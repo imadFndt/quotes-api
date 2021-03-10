@@ -2,13 +2,17 @@ package com.fndt.quote.data
 
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-private fun Database.populateDb() = transaction {
-    SchemaUtils.create(DbProvider.Quotes, DbProvider.Authors)
-    DbProvider.Authors.deleteAll()
+fun populateDb() = transaction {
+    SchemaUtils.create(DbProvider.Quotes, DbProvider.Authors, DbProvider.Users)
     DbProvider.Quotes.deleteAll()
+    DbProvider.Authors.deleteAll()
+    DbProvider.Users.deleteAll()
     DbProvider.Authors.batchInsert(authorList) { author ->
         this[DbProvider.Authors.name] = author.name
     }
@@ -39,7 +43,7 @@ private val quotesList = listOf(
         id = 0,
         body = "Почему я должен делать вид, что мне хорошо, когда мне в действительности плохо?",
         createdAt = 0,
-        author = Author(0, "Бараш")
+        author = Author(0, "Бараш"),
     ),
     Quote(
         id = 0,

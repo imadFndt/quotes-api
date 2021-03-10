@@ -13,6 +13,7 @@ val ktorVersion: String by project
 val logbackVersion: String by project
 val kotlinSerializationVersion: String by project
 val exposedVersion: String by project
+val koinVersion: String by project
 
 repositories {
     mavenCentral()
@@ -36,6 +37,10 @@ dependencies {
     implementation("io.ktor:ktor-gson:$ktorVersion")
     implementation("io.ktor:ktor-serialization:$ktorVersion")
     implementation("io.ktor:ktor-auth:$ktorVersion")
+
+    // DI
+    implementation("org.koin:koin-core:$koinVersion")
+    implementation("org.koin:koin-ktor:$koinVersion")
 
     // Logs
     implementation("ch.qos.logback:logback-classic:$logbackVersion")

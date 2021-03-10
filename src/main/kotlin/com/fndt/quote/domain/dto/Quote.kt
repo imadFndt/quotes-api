@@ -8,6 +8,6 @@ data class Quote(
     val id: Int,
     var body: String,
     @SerialName("created_at") val createdAt: Long,
-    val author: Author,
+    var author: Author,
     var likes: Int = 0,
 )
