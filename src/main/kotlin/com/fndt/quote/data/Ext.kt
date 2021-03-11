@@ -43,5 +43,5 @@ fun ResultRow.toUser(): User {
 
 fun String.toHashed(): String {
     val digest = MessageDigest.getInstance("SHA-256")
-    return digest.digest(this.toByteArray()).toString()
+    return digest.digest(this.toByteArray()).decodeToString()
 }

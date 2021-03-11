@@ -13,8 +13,7 @@ class AuthorsController(private val browseService: QuotesBrowseService) : Routin
         route(AUTHORS_ENDPOINT) {
             get("{id}") {
                 val id = call.parameters["id"] ?: return@get call.respondText(
-                    "Missing or malformed id",
-                    status = HttpStatusCode.BadRequest
+                    "Missing or malformed id", status = HttpStatusCode.BadRequest
                 )
                 try {
                     id.toInt()

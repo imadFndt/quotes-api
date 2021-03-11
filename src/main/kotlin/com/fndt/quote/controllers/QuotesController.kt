@@ -6,9 +6,11 @@ import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.serialization.SerializationException
 
 const val QUOTES_ENDPOINT = "/quotes"
 
@@ -24,15 +26,25 @@ class QuotesController(
                     call.respond(browseService.getQuotes())
                 }
                 post {
-                    call.receiveOrNull<Quote>()?.let { editService.upsertQuote(it) }
+                    call.receiveCatching<Quote> { quote ->
+                        editService.upsertQuote(quote)
+                    }
                 }
                 post("/like") {
-                    call.receiveOrNull<Like>()?.let {
-                        browseService.setQuoteLike(it)
-                        call.respondText("Like put successfully")
+                    call.receiveCatching<Like> { like ->
+                        browseService.setQuoteLike(like)
+                        respondText("Like put successfully")
                     }
                 }
             }
         }
+    }
+}
+
+suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(block: ApplicationCall.(T) -> Unit) {
+    try {
+        block(receive())
+    } catch (e: SerializationException) {
+        respondText(text = "Malformed json", status = HttpStatusCode.UnsupportedMediaType)
     }
 }

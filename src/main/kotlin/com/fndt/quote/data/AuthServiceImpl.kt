@@ -7,10 +7,11 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
 class AuthServiceImpl(private val userTable: DbProvider.Users) : AuthService {
-    override fun checkCredentials(credentials: UserPasswordCredential): AuthRole {
+    override suspend fun checkCredentials(credentials: UserPasswordCredential): AuthRole = transactionWithIO {
         val user = userTable.select {
-            (DbProvider.Users.name eq credentials.name) and (DbProvider.Users.hashedPassword eq credentials.password)
+            (DbProvider.Users.name eq credentials.name) and
+                (DbProvider.Users.hashedPassword eq credentials.password.toHashed())
         }.firstOrNull()?.toUser()
-        return user?.role ?: AuthRole.NOT_AUTHORIZED
+        user?.role ?: AuthRole.NOT_AUTHORIZED
     }
 }

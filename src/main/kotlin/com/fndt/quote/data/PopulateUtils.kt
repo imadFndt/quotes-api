@@ -4,15 +4,12 @@ import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun populateDb() = transaction {
+    SchemaUtils.drop(DbProvider.Quotes, DbProvider.Authors, DbProvider.Users)
     SchemaUtils.create(DbProvider.Quotes, DbProvider.Authors, DbProvider.Users)
-    DbProvider.Quotes.deleteAll()
-    DbProvider.Authors.deleteAll()
-    DbProvider.Users.deleteAll()
     DbProvider.Authors.batchInsert(authorList) { author ->
         this[DbProvider.Authors.name] = author.name
     }

@@ -4,5 +4,5 @@ import com.fndt.quote.domain.dto.AuthRole
 import io.ktor.auth.*
 
 interface AuthService {
-    fun checkCredentials(credentials: UserPasswordCredential): AuthRole
+    suspend fun checkCredentials(credentials: UserPasswordCredential): AuthRole
 }

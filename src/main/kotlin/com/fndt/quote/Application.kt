@@ -8,8 +8,9 @@ import com.fndt.quote.di.Modules
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
-import io.ktor.gson.*
 import io.ktor.routing.*
+import io.ktor.serialization.*
+import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
 
@@ -18,7 +19,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    install(ContentNegotiation) { gson { setPrettyPrinting() } }
+    install(ContentNegotiation) { json(json = Json { prettyPrint = true }) }
     install(Koin) { modules(Modules.dbModule, Modules.serviceModule, Modules.controllersModule) }
 
     val authorsController by inject<AuthorsController>()
