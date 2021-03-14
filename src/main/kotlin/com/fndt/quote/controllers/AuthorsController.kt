@@ -1,6 +1,5 @@
 package com.fndt.quote.controllers
 
-import com.fndt.quote.domain.QuotesBrowseService
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*

@@ -9,5 +9,5 @@ data class Comment(
     val body: String,
     @SerialName("quote_id") val quoteId: Int,
     val date: Long,
-    val user: String
+    val user: Int
 )

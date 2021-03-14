@@ -1,11 +1,12 @@
-package com.fndt.quote.data
+package com.fndt.quote.data.util
 
-import com.fndt.quote.data.DbProvider.Quotes.body
-import com.fndt.quote.data.DbProvider.Quotes.createdAt
-import com.fndt.quote.data.DbProvider.Tags.isPublic
-import com.fndt.quote.data.DbProvider.Tags.name
-import com.fndt.quote.data.DbProvider.TagsOnQuotes.quote
-import com.fndt.quote.data.DbProvider.TagsOnQuotes.tag
+import com.fndt.quote.data.DatabaseDefinition
+import com.fndt.quote.data.DatabaseDefinition.Quotes.body
+import com.fndt.quote.data.DatabaseDefinition.Quotes.createdAt
+import com.fndt.quote.data.DatabaseDefinition.Tags.isPublic
+import com.fndt.quote.data.DatabaseDefinition.Tags.name
+import com.fndt.quote.data.DatabaseDefinition.TagsOnQuotes.quote
+import com.fndt.quote.data.DatabaseDefinition.TagsOnQuotes.tag
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
@@ -17,70 +18,70 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun populateDb() = transaction {
     val tables = arrayOf(
-        DbProvider.Quotes,
-        DbProvider.Authors,
-        DbProvider.Users,
-        DbProvider.Tags,
-        DbProvider.TagsOnQuotes,
-        DbProvider.Comments,
-        DbProvider.LikesOnQuotes,
+        DatabaseDefinition.Quotes,
+        DatabaseDefinition.Authors,
+        DatabaseDefinition.Users,
+        DatabaseDefinition.Tags,
+        DatabaseDefinition.TagsOnQuotes,
+        DatabaseDefinition.Comments,
+        DatabaseDefinition.LikesOnQuotes,
     )
     SchemaUtils.drop(*tables)
     SchemaUtils.create(*tables)
-    DbProvider.Authors.batchInsert(authorList) { author ->
-        this[DbProvider.Authors.name] = author.name
+    DatabaseDefinition.Authors.batchInsert(authorList) { author ->
+        this[DatabaseDefinition.Authors.name] = author.name
     }
-    DbProvider.Quotes.batchInsert(quotesList) { quote ->
+    DatabaseDefinition.Quotes.batchInsert(quotesList) { quote ->
         this[body] = quote.body
         this[createdAt] = System.currentTimeMillis()
-        val authorId = DbProvider.Authors
-            .slice(DbProvider.Authors.id)
-            .select { DbProvider.Authors.name eq quote.author.name }
+        val authorId = DatabaseDefinition.Authors
+            .slice(DatabaseDefinition.Authors.id)
+            .select { DatabaseDefinition.Authors.name eq quote.author.name }
             .limit(1)
             .firstOrNull()
-            ?.let { it[DbProvider.Authors.id] } ?: run { throw IllegalArgumentException() }
-        this[DbProvider.Quotes.author] = authorId
+            ?.let { it[DatabaseDefinition.Authors.id] } ?: run { throw IllegalArgumentException() }
+        this[DatabaseDefinition.Quotes.author] = authorId
         this[isPublic] = true
     }
-    DbProvider.Users.insert { insert ->
+    DatabaseDefinition.Users.insert { insert ->
         insert[hashedPassword] = "a".toHashed()
         insert[name] = "a"
-        insert[role] = AuthRole.REGULAR.byte
+        insert[role] = AuthRole.REGULAR
     }
-    DbProvider.Comments.insert { insert ->
+    DatabaseDefinition.Comments.insert { insert ->
         insert[body] = "Хуйня"
         insert[quoteId] = 1
         insert[createdAt] = System.currentTimeMillis()
-        insert[user] = "a"
+        insert[user] = 1
     }
     val tags = listOf("Смешарики", "За жизнь")
-    DbProvider.Tags.batchInsert(tags) { tag ->
+    DatabaseDefinition.Tags.batchInsert(tags) { tag ->
         this[name] = tag
         this[isPublic] = true
     }
-    DbProvider.TagsOnQuotes.batchInsert(tags) { current ->
+    DatabaseDefinition.TagsOnQuotes.batchInsert(tags) { current ->
         this[quote] = 1
-        this[tag] = DbProvider.Tags
-            .slice(DbProvider.Tags.id)
+        this[tag] = DatabaseDefinition.Tags
+            .slice(DatabaseDefinition.Tags.id)
             .select { name eq current }
             .firstOrNull()
-            ?.let { it[DbProvider.Tags.id] } ?: run { throw IllegalArgumentException() }
+            ?.let { it[DatabaseDefinition.Tags.id] } ?: run { throw IllegalArgumentException() }
     }
-    DbProvider.TagsOnQuotes.insert { insertStatement ->
+    DatabaseDefinition.TagsOnQuotes.insert { insertStatement ->
         insertStatement[quote] = 2
-        insertStatement[tag] = DbProvider.Tags
-            .slice(DbProvider.Tags.id)
+        insertStatement[tag] = DatabaseDefinition.Tags
+            .slice(DatabaseDefinition.Tags.id)
             .select { name eq "Смешарики" }
             .firstOrNull()
-            ?.let { it[DbProvider.Tags.id] } ?: run { throw IllegalArgumentException() }
+            ?.let { it[DatabaseDefinition.Tags.id] } ?: run { throw IllegalArgumentException() }
     }
-    DbProvider.LikesOnQuotes.insert { insertStatement ->
+    DatabaseDefinition.LikesOnQuotes.insert { insertStatement ->
         insertStatement[quote] = 2
-        insertStatement[user] = "a"
+        insertStatement[user] = 1
     }
-    DbProvider.LikesOnQuotes.insert { insertStatement ->
+    DatabaseDefinition.LikesOnQuotes.insert { insertStatement ->
         insertStatement[quote] = 1
-        insertStatement[user] = "a"
+        insertStatement[user] = 1
     }
     commit()
 }

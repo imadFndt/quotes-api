@@ -6,21 +6,20 @@ import com.fndt.quote.controllers.QuotesController
 import com.fndt.quote.controllers.RegistrationController
 import com.fndt.quote.data.*
 import com.fndt.quote.domain.AuthService
-import com.fndt.quote.domain.QuotesBrowseService
 import com.fndt.quote.domain.QuotesEditService
 import com.fndt.quote.domain.RegistrationService
 import org.koin.dsl.module
 
 object Modules {
     val dbModule = module {
-        DbProvider.initDb
-        single { DbProvider.Quotes }
-        single { DbProvider.Users }
-        single { DbProvider.Authors }
-        single { DbProvider.Tags }
-        single { DbProvider.TagsOnQuotes }
-        single { DbProvider.Comments }
-        single { DbProvider.LikesOnQuotes }
+        DatabaseDefinition.initDb
+        single { DatabaseDefinition.Quotes }
+        single { DatabaseDefinition.Users }
+        single { DatabaseDefinition.Authors }
+        single { DatabaseDefinition.Tags }
+        single { DatabaseDefinition.TagsOnQuotes }
+        single { DatabaseDefinition.Comments }
+        single { DatabaseDefinition.LikesOnQuotes }
     }
     val serviceModule = module {
         single<QuotesEditService> { EditServiceImpl(get(), get()) }

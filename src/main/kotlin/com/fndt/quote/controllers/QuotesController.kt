@@ -3,7 +3,6 @@ package com.fndt.quote.controllers
 import com.fndt.quote.controllers.dto.AddComment
 import com.fndt.quote.controllers.dto.AddQuote
 import com.fndt.quote.controllers.util.receiveCatching
-import com.fndt.quote.domain.QuotesBrowseService
 import com.fndt.quote.domain.QuotesEditService
 import com.fndt.quote.domain.dto.Like
 import io.ktor.application.*
