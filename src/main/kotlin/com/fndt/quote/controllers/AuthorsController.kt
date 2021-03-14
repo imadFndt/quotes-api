@@ -10,18 +10,17 @@ const val AUTHORS_ENDPOINT = "/authors"
 
 class AuthorsController(private val browseService: QuotesBrowseService) : RoutingController {
     override fun route(routing: Routing) = routing {
-        route(AUTHORS_ENDPOINT) {
-            get("{id}") {
-                val id = call.parameters["id"] ?: return@get call.respondText(
-                    "Missing or malformed id", status = HttpStatusCode.BadRequest
-                )
-                try {
-                    id.toInt()
-                    call.respond(browseService.getQuotesByAuthorId(id.toInt()))
-                } catch (e: NumberFormatException) {
-                    call.respondText("Malformed id", status = HttpStatusCode.BadRequest)
-                }
+        suspend fun ApplicationCall.respondQuotesById() {
+            val id =
+                parameters["id"] ?: return respondText("Missing or malformed id", status = HttpStatusCode.BadRequest)
+            try {
+                respond(browseService.getQuotes(id.toInt()))
+            } catch (e: NumberFormatException) {
+                respondText("Malformed id", status = HttpStatusCode.BadRequest)
             }
+        }
+        route(AUTHORS_ENDPOINT) {
+            get("{id}") { call.respondQuotesById() }
         }
     }
 }

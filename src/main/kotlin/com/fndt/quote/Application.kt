@@ -32,10 +32,3 @@ fun Application.module() {
         listOf(authorsController, registrationController, quotesController).forEach { it.route(this) }
     }
 }
-
-/*
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '{"body":"Тело цитаты","date":"30", "author": {"id":3,"name":"Копатыч"}}' \
-  http://0.0.0.0:8080/quotes
- */

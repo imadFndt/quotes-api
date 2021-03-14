@@ -1,9 +1,6 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.domain.dto.AuthRole
-import com.fndt.quote.domain.dto.Author
-import com.fndt.quote.domain.dto.Quote
-import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.dto.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.ResultRow
@@ -19,16 +16,17 @@ suspend fun <T> transactionWithIO(block: Transaction.() -> T): T {
     }
 }
 
-fun ResultRow.toQuotes(): Quote {
+fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote {
     return Quote(
         id = this[DbProvider.Quotes.id].value,
         body = this[DbProvider.Quotes.body],
-        createdAt = this[DbProvider.Quotes.date],
+        createdAt = this[DbProvider.Quotes.createdAt],
         author = Author(
             id = this[DbProvider.Authors.id].value,
             name = this[DbProvider.Authors.name]
         ),
-        likes = this[DbProvider.Quotes.likes],
+        likes = likesCount,
+        tags = tagList,
     )
 }
 
@@ -38,6 +36,13 @@ fun ResultRow.toUser(): User {
         name = this[DbProvider.Users.name],
         hashedPassword = this[DbProvider.Users.hashedPassword],
         role = role
+    )
+}
+
+fun ResultRow.toTag(): Tag {
+    return Tag(
+        id = this[DbProvider.Tags.id].value,
+        name = this[DbProvider.Tags.name],
     )
 }
 

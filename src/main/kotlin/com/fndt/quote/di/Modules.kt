@@ -17,10 +17,14 @@ object Modules {
         single { DbProvider.Quotes }
         single { DbProvider.Users }
         single { DbProvider.Authors }
+        single { DbProvider.Tags }
+        single { DbProvider.TagsOnQuotes }
+        single { DbProvider.Comments }
+        single { DbProvider.LikesOnQuotes }
     }
     val serviceModule = module {
         single<QuotesEditService> { EditServiceImpl(get(), get()) }
-        single<QuotesBrowseService> { QuotesBrowseServiceImpl(get(), get()) }
+        single<QuotesBrowseService> { QuotesBrowseServiceImpl(get(), get(), get(), get(), get(), get()) }
         single<RegistrationService> { RegistrationServiceImpl(get()) }
         single<AuthService> { AuthServiceImpl(get()) }
     }
