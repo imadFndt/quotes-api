@@ -1,7 +1,8 @@
 package com.fndt.quote.domain.dto
 
 data class User(
+    val id: Int,
     val name: String,
-    val hashedPassword: String,
+    internal val hashedPassword: String,
     val role: AuthRole
 )

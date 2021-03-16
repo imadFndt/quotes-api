@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Table
 import kotlin.reflect.KProperty
 
-object DatabaseDefinition {
+object DatabaseProvider {
     val initDb by lazy {
         Database.connect(
             "jdbc:h2:file:/Users/imadfndt/IdeaProjects/quotes-test/src/main/resources/db/quotes;DB_CLOSE_DELAY=-1",
@@ -37,7 +37,7 @@ object DatabaseDefinition {
         abstract val isPublic: Column<Boolean>
     }
 
-    object Quotes : DatabaseDefinition.AccessLimitableIntIdTable() {
+    object Quotes : DatabaseProvider.AccessLimitableIntIdTable() {
         val body = varchar("body", 200)
         val createdAt = long("date")
         val author = reference("author_id", Authors)
@@ -60,7 +60,7 @@ object DatabaseDefinition {
         val quote = reference("quote", Quotes)
     }
 
-    object Tags : DatabaseDefinition.AccessLimitableIntIdTable() {
+    object Tags : DatabaseProvider.AccessLimitableIntIdTable() {
         val name = varchar("name", 50)
         override val isPublic = bool("is_public")
     }

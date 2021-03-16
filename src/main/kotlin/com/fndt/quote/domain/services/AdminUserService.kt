@@ -1,4 +1,4 @@
-package com.fndt.quote.domain
+package com.fndt.quote.domain.services
 
 import com.fndt.quote.domain.dto.AuthRole
 

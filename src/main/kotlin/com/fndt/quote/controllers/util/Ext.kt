@@ -7,11 +7,12 @@ import io.ktor.response.*
 import kotlinx.serialization.SerializationException
 
 // todo suspend nullable lambda
-suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(block: ApplicationCall.(T) -> Unit) {
-    try {
-        block(receive())
+suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
+    return try {
+        receive()
     } catch (e: SerializationException) {
         respondText(text = "Malformed json", status = HttpStatusCode.UnsupportedMediaType)
+        null
     }
 }
 

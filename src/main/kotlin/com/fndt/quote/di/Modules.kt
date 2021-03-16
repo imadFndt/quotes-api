@@ -5,27 +5,25 @@ import com.fndt.quote.controllers.AuthorsController
 import com.fndt.quote.controllers.QuotesController
 import com.fndt.quote.controllers.RegistrationController
 import com.fndt.quote.data.*
-import com.fndt.quote.domain.AuthService
-import com.fndt.quote.domain.QuotesEditService
-import com.fndt.quote.domain.RegistrationService
+import com.fndt.quote.domain.services.implementations.AuthServiceImpl
+import com.fndt.quote.domain.services.implementations.RegistrationServiceImpl
+import com.fndt.quote.domain.services.AuthService
+import com.fndt.quote.domain.services.QuotesEditService
+import com.fndt.quote.domain.services.RegistrationService
 import org.koin.dsl.module
 
 object Modules {
     val dbModule = module {
-        DatabaseDefinition.initDb
-        single { DatabaseDefinition.Quotes }
-        single { DatabaseDefinition.Users }
-        single { DatabaseDefinition.Authors }
-        single { DatabaseDefinition.Tags }
-        single { DatabaseDefinition.TagsOnQuotes }
-        single { DatabaseDefinition.Comments }
-        single { DatabaseDefinition.LikesOnQuotes }
+        DatabaseProvider.initDb
+        single { DatabaseProvider.Quotes }
+        single { DatabaseProvider.Users }
+        single { DatabaseProvider.Authors }
+        single { DatabaseProvider.Tags }
+        single { DatabaseProvider.TagsOnQuotes }
+        single { DatabaseProvider.Comments }
+        single { DatabaseProvider.LikesOnQuotes }
     }
     val serviceModule = module {
-        single<QuotesEditService> { EditServiceImpl(get(), get()) }
-        single<QuotesBrowseService> { QuotesBrowseServiceImpl(get(), get(), get(), get(), get(), get()) }
-        single<RegistrationService> { RegistrationServiceImpl(get()) }
-        single<AuthService> { AuthServiceImpl(get()) }
     }
     val controllersModule = module {
         single { AuthController(get()) }

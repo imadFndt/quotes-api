@@ -1,4 +1,4 @@
-package com.fndt.quote.domain
+package com.fndt.quote.domain.services
 
 interface RegistrationService {
     suspend fun registerUser(login: String, password: String): Boolean
