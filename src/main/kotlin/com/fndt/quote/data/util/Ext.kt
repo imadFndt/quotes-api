@@ -22,10 +22,7 @@ fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote
         id = this[DatabaseProvider.Quotes.id].value,
         body = this[DatabaseProvider.Quotes.body],
         createdAt = this[DatabaseProvider.Quotes.createdAt],
-        author = Author(
-            id = this[DatabaseProvider.Authors.id].value,
-            name = this[DatabaseProvider.Authors.name]
-        ),
+        author = this.toAuthor(),
         likes = likesCount,
         tags = tagList,
     )
@@ -60,6 +57,13 @@ fun ResultRow.toComment(): Comment {
         quoteId = this[DatabaseProvider.Comments.quoteId].value,
         date = this[DatabaseProvider.Comments.createdAt],
         user = this[DatabaseProvider.Comments.user].value
+    )
+}
+
+fun ResultRow.toAuthor(): Author {
+    return Author(
+        id = this[DatabaseProvider.Authors.id].value,
+        name = this[DatabaseProvider.Authors.name]
     )
 }
 

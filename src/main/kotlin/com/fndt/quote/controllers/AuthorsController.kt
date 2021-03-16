@@ -1,29 +1,21 @@
 package com.fndt.quote.controllers
 
+import com.fndt.quote.controllers.util.getAndCheckIntParameter
+import com.fndt.quote.controllers.util.getExt
+import com.fndt.quote.controllers.util.routePathWithAuth
+import com.fndt.quote.domain.ServiceHolder
 import com.fndt.quote.domain.services.RegularUserService
 import io.ktor.application.*
-import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 const val AUTHORS_ENDPOINT = "/authors"
 
-class AuthorsController : RoutingController {
-    val service: RegularUserService? = null
-    override fun route(routing: Routing) = routing {
-        suspend fun ApplicationCall.respondQuotesById() {
-            val id =
-                parameters["id"] ?: return respondText("Missing or malformed id", status = HttpStatusCode.BadRequest)
-            try {
-                respond(service.getQuotes(id.toInt()))
-            } catch (e: NumberFormatException) {
-                respondText("Malformed id", status = HttpStatusCode.BadRequest)
-            }
-        }
-        route(AUTHORS_ENDPOINT) {
-            get("{id}") {
-                call.respondQuotesById()
-            }
+class AuthorsController(private val holder: ServiceHolder) : RoutingController {
+    override fun route(routing: Routing) = routing.routePathWithAuth(AUTHORS_ENDPOINT) {
+        getExt<RegularUserService>("{id}", holder) { service ->
+            val id = getAndCheckIntParameter("id") ?: return@getExt
+            respond(service.getQuotes(id))
         }
     }
 }

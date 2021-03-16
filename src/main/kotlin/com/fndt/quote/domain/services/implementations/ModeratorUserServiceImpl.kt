@@ -1,7 +1,6 @@
 package com.fndt.quote.domain.services.implementations
 
 import com.fndt.quote.data.QuoteDaoImpl
-import com.fndt.quote.data.UserDaoImpl
 import com.fndt.quote.domain.dao.*
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Tag

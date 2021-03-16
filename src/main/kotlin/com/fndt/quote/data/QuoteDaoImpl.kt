@@ -1,8 +1,8 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.domain.dao.QuoteDao
 import com.fndt.quote.data.util.toQuotes
 import com.fndt.quote.data.util.toTag
+import com.fndt.quote.domain.dao.QuoteDao
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.Tag
 import org.jetbrains.exposed.sql.*

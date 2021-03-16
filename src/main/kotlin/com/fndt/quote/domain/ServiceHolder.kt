@@ -5,21 +5,25 @@ import com.fndt.quote.domain.services.AdminUserService
 import com.fndt.quote.domain.services.ModeratorUserService
 import com.fndt.quote.domain.services.RegularUserService
 
-class UserServiceHolder(factory: UserServiceFactory) {
+class ServiceHolder(factory: ServiceFactory) {
+    val authService by lazy { factory.createAuthService() }
+
+    val registrationService by lazy { factory.createRegistrationService() }
+
     private val adminUserService by lazy {
-        factory.createService(AuthRole.ADMIN) as AdminUserService
+        factory.createUserService(AuthRole.ADMIN) as AdminUserService
     }
 
     private val moderatorUserService by lazy {
-        factory.createService(AuthRole.MODERATOR) as ModeratorUserService
+        factory.createUserService(AuthRole.MODERATOR) as ModeratorUserService
     }
 
     private val regularUserService by lazy {
-        factory.createService(AuthRole.REGULAR) as RegularUserService
+        factory.createUserService(AuthRole.REGULAR) as RegularUserService
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : RegularUserService> getService(role: AuthRole?): T? {
+    fun <T : RegularUserService> getUserService(role: AuthRole?): T? {
         return when (role) {
             AuthRole.ADMIN -> if (roleMatches<AdminUserService>(role)) adminUserService as? T else null
             AuthRole.MODERATOR -> if (roleMatches<ModeratorUserService>(role)) moderatorUserService as? T else null

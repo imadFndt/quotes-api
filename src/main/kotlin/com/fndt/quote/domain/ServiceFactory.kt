@@ -2,12 +2,12 @@ package com.fndt.quote.domain
 
 import com.fndt.quote.domain.dao.*
 import com.fndt.quote.domain.dto.AuthRole
+import com.fndt.quote.domain.services.AuthService
+import com.fndt.quote.domain.services.RegistrationService
 import com.fndt.quote.domain.services.RegularUserService
-import com.fndt.quote.domain.services.implementations.AdminUserServiceImpl
-import com.fndt.quote.domain.services.implementations.ModeratorUserServiceImpl
-import com.fndt.quote.domain.services.implementations.RegularUserServiceImpl
+import com.fndt.quote.domain.services.implementations.*
 
-class UserServiceFactory(
+class ServiceFactory(
     private val userDao: UserDao,
     private val commentDao: CommentDao,
     private val likeDao: LikeDao,
@@ -17,7 +17,7 @@ class UserServiceFactory(
 ) {
 
     @Suppress("UNCHECKED_CAST")
-    fun createService(role: AuthRole?): RegularUserService? {
+    fun createUserService(role: AuthRole?): RegularUserService? {
         return when (role) {
             AuthRole.ADMIN -> AdminUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao)
             AuthRole.MODERATOR -> ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao)
@@ -25,4 +25,7 @@ class UserServiceFactory(
             else -> null
         }
     }
+
+    fun createAuthService(): AuthService = AuthServiceImpl(userDao)
+    fun createRegistrationService(): RegistrationService = RegistrationServiceImpl(userDao)
 }

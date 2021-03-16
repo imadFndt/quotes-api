@@ -1,7 +1,7 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.domain.dao.CommentDao
 import com.fndt.quote.data.util.toComment
+import com.fndt.quote.domain.dao.CommentDao
 import com.fndt.quote.domain.dto.Comment
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
