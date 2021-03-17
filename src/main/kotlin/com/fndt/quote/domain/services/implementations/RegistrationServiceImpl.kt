@@ -7,8 +7,8 @@ import kotlinx.coroutines.withContext
 
 internal class RegistrationServiceImpl(private val userDao: UserDao) : RegistrationService {
     override suspend fun registerUser(login: String, password: String) = withContext(Dispatchers.IO) {
-        userDao.findUser(name = login) ?: throw IllegalArgumentException("User already registered")
-        userDao.insert(login, password)
-        true
+        userDao.findUser(name = login)?.let { throw IllegalArgumentException("User already registered") }
+        userDao.insert(login, password) ?: throw IllegalStateException("Failed to register")
+        Unit
     }
 }
