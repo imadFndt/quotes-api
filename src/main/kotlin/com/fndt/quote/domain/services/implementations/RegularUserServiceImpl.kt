@@ -23,7 +23,7 @@ internal open class RegularUserServiceImpl(
     override suspend fun setQuoteLike(like: Like, likeAction: Boolean): Boolean = withContext(Dispatchers.IO) {
         val likeExists = likeDao.find(like) != null
         when {
-            likeAction && !likeExists -> likeDao.like(like) == 1
+            likeAction && !likeExists -> likeDao.like(like) != null
             likeAction && likeExists -> likeDao.unlike(like) == 1
             else -> return@withContext false
         }
@@ -71,7 +71,7 @@ internal open class RegularUserServiceImpl(
     override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int): Boolean =
         withContext(Dispatchers.IO) {
             if (quoteDao.findById(quoteId) != null) return@withContext false
-            commentDao.upsertComment(commentBody, quoteId, userId)
+            commentDao.insert(commentBody, quoteId, userId)
             return@withContext true
         }
 

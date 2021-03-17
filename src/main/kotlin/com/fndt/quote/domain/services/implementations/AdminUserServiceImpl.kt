@@ -14,10 +14,10 @@ internal class AdminUserServiceImpl(
     authorDao: AuthorDao,
 ) : ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao), AdminUserService {
     override suspend fun setTagVisibility(tagId: Int, isPublic: Boolean): Boolean = transaction {
-        tagDao.update(tagId = tagId, isPublic = isPublic) > 0
+        tagDao.update(tagId = tagId, isPublic = isPublic) != null
     }
 
     override suspend fun changeRole(userId: Int, newRole: AuthRole, oldRole: AuthRole): Boolean = transaction {
-        userDao.update(userId, role = newRole) > 0
+        userDao.update(userId, role = newRole) != null
     }
 }

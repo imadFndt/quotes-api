@@ -2,19 +2,13 @@ package com.fndt.quote.data.util
 
 import com.fndt.quote.data.DatabaseProvider
 import com.fndt.quote.domain.dto.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.*
 import java.security.MessageDigest
 
-suspend fun <T> transactionWithIO(block: Transaction.() -> T): T {
-    return withContext(Dispatchers.IO) {
-        transaction {
-            this.block()
-        }
-    }
+fun Query.andWhere(andPart: SqlExpressionBuilder.() -> Op<Boolean>) = adjustWhere {
+    val expr = Op.build { andPart() }
+    if (this == null) expr
+    else this and expr
 }
 
 fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote {
@@ -22,6 +16,7 @@ fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote
         id = this[DatabaseProvider.Quotes.id].value,
         body = this[DatabaseProvider.Quotes.body],
         createdAt = this[DatabaseProvider.Quotes.createdAt],
+        isPublic = this[DatabaseProvider.Quotes.isPublic],
         author = this.toAuthor(),
         likes = likesCount,
         tags = tagList,

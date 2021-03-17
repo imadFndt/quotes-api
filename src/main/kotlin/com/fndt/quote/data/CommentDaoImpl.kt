@@ -17,17 +17,19 @@ class CommentDaoImpl(dbProvider: DatabaseProvider) : CommentDao {
             .map { it.toComment() }
     }
 
-    override fun upsertComment(commentBody: String, quoteId: Int, userId: Int): Int = transaction {
-        commentsTable.insert { insert ->
-            insert[body] = commentBody
-            insert[createdAt] = System.currentTimeMillis()
-            insert[user] = userId
-            insert[this.quoteId] = quoteId
-        }.execute(this) ?: OPERATION_FAILED
+    override fun insert(commentBody: String, quoteId: Int, userId: Int): Comment? = transaction {
+        findComment(
+            commentsTable.insert { insert ->
+                insert[body] = commentBody
+                insert[createdAt] = System.currentTimeMillis()
+                insert[user] = userId
+                insert[this.quoteId] = quoteId
+            }[commentsTable.id].value
+        )
     }
 
     override fun deleteComment(commentId: Int): Int = transaction {
-        commentsTable.deleteWhere { commentsTable.user eq commentId }
+        commentsTable.deleteWhere { commentsTable.id eq commentId }
     }
 
     override fun findComment(commentId: Int): Comment? = transaction {

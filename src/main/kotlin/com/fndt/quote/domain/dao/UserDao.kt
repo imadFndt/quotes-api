@@ -10,10 +10,9 @@ interface UserDao {
         role: AuthRole? = null,
         password: String? = null,
         login: String? = null
-    ): Int
+    ): User?
 
     fun insert(login: String, password: String): User?
-    fun findUser(userId: Int): User?
-    fun findUser(userName: String): User?
-    fun findUser(login: String, password: String): User?
+    fun findUser(userId: Int? = null, name: String? = null, password: String? = null): User?
+    fun getUsers(): List<User>
 }

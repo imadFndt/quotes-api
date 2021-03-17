@@ -55,8 +55,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     // Tests
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("io.mockk:mockk:1.10.6")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
-    testImplementation("junit", "junit", "4.12")
 }
 
 configure<JavaPluginConvention> {
@@ -69,4 +70,7 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+}
+tasks.test {
+    useJUnitPlatform()
 }

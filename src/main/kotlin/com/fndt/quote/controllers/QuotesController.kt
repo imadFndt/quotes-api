@@ -15,6 +15,10 @@ import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 
 const val QUOTES_ENDPOINT = "/quotes"
+const val LIKE_ENDPOINT = "/like"
+const val ID = "id"
+const val COMMENTS_ENDPOINT = "{$ID}/comment"
+const val DELETE_COMMENT_ENDPOINT = "/comment/{$ID}"
 
 class QuotesController(private val holder: ServiceHolder) : RoutingController {
 
@@ -26,7 +30,7 @@ class QuotesController(private val holder: ServiceHolder) : RoutingController {
             val result = service.upsertQuote(quote.body, quote.authorId, quote.tagsId, quote.quoteId)
             respondText(result.toString())
         }
-        postExt<RegularUserService>("/like", holder) { service ->
+        postExt<RegularUserService>(LIKE_ENDPOINT, holder) { service ->
             val (quoteId, action) = receiveCatching<LikeRequest>() ?: return@postExt
             val userId = principal<UserRolePrincipal>()?.user?.id
             val likeSuccess = service.setQuoteLike(Like(quoteId, userId!!), action)
@@ -36,19 +40,19 @@ class QuotesController(private val holder: ServiceHolder) : RoutingController {
                 respondText("Like failed", status = HttpStatusCode.Conflict)
             }
         }
-        getExt<RegularUserService>("{id}/comment", holder) { service ->
-            getAndCheckIntParameter("id")?.let { respond(service.getComments(it)) }
+        getExt<RegularUserService>(COMMENTS_ENDPOINT, holder) { service ->
+            getAndCheckIntParameter(ID)?.let { respond(service.getComments(it)) }
         }
-        postExt<RegularUserService>("{id}/comment", holder) { service ->
+        postExt<RegularUserService>(COMMENTS_ENDPOINT, holder) { service ->
             val principal = principal<UserRolePrincipal>() ?: return@postExt
             getAndCheckIntParameter("id")?.let { quoteId ->
                 val comment = receiveCatching<AddComment>() ?: return@postExt
                 respond(service.addComment(comment.commentBody, quoteId, principal.user.id))
             }
         }
-        deleteExt<RegularUserService>("/comment/{comment}", holder) { service ->
+        deleteExt<RegularUserService>(DELETE_COMMENT_ENDPOINT, holder) { service ->
             val principal = principal<UserRolePrincipal>() ?: return@deleteExt
-            getAndCheckIntParameter("comment")?.let { respond(service.deleteComment(it, principal.user.id)) }
+            getAndCheckIntParameter(ID)?.let { respond(service.deleteComment(it, principal.user.id)) }
         }
     }
 }

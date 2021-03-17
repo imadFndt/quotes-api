@@ -17,9 +17,11 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     private val tagsTable: DatabaseProvider.Tags by dbProvider
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
 
-    override fun getQuotes(id: Int?): List<Quote> = transaction {
+    override fun getQuotes(id: Int?, isPublic: Boolean?): List<Quote> = transaction {
         (quotesTable innerJoin authorsTable)
-            .run { id?.let { select { authorsTable.id eq id } } ?: run { selectAll() } }
+            .selectAll()
+            .apply { id?.let { andWhere { authorsTable.id eq it } } }
+            .apply { isPublic?.let { andWhere { quotesTable.isPublic eq it } } }
             .map {
                 it.toQuotes(
                     fetchTags(it[DatabaseProvider.Quotes.id].value),
@@ -28,43 +30,21 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
             }
     }
 
-    override fun upsertQuote(body: String, authorId: Int?, isPublic: Boolean, quoteId: Int?): Quote? = transaction {
-        authorsTable.select { DatabaseProvider.Authors.id eq authorId }.firstOrNull() ?: return@transaction null
-        val resultId = quoteId?.let { id ->
-            quotesTable.update({ quotesTable.id eq id }) { update ->
-                update[DatabaseProvider.Quotes.body] = body
-                update[author] = authorId
-                update[this.isPublic] = isPublic
-            }
-            id
-        } ?: run {
-            authorId ?: return@run OPERATION_FAILED
-            quotesTable.insert { insert ->
-                insert[DatabaseProvider.Quotes.body] = body
-                insert[author] = authorId
-                insert[createdAt] = System.currentTimeMillis()
-                insert[this.isPublic] = isPublic
-            }[quotesTable.id].value
-        }
-        return@transaction findById(resultId)
+    override fun insert(body: String, authorId: Int) = transaction {
+        val id = quotesTable.insert { insert ->
+            insert[quotesTable.body] = body
+            insert[author] = authorId
+            insert[createdAt] = System.currentTimeMillis()
+            insert[this.isPublic] = false
+        }[quotesTable.id].value
+        findById(id)
     }
 
-    fun insert(body: String, authorId: Int) = transaction {
-        findById(
-            quotesTable.insert { insert ->
-                insert[quotesTable.body] = body
-                insert[author] = authorId
-                insert[createdAt] = System.currentTimeMillis()
-                insert[this.isPublic] = isPublic
-            }[quotesTable.id].value
-        )
-    }
-
-    fun update(quoteId: Int, body: String? = null, authorId: Int? = null, isPublic: Boolean = false) = transaction {
+    override fun update(quoteId: Int, body: String?, authorId: Int?, isPublic: Boolean?) = transaction {
         quotesTable.update({ quotesTable.id eq quoteId }) { update ->
             body?.let { update[DatabaseProvider.Quotes.body] = it }
             authorId?.let { update[author] = it }
-            update[this.isPublic] = isPublic
+            isPublic?.let { update[this.isPublic] = isPublic }
         }
         findById(quoteId)
     }
@@ -74,8 +54,7 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     }
 
     override fun findById(id: Int): Quote? = transaction {
-        quotesTable
-            .slice(quotesTable.id)
+        (quotesTable innerJoin authorsTable)
             .select { quotesTable.id eq id }
             .firstOrNull()
             ?.toQuotes(fetchTags(id), fetchLikes(id))

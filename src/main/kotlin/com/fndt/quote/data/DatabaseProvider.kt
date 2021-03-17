@@ -10,6 +10,7 @@ import kotlin.reflect.KProperty
 
 object DatabaseProvider {
     val initDb by lazy {
+        // LOCAL IS jdbc:h2:mem:
         Database.connect(
             "jdbc:h2:file:/Users/imadfndt/IdeaProjects/quotes-test/src/main/resources/db/quotes;DB_CLOSE_DELAY=-1",
             "org.h2.Driver",

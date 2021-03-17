@@ -4,5 +4,5 @@ data class User(
     val id: Int,
     val name: String,
     internal val hashedPassword: String,
-    val role: AuthRole
+    val role: AuthRole = AuthRole.REGULAR
 )

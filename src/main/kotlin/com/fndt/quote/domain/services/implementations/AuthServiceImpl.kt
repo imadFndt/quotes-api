@@ -7,6 +7,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class AuthServiceImpl(private val usersDao: UserDao) : AuthService {
     override suspend fun checkCredentials(login: String, password: String): User? = transaction {
-        usersDao.findUser(login, password)
+        usersDao.findUser(name = login, password = password)
     }
 }

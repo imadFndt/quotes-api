@@ -13,4 +13,5 @@ data class Quote(
     var author: Author,
     var likes: Int = 0,
     var tags: List<Tag> = emptyList(),
+    val isPublic: Boolean = false
 )

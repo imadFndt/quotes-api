@@ -1,7 +1,7 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.domain.dao.LikeDao
 import com.fndt.quote.data.util.toLike
+import com.fndt.quote.domain.dao.LikeDao
 import com.fndt.quote.domain.dto.Like
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -9,11 +9,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class LikeDaoImpl(dbProvider: DatabaseProvider) : LikeDao {
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
 
-    override fun like(like: Like): Int = transaction {
+    override fun like(like: Like) = transaction {
         likesQuotesMapTable.insert { insert ->
             insert[quote] = like.quoteId
             insert[user] = like.userId
-        }.execute(this) ?: OPERATION_FAILED
+        }
+        find(like)
     }
 
     override fun unlike(like: Like): Int = transaction {

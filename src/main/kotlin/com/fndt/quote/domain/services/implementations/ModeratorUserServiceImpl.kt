@@ -17,7 +17,7 @@ internal open class ModeratorUserServiceImpl(
     authorDao: AuthorDao,
 ) : RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, authorDao), ModeratorUserService {
     override suspend fun banUserTemporary(userId: Int, time: Int): Boolean = withContext(Dispatchers.IO) {
-        userDao.update(time = System.currentTimeMillis() + time, userId = userId, role = AuthRole.BANNED) > 0
+        userDao.update(time = System.currentTimeMillis() + time, userId = userId, role = AuthRole.BANNED) != null
     }
 
     override suspend fun setQuoteVisibility(quoteId: Int, isPublic: Boolean): Boolean = withContext(Dispatchers.IO) {
@@ -25,6 +25,6 @@ internal open class ModeratorUserServiceImpl(
     }
 
     override suspend fun addTagForModeration(tag: Tag): Boolean = withContext(Dispatchers.IO) {
-        tagDao.upsertTag(tag.name) > 0
+        tagDao.upsertTag(tag.name) != null
     }
 }
