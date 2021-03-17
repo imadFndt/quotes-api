@@ -23,7 +23,7 @@ internal class CommentDaoImplTest {
     }
 
     @Test
-    fun `Add comment`() {
+    fun `add comment`() {
         // WHEN
         val comment = commentDao.insert("Like it", 1, 1)
         comment ?: throw NullPointerException()
@@ -36,7 +36,7 @@ internal class CommentDaoImplTest {
     }
 
     @Test
-    fun `Delete comment`() {
+    fun `delete comment`() {
         // GIVEN
         val comment = commentDao.insert("Like it", 1, 1)
         comment ?: throw NullPointerException()
@@ -44,7 +44,7 @@ internal class CommentDaoImplTest {
         anotherComment ?: throw NullPointerException()
 
         // WHEN
-        commentDao.deleteComment(comment.id)
+        commentDao.remove(comment.id)
         val allComments = commentDao.getComments(1)
         // THEN
         assertTrue { !allComments.contains(comment) && allComments.contains(anotherComment) }

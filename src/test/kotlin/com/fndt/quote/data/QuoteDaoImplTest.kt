@@ -46,7 +46,7 @@ internal class QuoteDaoImplTest {
                     this[DatabaseProvider.Quotes.isPublic] = true
                     val authorId = DatabaseProvider.Authors
                         .slice(DatabaseProvider.Authors.id)
-                        .select { DatabaseProvider.Authors.name eq quote.author.name }
+                        .select { DatabaseProvider.Authors.name eq (quote.author?.name ?: "") }
                         .limit(1)
                         .firstOrNull()
                         ?.let { it[DatabaseProvider.Authors.id] } ?: run { throw IllegalArgumentException() }
@@ -57,7 +57,7 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `Gets all quotes right`() {
+    fun `gets all quotes right`() {
         // WHEN
         val quotesDbList = quoteDao.getQuotes()
         // THEN
@@ -70,17 +70,17 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `Get all quotes by author id`() {
+    fun `get all quotes by author id`() {
         // WHEN 
         val quotesById = quoteDao.getQuotes(1)
 
         // THEN
-        assertFalse { quotesById.all { it.author.id != 1 } }
-        assertTrue { quotesById.all { it.author.id == 1 } }
+        assertFalse { quotesById.all { it.author?.id != 1 } }
+        assertTrue { quotesById.all { it.author?.id == 1 } }
     }
 
     @Test
-    fun `Get all quotes by access`() {
+    fun `get all quotes by access`() {
         // GIVEN
         val privateQuotes = quoteDao.getQuotes(isPublic = false)
         val trueQuotes = quoteDao.getQuotes(isPublic = true)
@@ -94,7 +94,7 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `Get all quotes by author and access`() {
+    fun `get all quotes by author and access`() {
         // GIVEN
         val expectedList = quoteDao.getQuotes().filter { it.id == 1 && !it.isPublic }
 
@@ -106,20 +106,20 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `Insert quote`() = transaction {
+    fun `insert quote`() = transaction {
         // WHEN
         val quote = quoteDao.insert("Привет", 1)
         quote ?: throw NullPointerException()
 
         // THEN
         assertTrue {
-            quote == quoteDao.findById(quote.id) && quote.body == "Привет" && quote.author.id == 1
+            quote == quoteDao.findById(quote.id) && quote.body == "Привет" && quote.author?.id == 1
         }
     }
 
     // TODO CHECK DOUBLE INSERT
     @Test
-    fun `Updating quote`() {
+    fun `updating quote`() {
         // GIVEN
         val expectedQuote = quoteDao.findById(1)?.apply {
             body = "New body"
@@ -133,7 +133,7 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `Deleting quote`() {
+    fun `deleting quote`() {
         // GIVEN
         val expectedList = quoteDao.getQuotes().toMutableList()
         val removingQuote = quotesList[0]

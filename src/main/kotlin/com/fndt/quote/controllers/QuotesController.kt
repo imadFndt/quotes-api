@@ -27,8 +27,12 @@ class QuotesController(private val holder: ServiceHolder) : RoutingController {
         postExt<RegularUserService>(holder = holder) { service ->
             val quote = receiveCatching<AddQuote>()
             quote ?: return@postExt
-            val result = service.upsertQuote(quote.body, quote.authorId, quote.tagsId, quote.quoteId)
-            respondText(result.toString())
+            try {
+                service.addQuote(quote.body, quote.authorId)
+                respondText("Success")
+            } catch (e: IllegalStateException) {
+                respondText("Failure", status = HttpStatusCode.BadRequest)
+            }
         }
         postExt<RegularUserService>(LIKE_ENDPOINT, holder) { service ->
             val (quoteId, action) = receiveCatching<LikeRequest>() ?: return@postExt

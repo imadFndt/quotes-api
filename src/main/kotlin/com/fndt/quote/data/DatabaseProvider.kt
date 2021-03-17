@@ -2,6 +2,7 @@ package com.fndt.quote.data
 
 import com.fndt.quote.data.util.populateDb
 import com.fndt.quote.domain.dto.AuthRole
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
@@ -41,7 +42,7 @@ object DatabaseProvider {
     object Quotes : DatabaseProvider.AccessLimitableIntIdTable() {
         val body = varchar("body", 200)
         val createdAt = long("date")
-        val author = reference("author_id", Authors)
+        val author: Column<EntityID<Int>?> = optReference("author_id", Authors)
         override val isPublic = bool("is_public")
     }
 

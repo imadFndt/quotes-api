@@ -23,7 +23,7 @@ internal class TagDaoImplTest {
     }
 
     @Test
-    fun `Add tag`() {
+    fun `add tag`() {
         val tag = tagDao.insert("Statham")
         val tagList = tagDao.getTags()
 
@@ -31,7 +31,7 @@ internal class TagDaoImplTest {
     }
 
     @Test
-    fun `Delete tag`() {
+    fun `delete tag`() {
         val tag = tagDao.insert("Statham")
         val tag2 = tagDao.insert("Hummingway")
         tag2 ?: throw NullPointerException()

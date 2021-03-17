@@ -28,7 +28,7 @@ class CommentDaoImpl(dbProvider: DatabaseProvider) : CommentDao {
         )
     }
 
-    override fun deleteComment(commentId: Int): Int = transaction {
+    override fun remove(commentId: Int): Int = transaction {
         commentsTable.deleteWhere { commentsTable.id eq commentId }
     }
 

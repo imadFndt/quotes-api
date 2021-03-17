@@ -1,7 +1,6 @@
 package com.fndt.quote
 
 import com.fndt.quote.controllers.AuthController
-import com.fndt.quote.controllers.AuthorsController
 import com.fndt.quote.controllers.QuotesController
 import com.fndt.quote.controllers.RegistrationController
 import com.fndt.quote.di.Modules
@@ -22,13 +21,12 @@ fun Application.module() {
     install(ContentNegotiation) { json(json = Json { prettyPrint = true }) }
     install(Koin) { modules(Modules.dbModule, Modules.serviceModule, Modules.controllersModule) }
 
-    val authorsController by inject<AuthorsController>()
     val registrationController by inject<RegistrationController>()
     val quotesController by inject<QuotesController>()
     val authController by inject<AuthController>()
 
     install(Authentication) { authController.addBasicAuth(this) }
     routing {
-        listOf(authorsController, registrationController, quotesController).forEach { it.route(this) }
+        listOf(registrationController, quotesController).forEach { it.route(this) }
     }
 }

@@ -1,7 +1,6 @@
 package com.fndt.quote.di
 
 import com.fndt.quote.controllers.AuthController
-import com.fndt.quote.controllers.AuthorsController
 import com.fndt.quote.controllers.QuotesController
 import com.fndt.quote.controllers.RegistrationController
 import com.fndt.quote.data.*
@@ -26,9 +25,8 @@ object Modules {
     }
 
     val controllersModule = module {
-        single { AuthController(get()) }
-        single { AuthorsController(get()) }
+        single { AuthController(get<ServiceHolder>().authService) }
         single { QuotesController(get()) }
-        single { RegistrationController(get()) }
+        single { RegistrationController(get<ServiceHolder>().registrationService) }
     }
 }

@@ -25,7 +25,7 @@ internal class LikeDaoImplTest {
     }
 
     @Test
-    fun `Like works`() {
+    fun like() {
         // GIVEN
         val expected = Like(1, 1)
 
@@ -38,13 +38,13 @@ internal class LikeDaoImplTest {
     }
 
     @Test
-    fun `Unlike works`() {
+    fun unlike() {
         // GIVEN
         val like = Like(1, 1)
 
         // WHEN
         likeDao.like(like)
-        likeDao.unlike(like)
+        val answer = likeDao.unlike(like)
         val actual = likeDao.find(like)
 
         // THEN

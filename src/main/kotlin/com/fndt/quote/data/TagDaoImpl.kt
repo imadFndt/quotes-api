@@ -54,5 +54,9 @@ class TagDaoImpl(dbProvider: DatabaseProvider) : TagDao {
         findById(id)
     }
 
+    override fun removeQuoteFromTag(quoteId: Int, tagId: Int) = transaction {
+        tagsQuotesTable.deleteWhere { (tagsQuotesTable.quote eq quoteId) and (tagsQuotesTable.tag eq tagId) }
+    }
+
     private fun findById(id: Int) = tagsTable.select { tagsTable.id eq id }.firstOrNull()?.toTag()
 }

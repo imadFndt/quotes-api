@@ -4,6 +4,7 @@ import com.fndt.quote.data.util.toLike
 import com.fndt.quote.domain.dao.LikeDao
 import com.fndt.quote.domain.dto.Like
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LikeDaoImpl(dbProvider: DatabaseProvider) : LikeDao {
@@ -23,6 +24,10 @@ class LikeDaoImpl(dbProvider: DatabaseProvider) : LikeDao {
 
     override fun find(like: Like): Like? = transaction {
         likesQuotesMapTable.select(findCondition(like)).firstOrNull()?.toLike()
+    }
+
+    override fun getLikesForQuote(quoteId: Int): List<Like> = transaction {
+        likesQuotesMapTable.select { likesQuotesMapTable.quote eq quoteId }.map { it.toLike() }
     }
 
     private fun findCondition(like: Like): (SqlExpressionBuilder.() -> Op<Boolean>) = {

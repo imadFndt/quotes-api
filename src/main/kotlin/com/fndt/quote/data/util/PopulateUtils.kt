@@ -36,7 +36,7 @@ fun populateDb() = transaction {
         this[DatabaseProvider.Quotes.isPublic] = true
         val authorId = DatabaseProvider.Authors
             .slice(DatabaseProvider.Authors.id)
-            .select { DatabaseProvider.Authors.name eq quote.author.name }
+            .select { DatabaseProvider.Authors.name eq (quote.author?.name ?: "") }
             .limit(1)
             .firstOrNull()
             ?.let { it[DatabaseProvider.Authors.id] } ?: run { throw IllegalArgumentException() }
@@ -118,5 +118,5 @@ internal val quotesList = listOf(
     ),
 )
 internal val usersList = listOf(
-    User(0, "a", "a".toHashed(), role = AuthRole.REGULAR)
+    User(1, "a", "a".toHashed(), role = AuthRole.REGULAR)
 )

@@ -6,4 +6,5 @@ interface LikeDao {
     fun like(like: Like): Like?
     fun unlike(like: Like): Int
     fun find(like: Like): Like?
+    fun getLikesForQuote(quoteId: Int): List<Like>
 }

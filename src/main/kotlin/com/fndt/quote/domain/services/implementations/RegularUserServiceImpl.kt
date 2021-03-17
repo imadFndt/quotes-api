@@ -1,6 +1,5 @@
 package com.fndt.quote.domain.services.implementations
 
-import com.fndt.quote.data.QuoteDaoImpl
 import com.fndt.quote.domain.dao.*
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.Like
@@ -24,40 +23,28 @@ internal open class RegularUserServiceImpl(
         val likeExists = likeDao.find(like) != null
         when {
             likeAction && !likeExists -> likeDao.like(like) != null
-            likeAction && likeExists -> likeDao.unlike(like) == 1
+            !likeAction && likeExists -> likeDao.unlike(like) > 0
             else -> return@withContext false
         }
     }
 
-    override suspend fun upsertQuote(
+    override suspend fun addQuote(
         body: String,
         authorId: Int,
-        tagId: List<Int>,
-        quoteId: Int?
-    ): Boolean = withContext(Dispatchers.IO) {
-        val comment = commentDao.findComment(authorId)
-        val commentExists = comment != null
-        val userIsRequesting = comment?.user == authorId
-        authorDao.findById(authorId) ?: throw IllegalArgumentException("Author does not exists")
-        when {
-            commentExists && userIsRequesting -> {
-                (quoteDao as QuoteDaoImpl).update(quoteId!!, body, authorId)?.let { quote ->
-                    tagId.forEach { tagId ->
-                        if (quote.tags.find { it.id == tagId } == null) tagDao.addQuoteToTag(quote.id, tagId)
-                    }
-                } ?: run { throw IllegalStateException() }
-                true
-            }
-            !commentExists -> {
-                (quoteDao as QuoteDaoImpl).insert(body, authorId)?.let { quote ->
-                    tagId.forEach { tagDao.addQuoteToTag(quote.id, it) }
-                    true
-                } ?: run { throw IllegalStateException() }
-            }
-            else -> {
-                throw IllegalArgumentException("User does not own it")
-            }
-        }
+    ) = withContext(Dispatchers.IO) {
+        quoteDao.insert(body, authorId) ?: run { throw IllegalStateException() }
+    }
+
+    override suspend fun updateQuote(
+        quoteId: Int,
+        body: String,
+        authorId: Int,
+        tagIds: List<Int>
+    ) = withContext(Dispatchers.IO) {
+        tagIds.forEach { tagDao.removeQuoteFromTag(quoteId, it) }
+        quoteDao.update(quoteId, body, authorId)?.let { quote ->
+            tagIds.forEach { tagDao.addQuoteToTag(quote.id, it) }
+        } ?: run { throw IllegalStateException() }
     }
 
     override suspend fun removeQuote(quoteId: Int) = withContext(Dispatchers.IO) {
@@ -68,15 +55,14 @@ internal open class RegularUserServiceImpl(
         commentDao.getComments(quoteId)
     }
 
-    override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int): Boolean =
-        withContext(Dispatchers.IO) {
-            if (quoteDao.findById(quoteId) != null) return@withContext false
-            commentDao.insert(commentBody, quoteId, userId)
-            return@withContext true
-        }
+    override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int) = withContext(Dispatchers.IO) {
+        quoteDao.findById(quoteId) ?: return@withContext false
+        commentDao.insert(commentBody, quoteId, userId)
+        return@withContext true
+    }
 
     override suspend fun deleteComment(commentId: Int, userId: Int): Boolean = withContext(Dispatchers.IO) {
         val userIsRequesting = commentDao.findComment(userId)?.user == userId
-        if (userIsRequesting) commentDao.deleteComment(commentId) == 1 else throw IllegalArgumentException("User does not own it")
+        if (userIsRequesting) commentDao.remove(commentId) == 1 else throw IllegalArgumentException("User does not own it")
     }
 }

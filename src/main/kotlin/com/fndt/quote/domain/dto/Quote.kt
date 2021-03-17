@@ -10,7 +10,7 @@ data class Quote(
     val id: Int = UNDEFINED,
     var body: String,
     @SerialName("created_at") val createdAt: Long,
-    var author: Author,
+    var author: Author?,
     var likes: Int = 0,
     var tags: List<Tag> = emptyList(),
     val isPublic: Boolean = false

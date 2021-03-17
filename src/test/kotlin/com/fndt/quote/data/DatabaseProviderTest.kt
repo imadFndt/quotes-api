@@ -7,7 +7,7 @@ internal class DatabaseProviderTest {
     private val usersTable: DatabaseProvider.Users by DatabaseProvider
 
     @Test
-    fun `Get value delegate`() {
+    fun `get value delegate`() {
         assertEquals(DatabaseProvider.Users, usersTable)
     }
 }

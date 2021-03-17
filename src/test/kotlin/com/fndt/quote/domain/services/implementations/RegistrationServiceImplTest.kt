@@ -41,7 +41,7 @@ internal class RegistrationServiceImplTest {
     }
 
     @Test
-    fun `User registration`() = runBlocking {
+    fun `user registration`() = runBlocking {
         val usersSize = users.size
 
         service.registerUser(login, password)
@@ -51,7 +51,7 @@ internal class RegistrationServiceImplTest {
     }
 
     @Test
-    fun `Existing user registration`() = runBlocking {
+    fun `existing user registration`() = runBlocking {
         assertThrows<IllegalArgumentException> {
             runBlocking {
                 service.registerUser(login, password)

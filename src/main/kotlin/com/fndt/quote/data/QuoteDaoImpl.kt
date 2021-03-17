@@ -5,6 +5,7 @@ import com.fndt.quote.data.util.toTag
 import com.fndt.quote.domain.dao.QuoteDao
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.Tag
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -16,6 +17,7 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     private val tagQuoteMapTable: DatabaseProvider.TagsOnQuotes by dbProvider
     private val tagsTable: DatabaseProvider.Tags by dbProvider
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
+    private val commentTable: DatabaseProvider.Comments by dbProvider
 
     override fun getQuotes(id: Int?, isPublic: Boolean?): List<Quote> = transaction {
         (quotesTable innerJoin authorsTable)
@@ -33,7 +35,7 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     override fun insert(body: String, authorId: Int) = transaction {
         val id = quotesTable.insert { insert ->
             insert[quotesTable.body] = body
-            insert[author] = authorId
+            insert[author] = EntityID(authorId, DatabaseProvider.Authors)
             insert[createdAt] = System.currentTimeMillis()
             insert[this.isPublic] = false
         }[quotesTable.id].value
@@ -43,13 +45,17 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     override fun update(quoteId: Int, body: String?, authorId: Int?, isPublic: Boolean?) = transaction {
         quotesTable.update({ quotesTable.id eq quoteId }) { update ->
             body?.let { update[DatabaseProvider.Quotes.body] = it }
-            authorId?.let { update[author] = it }
+            authorId?.let { update[author] = EntityID(it, DatabaseProvider.Authors) }
             isPublic?.let { update[this.isPublic] = isPublic }
         }
         findById(quoteId)
     }
 
     override fun removeQuote(quoteId: Int): Int = transaction {
+        commentTable.deleteWhere { commentTable.quoteId eq quoteId }
+        likesQuotesMapTable.deleteWhere { likesQuotesMapTable.quote eq quoteId }
+        tagQuoteMapTable.deleteWhere { (tagQuoteMapTable.quote eq quoteId) }
+
         quotesTable.deleteWhere { quotesTable.id eq quoteId }
     }
 
@@ -58,6 +64,12 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
             .select { quotesTable.id eq id }
             .firstOrNull()
             ?.toQuotes(fetchTags(id), fetchLikes(id))
+    }
+
+    override fun findByAuthorId(authorId: Int): List<Quote> = transaction {
+        (quotesTable innerJoin authorsTable)
+            .select { authorsTable.id eq authorId }
+            .map { it.toQuotes(fetchTags(it[quotesTable.id].value), fetchLikes(it[quotesTable.id].value)) }
     }
 
     private fun fetchLikes(quoteId: Int): Int = transaction {

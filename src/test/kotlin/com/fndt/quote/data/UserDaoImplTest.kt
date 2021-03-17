@@ -25,7 +25,7 @@ internal class UserDaoImplTest {
     }
 
     @Test
-    fun `Add user`() {
+    fun `add user`() {
         // GIVEN
         val preInsertList = userDao.getUsers().toMutableList()
         val name = "b"
@@ -41,7 +41,7 @@ internal class UserDaoImplTest {
     }
 
     @Test
-    fun `Update user`() {
+    fun `update user`() {
         val newUser = userDao.insert("b", "b")
         newUser ?: throw IllegalStateException()
         val updated = userDao.update(newUser.id, role = AuthRole.MODERATOR)
