@@ -11,16 +11,6 @@ class TagDaoImpl(dbProvider: DatabaseProvider) : TagDao {
     private val tagsQuotesTable: DatabaseProvider.TagsOnQuotes by dbProvider
     private val quotesTable: DatabaseProvider.TagsOnQuotes by dbProvider
 
-    override fun upsertTag(name: String?, isPublic: Boolean, tagId: Int?) = transaction {
-        tagId?.let { tag ->
-            update(tagId, isPublic, name)
-            findById(tag)
-        } ?: run {
-            name ?: run { throw IllegalArgumentException("Insert with empty name") }
-            insert(name)
-        }
-    }
-
     override fun insert(name: String) = transaction {
         findById(
             tagsTable.insert { insert ->
@@ -56,6 +46,10 @@ class TagDaoImpl(dbProvider: DatabaseProvider) : TagDao {
 
     override fun removeQuoteFromTag(quoteId: Int, tagId: Int) = transaction {
         tagsQuotesTable.deleteWhere { (tagsQuotesTable.quote eq quoteId) and (tagsQuotesTable.tag eq tagId) }
+    }
+
+    override fun findTag(tagId: Int): Tag? = transaction {
+        tagsTable.select { tagsTable.id eq tagId }.firstOrNull()?.toTag()
     }
 
     private fun findById(id: Int) = tagsTable.select { tagsTable.id eq id }.firstOrNull()?.toTag()

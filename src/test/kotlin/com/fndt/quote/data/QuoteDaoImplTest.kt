@@ -2,8 +2,9 @@ package com.fndt.quote.data
 
 import com.fndt.quote.data.util.populateDb
 import com.fndt.quote.data.util.quotesList
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -65,20 +66,22 @@ internal class QuoteDaoImplTest {
     }
 
     @Test
-    fun `insert quote`() = transaction {
-        // WHEN
-        val quote = quoteDao.insert("Привет", 1)
-        quote ?: throw NullPointerException()
-
-        // THEN
-        assertTrue {
-            quote == quoteDao.findById(quote.id) && quote.body == "Привет" && quote.user.id == 1
+    fun `insert quote`() = runBlocking {
+        newSuspendedTransaction {
+            // WHEN
+            val quote = quoteDao.insert("Привет", 1)
+            quote ?: throw NullPointerException()
+            val quoteActual = quoteDao.findById(quote.id)
+            // THEN
+            assertTrue {
+                quote == quoteActual && quote.body == "Привет" && quote.user.id == 1
+            }
         }
     }
 
     // TODO CHECK DOUBLE INSERT
     @Test
-    fun `updating quote`() {
+    fun `updating quote`() = runBlocking {
         // GIVEN
         val expectedQuote = quoteDao.findById(1)?.apply {
             body = "New body"
@@ -108,7 +111,7 @@ internal class QuoteDaoImplTest {
 
     // TODO
     @Test
-    fun `find by id `() {
+    fun `find by id `() = runBlocking {
         val quote = quoteDao.findById(1)
     }
 

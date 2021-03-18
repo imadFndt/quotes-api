@@ -10,8 +10,6 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
-const val BLOCKED_FOREVER = -1L
-
 class UserDaoImpl(dbProvider: DatabaseProvider) : UserDao {
     private val usersTable: DatabaseProvider.Users by dbProvider
 
@@ -26,6 +24,7 @@ class UserDaoImpl(dbProvider: DatabaseProvider) : UserDao {
             role?.run { it[usersTable.role] = role }
             password?.run { it[usersTable.hashedPassword] = password.toHashed() }
             login?.run { it[usersTable.name] = login }
+            time?.run { it[usersTable.blockedUntil] = time }
         }
         findUser(userId)
     }

@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -145,7 +146,7 @@ internal class RegularUserServiceImplTest {
         val user = users[0]
         val dummyComment = Comment(1, "Dummy body", quote.id, 0, user.id)
         every { commentDao.insert(dummyComment.body, dummyComment.quoteId, dummyComment.user) } returns dummyComment
-        every { quoteDao.findById(any()) } returns quote
+        coEvery { quoteDao.findById(any()) } returns quote
 
         service.addComment(dummyComment.body, quote.id, user.id)
 
@@ -158,16 +159,20 @@ internal class RegularUserServiceImplTest {
         val user = users[0]
         val dummyComment = Comment(1, "Dummy body", quote.id, 0, user.id)
         every { commentDao.insert(dummyComment.body, dummyComment.quoteId, dummyComment.user) } returns dummyComment
-        every { quoteDao.findById(any()) } returns null
+        coEvery { quoteDao.findById(any()) } returns null
 
-        service.addComment(dummyComment.body, quote.id, user.id)
+        assertThrows<IllegalArgumentException> {
+            runBlocking {
+                service.addComment(dummyComment.body, quote.id, user.id)
+            }
+        }
 
         verify(exactly = 0) { commentDao.insert(dummyComment.body, dummyComment.quoteId, dummyComment.user) }
     }
 
     @Test
     fun `add quote`() = runBlocking {
-        every { quoteDao.insert(any(), any()) } answers {
+        coEvery { quoteDao.insert(any(), any()) } answers {
             Quote(10, "ada", System.currentTimeMillis(), User(1, "a")).apply {
                 quotes.add(this)
             }
@@ -182,7 +187,7 @@ internal class RegularUserServiceImplTest {
     fun `update quote`() = runBlocking {
         val idSlot = slot<Int>()
         val bodySlot = slot<String>()
-        every { quoteDao.update(quoteId = capture(idSlot), body = capture(bodySlot)) } answers {
+        coEvery { quoteDao.update(quoteId = capture(idSlot), body = capture(bodySlot)) } answers {
             Quote(idSlot.captured, body = bodySlot.captured, quotes[0].createdAt, quotes[0].user, quotes[0].likes)
         }
 

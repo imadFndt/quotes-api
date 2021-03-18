@@ -12,14 +12,13 @@ class ServiceFactory(
     private val commentDao: CommentDao,
     private val likeDao: LikeDao,
     private val quoteDao: QuoteDao,
-    private val authorDao: AuthorDao,
     private val tagDao: TagDao,
 ) {
 
     @Suppress("UNCHECKED_CAST")
     fun createUserService(role: AuthRole?): RegularUserService? {
         return when (role) {
-            AuthRole.ADMIN -> AdminUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao)
+            AuthRole.ADMIN -> AdminUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao)
             AuthRole.MODERATOR -> ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao)
             AuthRole.REGULAR -> RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, userDao)
             else -> null

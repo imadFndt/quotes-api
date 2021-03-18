@@ -17,7 +17,7 @@ internal open class RegularUserServiceImpl(
     private val userDao: UserDao,
 ) : RegularUserService {
 
-    override suspend fun getQuotes(id: Int?): List<Quote> = quoteDao.getQuotes(id, true)
+    override suspend fun getQuotes(userId: Int?): List<Quote> = quoteDao.getQuotes(userId)
 
     override suspend fun setQuoteLike(like: Like, likeAction: Boolean): Boolean = withContext(Dispatchers.IO) {
         quoteDao.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
@@ -26,7 +26,7 @@ internal open class RegularUserServiceImpl(
         when {
             likeAction && !likeExists -> likeDao.like(like) != null
             !likeAction && likeExists -> likeDao.unlike(like) > 0
-            else -> return@withContext false
+            else -> throw IllegalArgumentException("Like failed")
         }
     }
 
@@ -43,7 +43,7 @@ internal open class RegularUserServiceImpl(
         authorId: Int?,
         tagIds: List<Int>?
     ) = withContext(Dispatchers.IO) {
-        val quote = quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exists")
+        val quote = quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
         val tagsEqual = tagIds == quote.tags
         if (!tagsEqual) tagIds?.forEach { tagDao.removeQuoteFromTag(quoteId, it) }
         quoteDao.update(quoteId, body)?.also { quote ->
@@ -60,7 +60,7 @@ internal open class RegularUserServiceImpl(
     }
 
     override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int) = withContext(Dispatchers.IO) {
-        quoteDao.findById(quoteId) ?: return@withContext false
+        quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
         commentDao.insert(commentBody, quoteId, userId)
         return@withContext true
     }

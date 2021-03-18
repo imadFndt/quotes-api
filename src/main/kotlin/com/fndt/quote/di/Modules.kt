@@ -20,7 +20,7 @@ object Modules {
         single<UserDao> { UserDaoImpl(get()) }
     }
     val serviceModule = module {
-        single { ServiceHolder(ServiceFactory(get(), get(), get(), get(), get(), get())) }
+        single { ServiceHolder(ServiceFactory(get(), get(), get(), get(), get())) }
     }
 
     val controllersModule = module {

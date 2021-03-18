@@ -16,10 +16,13 @@ class QuoteDaoImpl(dbProvider: DatabaseProvider) : QuoteDao {
     private val commentTable: DatabaseProvider.Comments by dbProvider
     private val userTable: DatabaseProvider.Users by dbProvider
 
-    override fun getQuotes(id: Int?, isPublic: Boolean?): List<Quote> = transaction {
+    override fun getQuotes(userId: Int?, isPublic: Boolean?): List<Quote> = transaction {
         (quotesTable innerJoin userTable)
             .selectAll()
-            .apply { isPublic?.let { andWhere { quotesTable.isPublic eq it } } }
+            .apply {
+                isPublic?.let { andWhere { quotesTable.isPublic eq it } }
+                userId?.let { andWhere { quotesTable.user eq it } }
+            }
             .map {
                 it.toQuotes(
                     fetchTags(it[DatabaseProvider.Quotes.id].value),
