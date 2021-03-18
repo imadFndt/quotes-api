@@ -1,16 +1,12 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.data.util.authorList
+import com.fndt.quote.data.util.populateDb
 import com.fndt.quote.data.util.quotesList
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class QuoteDaoImplTest {
@@ -25,34 +21,7 @@ internal class QuoteDaoImplTest {
             "root",
             ""
         ).apply {
-            transaction {
-                val tables = arrayOf(
-                    DatabaseProvider.Quotes,
-                    DatabaseProvider.Authors,
-                    DatabaseProvider.Users,
-                    DatabaseProvider.Tags,
-                    DatabaseProvider.TagsOnQuotes,
-                    DatabaseProvider.Comments,
-                    DatabaseProvider.LikesOnQuotes,
-                )
-                SchemaUtils.drop(*tables)
-                SchemaUtils.create(*tables)
-                DatabaseProvider.Authors.batchInsert(authorList) { author ->
-                    this[DatabaseProvider.Authors.name] = author.name
-                }
-                DatabaseProvider.Quotes.batchInsert(quotesList) { quote ->
-                    this[DatabaseProvider.Quotes.body] = quote.body
-                    this[DatabaseProvider.Quotes.createdAt] = System.currentTimeMillis()
-                    this[DatabaseProvider.Quotes.isPublic] = true
-                    val authorId = DatabaseProvider.Authors
-                        .slice(DatabaseProvider.Authors.id)
-                        .select { DatabaseProvider.Authors.name eq (quote.author?.name ?: "") }
-                        .limit(1)
-                        .firstOrNull()
-                        ?.let { it[DatabaseProvider.Authors.id] } ?: run { throw IllegalArgumentException() }
-                    this[DatabaseProvider.Quotes.author] = authorId
-                }
-            }
+            populateDb()
         }
     }
 
@@ -67,16 +36,6 @@ internal class QuoteDaoImplTest {
                     it.body == (quotesList.find { quoteId -> quoteId.body == it.body })?.body
             }
         }
-    }
-
-    @Test
-    fun `get all quotes by author id`() {
-        // WHEN 
-        val quotesById = quoteDao.getQuotes(1)
-
-        // THEN
-        assertFalse { quotesById.all { it.author?.id != 1 } }
-        assertTrue { quotesById.all { it.author?.id == 1 } }
     }
 
     @Test
@@ -113,7 +72,7 @@ internal class QuoteDaoImplTest {
 
         // THEN
         assertTrue {
-            quote == quoteDao.findById(quote.id) && quote.body == "Привет" && quote.author?.id == 1
+            quote == quoteDao.findById(quote.id) && quote.body == "Привет" && quote.user.id == 1
         }
     }
 
@@ -145,5 +104,17 @@ internal class QuoteDaoImplTest {
 
         // THEN
         assertEquals(expectedList, actualList)
+    }
+
+    // TODO
+    @Test
+    fun `find by id `() {
+        val quote = quoteDao.findById(1)
+    }
+
+    // TODO
+    @Test
+    fun `find by id`() {
+        val quotes = quoteDao.findByUserId(1)
     }
 }

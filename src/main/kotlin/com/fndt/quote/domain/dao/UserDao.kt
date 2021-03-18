@@ -13,6 +13,12 @@ interface UserDao {
     ): User?
 
     fun insert(login: String, password: String): User?
-    fun findUser(userId: Int? = null, name: String? = null, password: String? = null): User?
+    fun findUser(
+        userId: Int? = null,
+        name: String? = null,
+        password: String? = null,
+        withPassword: Boolean = false
+    ): User?
+
     fun getUsers(): List<User>
 }

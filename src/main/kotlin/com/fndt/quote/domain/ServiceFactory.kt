@@ -20,8 +20,8 @@ class ServiceFactory(
     fun createUserService(role: AuthRole?): RegularUserService? {
         return when (role) {
             AuthRole.ADMIN -> AdminUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao)
-            AuthRole.MODERATOR -> ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao)
-            AuthRole.REGULAR -> RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, authorDao)
+            AuthRole.MODERATOR -> ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao)
+            AuthRole.REGULAR -> RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, userDao)
             else -> null
         }
     }

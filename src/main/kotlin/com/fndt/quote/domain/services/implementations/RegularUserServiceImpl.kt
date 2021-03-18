@@ -14,12 +14,14 @@ internal open class RegularUserServiceImpl(
     private val quoteDao: QuoteDao,
     private val likeDao: LikeDao,
     private val tagDao: TagDao,
-    private val authorDao: AuthorDao
+    private val userDao: UserDao,
 ) : RegularUserService {
 
-    override suspend fun getQuotes(id: Int?): List<Quote> = quoteDao.getQuotes(id)
+    override suspend fun getQuotes(id: Int?): List<Quote> = quoteDao.getQuotes(id, true)
 
     override suspend fun setQuoteLike(like: Like, likeAction: Boolean): Boolean = withContext(Dispatchers.IO) {
+        quoteDao.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
+        userDao.findUser(like.userId) ?: throw IllegalArgumentException("User does not exist")
         val likeExists = likeDao.find(like) != null
         when {
             likeAction && !likeExists -> likeDao.like(like) != null
@@ -38,12 +40,14 @@ internal open class RegularUserServiceImpl(
     override suspend fun updateQuote(
         quoteId: Int,
         body: String,
-        authorId: Int,
-        tagIds: List<Int>
+        authorId: Int?,
+        tagIds: List<Int>?
     ) = withContext(Dispatchers.IO) {
-        tagIds.forEach { tagDao.removeQuoteFromTag(quoteId, it) }
-        quoteDao.update(quoteId, body, authorId)?.let { quote ->
-            tagIds.forEach { tagDao.addQuoteToTag(quote.id, it) }
+        val quote = quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exists")
+        val tagsEqual = tagIds == quote.tags
+        if (!tagsEqual) tagIds?.forEach { tagDao.removeQuoteFromTag(quoteId, it) }
+        quoteDao.update(quoteId, body)?.also { quote ->
+            if (!tagsEqual) tagIds?.forEach { tagDao.addQuoteToTag(quote.id, it) }
         } ?: run { throw IllegalStateException() }
     }
 

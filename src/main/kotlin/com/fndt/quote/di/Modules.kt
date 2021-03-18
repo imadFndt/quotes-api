@@ -18,7 +18,6 @@ object Modules {
         single<QuoteDao> { QuoteDaoImpl(get()) }
         single<TagDao> { TagDaoImpl(get()) }
         single<UserDao> { UserDaoImpl(get()) }
-        single<AuthorDao> { AuthorDaoImpl(get()) }
     }
     val serviceModule = module {
         single { ServiceHolder(ServiceFactory(get(), get(), get(), get(), get(), get())) }

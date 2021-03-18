@@ -19,7 +19,7 @@ internal class AuthServiceImplTest {
 
     lateinit var service: AuthService
 
-    private val users = mutableListOf(User(1, "a", "a"))
+    private val users = mutableListOf(User(id = 1, "a", password = "a"))
 
     @BeforeEach
     fun init() {

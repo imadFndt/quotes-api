@@ -23,10 +23,7 @@ class UserDaoImpl(dbProvider: DatabaseProvider) : UserDao {
         login: String?
     ) = transaction {
         usersTable.update({ usersTable.id eq userId }) {
-            role?.run {
-                it[usersTable.role] = role
-                if (role == AuthRole.BANNED) it[blockedUntil] = time ?: run { BLOCKED_FOREVER }
-            }
+            role?.run { it[usersTable.role] = role }
             password?.run { it[usersTable.hashedPassword] = password.toHashed() }
             login?.run { it[usersTable.name] = login }
         }
@@ -43,12 +40,12 @@ class UserDaoImpl(dbProvider: DatabaseProvider) : UserDao {
         )
     }
 
-    override fun findUser(userId: Int?, name: String?, password: String?) = transaction {
+    override fun findUser(userId: Int?, name: String?, password: String?, withPassword: Boolean) = transaction {
         usersTable.selectAll()
             .apply { userId?.let { andWhere { usersTable.id eq userId } } }
             .apply { name?.let { andWhere { usersTable.name eq name } } }
             .apply { password?.let { andWhere { usersTable.hashedPassword eq password.toHashed() } } }
-            .firstOrNull()?.toUser()
+            .firstOrNull()?.toUser(withPassword)
     }
 
     override fun getUsers() = transaction {

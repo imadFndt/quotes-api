@@ -29,7 +29,6 @@ class ServiceHolder(factory: ServiceFactory) {
             AuthRole.MODERATOR -> if (roleMatches<ModeratorUserService>(role)) moderatorUserService as? T else null
             AuthRole.REGULAR -> if (roleMatches<RegularUserService>(role)) regularUserService as? T else null
             AuthRole.NOT_AUTHORIZED -> null
-            AuthRole.BANNED -> throw IllegalArgumentException("User is banned")
             null -> null
         }
     }

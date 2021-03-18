@@ -12,7 +12,7 @@ internal class AdminUserServiceImpl(
     likeDao: LikeDao,
     private val tagDao: TagDao,
     authorDao: AuthorDao,
-) : ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao, authorDao), AdminUserService {
+) : ModeratorUserServiceImpl(userDao, commentDao, quoteDao, likeDao, tagDao), AdminUserService {
     override suspend fun setTagVisibility(tagId: Int, isPublic: Boolean): Boolean = transaction {
         tagDao.update(tagId = tagId, isPublic = isPublic) != null
     }

@@ -2,7 +2,6 @@ package com.fndt.quote.data
 
 import com.fndt.quote.data.util.populateDb
 import com.fndt.quote.domain.dto.AuthRole
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
@@ -25,7 +24,6 @@ object DatabaseProvider {
     inline operator fun <reified T : Table> getValue(any: Any, property: KProperty<*>): T {
         return when (T::class) {
             Quotes::javaClass.get().kotlin -> Quotes as T
-            Authors::javaClass.get().kotlin -> Authors as T
             Tags::javaClass.get().kotlin -> Tags as T
             Comments::javaClass.get().kotlin -> Comments as T
             LikesOnQuotes::javaClass.get().kotlin -> LikesOnQuotes as T
@@ -42,12 +40,8 @@ object DatabaseProvider {
     object Quotes : DatabaseProvider.AccessLimitableIntIdTable() {
         val body = varchar("body", 200)
         val createdAt = long("date")
-        val author: Column<EntityID<Int>?> = optReference("author_id", Authors)
+        val user = reference("user_id", Users)
         override val isPublic = bool("is_public")
-    }
-
-    object Authors : IntIdTable() {
-        val name = varchar("name", 50)
     }
 
     object Comments : IntIdTable() {

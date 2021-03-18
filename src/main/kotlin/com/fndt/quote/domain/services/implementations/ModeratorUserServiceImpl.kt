@@ -2,7 +2,6 @@ package com.fndt.quote.domain.services.implementations
 
 import com.fndt.quote.data.QuoteDaoImpl
 import com.fndt.quote.domain.dao.*
-import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.services.ModeratorUserService
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +13,9 @@ internal open class ModeratorUserServiceImpl(
     private val quoteDao: QuoteDao,
     likeDao: LikeDao,
     private val tagDao: TagDao,
-    authorDao: AuthorDao,
-) : RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, authorDao), ModeratorUserService {
-    override suspend fun banUserTemporary(userId: Int, time: Int): Boolean = withContext(Dispatchers.IO) {
-        userDao.update(time = System.currentTimeMillis() + time, userId = userId, role = AuthRole.BANNED) != null
+) : RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, userDao), ModeratorUserService {
+    override suspend fun banUser(userId: Int, time: Int): Boolean = withContext(Dispatchers.IO) {
+        userDao.update(time = System.currentTimeMillis() + time, userId = userId) != null
     }
 
     override suspend fun setQuoteVisibility(quoteId: Int, isPublic: Boolean): Boolean = withContext(Dispatchers.IO) {

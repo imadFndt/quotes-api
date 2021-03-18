@@ -1,8 +1,25 @@
 package com.fndt.quote.domain.dto
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+
+@Serializable
 data class User(
     val id: Int,
     val name: String,
-    internal val hashedPassword: String,
-    val role: AuthRole = AuthRole.REGULAR
-)
+    val role: AuthRole = AuthRole.REGULAR,
+    val blockedUntil: Long? = null
+) {
+    constructor(
+        id: Int,
+        name: String,
+        password: String,
+        role: AuthRole = AuthRole.REGULAR,
+        blockedUntil: Long? = null
+    ) : this(id, name, role, blockedUntil) {
+        hashedPassword = password
+    }
+
+    @Transient
+    var hashedPassword: String = ""
+}

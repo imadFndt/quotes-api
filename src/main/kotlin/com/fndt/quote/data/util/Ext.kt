@@ -17,20 +17,22 @@ fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote
         body = this[DatabaseProvider.Quotes.body],
         createdAt = this[DatabaseProvider.Quotes.createdAt],
         isPublic = this[DatabaseProvider.Quotes.isPublic],
-        author = this.toAuthor(),
+        user = this.toUser(),
         likes = likesCount,
         tags = tagList,
     )
 }
 
-fun ResultRow.toUser(): User {
+fun ResultRow.toUser(withPassword: Boolean = false): User {
     val role = AuthRole.values().find { it == this[DatabaseProvider.Users.role] } ?: AuthRole.NOT_AUTHORIZED
     return User(
         id = this[DatabaseProvider.Users.id].value,
         name = this[DatabaseProvider.Users.name],
-        hashedPassword = this[DatabaseProvider.Users.hashedPassword],
-        role = role
-    )
+        role = role,
+        blockedUntil = this[DatabaseProvider.Users.blockedUntil]
+    ).also {
+        if (withPassword) it.hashedPassword = this[DatabaseProvider.Users.hashedPassword]
+    }
 }
 
 fun ResultRow.toTag(): Tag {
@@ -52,13 +54,6 @@ fun ResultRow.toComment(): Comment {
         quoteId = this[DatabaseProvider.Comments.quoteId].value,
         date = this[DatabaseProvider.Comments.createdAt],
         user = this[DatabaseProvider.Comments.user].value
-    )
-}
-
-fun ResultRow.toAuthor(): Author {
-    return Author(
-        id = this[DatabaseProvider.Authors.id].value,
-        name = this[DatabaseProvider.Authors.name]
     )
 }
 

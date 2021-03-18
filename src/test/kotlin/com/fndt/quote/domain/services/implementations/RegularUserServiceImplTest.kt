@@ -6,6 +6,7 @@ import com.fndt.quote.domain.dao.*
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
+import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.services.RegularUserService
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
@@ -32,9 +33,9 @@ internal class RegularUserServiceImplTest {
     lateinit var tagDao: TagDao
 
     @MockK(relaxed = true)
-    lateinit var authorDao: AuthorDao
+    lateinit var userDao: UserDao
 
-    private val quotes = quotesList
+    private val quotes = quotesList.toMutableList()
 
     private val users = usersList
 
@@ -43,7 +44,7 @@ internal class RegularUserServiceImplTest {
     @BeforeEach
     fun init() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        service = RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, authorDao)
+        service = RegularUserServiceImpl(commentDao, quoteDao, likeDao, tagDao, userDao)
         coEvery { service.getQuotes() } returns quotesList
     }
 
@@ -164,7 +165,28 @@ internal class RegularUserServiceImplTest {
         verify(exactly = 0) { commentDao.insert(dummyComment.body, dummyComment.quoteId, dummyComment.user) }
     }
 
+    @Test
     fun `add quote`() = runBlocking {
+        every { quoteDao.insert(any(), any()) } answers {
+            Quote(10, "ada", System.currentTimeMillis(), User(1, "a")).apply {
+                quotes.add(this)
+            }
+        }
+
         val quote = service.addQuote("ada", 1)
+
+        assertTrue(quotes.contains(quote))
+    }
+
+    @Test
+    fun `update quote`() = runBlocking {
+        val idSlot = slot<Int>()
+        val bodySlot = slot<String>()
+        every { quoteDao.update(quoteId = capture(idSlot), body = capture(bodySlot)) } answers {
+            Quote(idSlot.captured, body = bodySlot.captured, quotes[0].createdAt, quotes[0].user, quotes[0].likes)
+        }
+
+        val quote = service.updateQuote(1, "bebe")
+        assertTrue(quote.body == "bebe")
     }
 }
