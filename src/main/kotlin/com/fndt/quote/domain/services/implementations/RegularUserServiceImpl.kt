@@ -1,31 +1,30 @@
 package com.fndt.quote.domain.services.implementations
 
-import com.fndt.quote.domain.dao.*
+import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
+import com.fndt.quote.domain.repository.*
 import com.fndt.quote.domain.services.RegularUserService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.*
 
 internal open class RegularUserServiceImpl(
-    private val commentDao: CommentDao,
-    private val quoteDao: QuoteDao,
-    private val likeDao: LikeDao,
-    private val tagDao: TagDao,
-    private val userDao: UserDao,
+    private val commentRepository: CommentRepository,
+    private val quoteRepository: QuoteRepository,
+    private val likeRepository: LikeRepository,
+    private val tagRepository: TagRepository,
+    private val userRepository: UserRepository,
+    private val requestManager: RequestManager
 ) : RegularUserService {
 
-    override suspend fun getQuotes(userId: Int?): List<Quote> = quoteDao.getQuotes(userId)
+    override suspend fun getQuotes(userId: Int?): List<Quote> = quoteRepository.getQuotes(userId, false, false, null)
 
-    override suspend fun setQuoteLike(like: Like, likeAction: Boolean): Boolean = withContext(Dispatchers.IO) {
-        quoteDao.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
-        userDao.findUser(like.userId) ?: throw IllegalArgumentException("User does not exist")
-        val likeExists = likeDao.find(like) != null
+    override suspend fun setQuoteLike(like: Like, likeAction: Boolean): Boolean = requestManager.execute {
+        quoteRepository.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
+        userRepository.findUser(like.userId) ?: throw IllegalArgumentException("User does not exist")
+        val likeExists = likeRepository.find(like) != null
         when {
-            likeAction && !likeExists -> likeDao.like(like) != null
-            !likeAction && likeExists -> likeDao.unlike(like) > 0
+            likeAction && !likeExists -> likeRepository.like(like) != null
+            !likeAction && likeExists -> likeRepository.unlike(like) != null
             else -> throw IllegalArgumentException("Like failed")
         }
     }
@@ -33,40 +32,16 @@ internal open class RegularUserServiceImpl(
     override suspend fun addQuote(
         body: String,
         authorId: Int,
-    ) = withContext(Dispatchers.IO) {
-        quoteDao.insert(body, authorId) ?: run { throw IllegalStateException() }
+    ) = requestManager.execute {
+        quoteRepository.insert(body, authorId) ?: run { throw IllegalStateException() }
     }
 
-    override suspend fun updateQuote(
-        quoteId: Int,
-        body: String,
-        authorId: Int?,
-        tagIds: List<Int>?
-    ) = withContext(Dispatchers.IO) {
-        val quote = quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
-        val tagsEqual = tagIds == quote.tags
-        if (!tagsEqual) tagIds?.forEach { tagDao.removeQuoteFromTag(quoteId, it) }
-        quoteDao.update(quoteId, body)?.also { quote ->
-            if (!tagsEqual) tagIds?.forEach { tagDao.addQuoteToTag(quote.id, it) }
-        } ?: run { throw IllegalStateException() }
+    override suspend fun getComments(quoteId: Int): List<Comment> = requestManager.execute {
+        commentRepository.getComments(quoteId)
     }
 
-    override suspend fun removeQuote(quoteId: Int) = withContext(Dispatchers.IO) {
-        quoteDao.removeQuote(quoteId) > 0
-    }
-
-    override suspend fun getComments(quoteId: Int): List<Comment> = withContext(Dispatchers.IO) {
-        commentDao.getComments(quoteId)
-    }
-
-    override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int) = withContext(Dispatchers.IO) {
-        quoteDao.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
-        commentDao.insert(commentBody, quoteId, userId)
-        return@withContext true
-    }
-
-    override suspend fun deleteComment(commentId: Int, userId: Int): Boolean = withContext(Dispatchers.IO) {
-        val userIsRequesting = commentDao.findComment(userId)?.user == userId
-        if (userIsRequesting) commentDao.remove(commentId) == 1 else throw IllegalArgumentException("User does not own it")
+    override suspend fun addComment(commentBody: String, quoteId: Int, userId: Int) = requestManager.execute {
+        quoteRepository.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
+        commentRepository.insert(commentBody, quoteId, userId)
     }
 }

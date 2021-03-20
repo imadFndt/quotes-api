@@ -12,7 +12,7 @@ object DatabaseProvider {
     val initDb by lazy {
         // LOCAL IS jdbc:h2:mem:
         Database.connect(
-            "jdbc:h2:file:/Users/imadfndt/IdeaProjects/quotes-test/src/main/resources/db/quotes;DB_CLOSE_DELAY=-1",
+            "jdbc:h2:file:/Users/imadfndt/IdeaProjects/quotes-api/src/main/resources/db/quotes;DB_CLOSE_DELAY=-1",
             "org.h2.Driver",
             "root",
             ""
@@ -33,11 +33,11 @@ object DatabaseProvider {
         }
     }
 
-    abstract class AccessLimitableIntIdTable : IntIdTable() {
+    abstract class AccessLimitableIntIdTable(tableName: String) : IntIdTable(tableName) {
         abstract val isPublic: Column<Boolean>
     }
 
-    object Quotes : DatabaseProvider.AccessLimitableIntIdTable() {
+    object Quotes : DatabaseProvider.AccessLimitableIntIdTable("Quotes") {
         val body = varchar("body", 200)
         val createdAt = long("date")
         val user = reference("user_id", Users)
@@ -56,7 +56,7 @@ object DatabaseProvider {
         val quote = reference("quote", Quotes)
     }
 
-    object Tags : DatabaseProvider.AccessLimitableIntIdTable() {
+    object Tags : DatabaseProvider.AccessLimitableIntIdTable("Tags") {
         val name = varchar("name", 50)
         override val isPublic = bool("is_public")
     }

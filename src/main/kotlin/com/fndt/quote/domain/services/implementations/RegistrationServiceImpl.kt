@@ -1,14 +1,14 @@
 package com.fndt.quote.domain.services.implementations
 
-import com.fndt.quote.domain.dao.UserDao
+import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.services.RegistrationService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class RegistrationServiceImpl(private val userDao: UserDao) : RegistrationService {
+internal class RegistrationServiceImpl(private val userRepository: UserRepository) : RegistrationService {
     override suspend fun registerUser(login: String, password: String) = withContext(Dispatchers.IO) {
-        userDao.findUser(name = login)?.let { throw IllegalArgumentException("User already registered") }
-        userDao.insert(login, password) ?: throw IllegalStateException("Failed to register")
+        userRepository.findUser(name = login)?.let { throw IllegalArgumentException("User already registered") }
+        userRepository.insert(login, password) ?: throw IllegalStateException("Failed to register")
         Unit
     }
 }

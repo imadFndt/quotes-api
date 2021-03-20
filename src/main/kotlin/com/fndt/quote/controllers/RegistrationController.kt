@@ -2,7 +2,7 @@ package com.fndt.quote.controllers
 
 import com.fndt.quote.controllers.dto.UserCredentials
 import com.fndt.quote.controllers.util.receiveCatching
-import com.fndt.quote.domain.services.RegistrationService
+import com.fndt.quote.domain.manager.UsersUseCaseManager
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -10,13 +10,12 @@ import io.ktor.routing.*
 
 const val REGISTRATION_ENDPOINT = "/register"
 
-class RegistrationController(private val service: RegistrationService) : RoutingController {
+class RegistrationController(private val useCaseManager: UsersUseCaseManager) : RoutingController {
     override fun route(routing: Routing) = routing {
         suspend fun ApplicationCall.registerAndRespond() {
             val credentials = receiveCatching<UserCredentials>() ?: return
-            service.registerUser(credentials.login, credentials.password)
             val result = try {
-                service.registerUser(credentials.login, credentials.password)
+                useCaseManager.registerUseCase(credentials.login, credentials.password).run()
                 "Succeed" to HttpStatusCode.OK
             } catch (e: Exception) {
                 "Failed" to HttpStatusCode.NotAcceptable

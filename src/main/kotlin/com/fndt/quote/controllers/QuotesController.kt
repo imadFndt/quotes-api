@@ -4,12 +4,13 @@ import com.fndt.quote.controllers.dto.AddComment
 import com.fndt.quote.controllers.dto.AddQuote
 import com.fndt.quote.controllers.dto.LikeRequest
 import com.fndt.quote.controllers.util.*
-import com.fndt.quote.domain.ServiceHolder
 import com.fndt.quote.domain.dto.Like
-import com.fndt.quote.domain.services.RegularUserService
+import com.fndt.quote.domain.manager.CommentsUseCaseManager
+import com.fndt.quote.domain.manager.QuotesUseCaseManager
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
@@ -20,43 +21,51 @@ const val ID = "id"
 const val COMMENTS_ENDPOINT = "{$ID}/comment"
 const val DELETE_COMMENT_ENDPOINT = "/comment/{$ID}"
 
-class QuotesController(private val holder: ServiceHolder) : RoutingController {
+class QuotesController(
+    private val quotesUseCaseManager: QuotesUseCaseManager,
+    private val commentsUseCaseManager: CommentsUseCaseManager,
+) : RoutingController {
 
     override fun route(routing: Routing) = routing.routePathWithAuth(QUOTES_ENDPOINT) {
-        getExt<RegularUserService>(holder = holder) { service -> respond(service.getQuotes()) }
-        postExt<RegularUserService>(holder = holder) { service ->
+        getExt { principal ->
+            respond(quotesUseCaseManager.getQuotesUseCase(userRequesting = principal.user).run())
+        }
+        getExt { principal ->
+            quotesUseCaseManager
+                .getQuotesUseCase(userRequesting = principal.user).run()
+                .also { respond(it) }
+        }
+        postExt { principal ->
             val quote = receiveCatching<AddQuote>()
             quote ?: return@postExt
             try {
-                service.addQuote(quote.body, quote.authorId)
+                quotesUseCaseManager
+                    .addQuotesUseCase(quote.body, quote.authorId).run()
                 respondText("Success")
             } catch (e: IllegalStateException) {
                 respondText("Failure", status = HttpStatusCode.BadRequest)
             }
         }
-        postExt<RegularUserService>(LIKE_ENDPOINT, holder) { service ->
+        postExt(LIKE_ENDPOINT) { principal ->
             val (quoteId, action) = receiveCatching<LikeRequest>() ?: return@postExt
-            val userId = principal<UserRolePrincipal>()?.user?.id
-            val likeSuccess = service.setQuoteLike(Like(quoteId, userId!!), action)
-            if (likeSuccess) {
+            val userId = principal.user.id
+            try {
+                quotesUseCaseManager.likeQuoteUseCase(Like(quoteId, userId), action).run()
                 respondText("Like success")
-            } else {
+            } catch (e: IllegalStateException) {
                 respondText("Like failed", status = HttpStatusCode.Conflict)
             }
         }
-        getExt<RegularUserService>(COMMENTS_ENDPOINT, holder) { service ->
-            getAndCheckIntParameter(ID)?.let { respond(service.getComments(it)) }
+        getExt(COMMENTS_ENDPOINT) { principal ->
+            getAndCheckIntParameter(ID)?.let { respond(commentsUseCaseManager.getCommentsUseCase(it).run()) }
         }
-        postExt<RegularUserService>(COMMENTS_ENDPOINT, holder) { service ->
-            val principal = principal<UserRolePrincipal>() ?: return@postExt
-            getAndCheckIntParameter("id")?.let { quoteId ->
-                val comment = receiveCatching<AddComment>() ?: return@postExt
-                respond(service.addComment(comment.commentBody, quoteId, principal.user.id))
-            }
-        }
-        deleteExt<RegularUserService>(DELETE_COMMENT_ENDPOINT, holder) { service ->
-            val principal = principal<UserRolePrincipal>() ?: return@deleteExt
-            getAndCheckIntParameter(ID)?.let { respond(service.deleteComment(it, principal.user.id)) }
+        postExt(COMMENTS_ENDPOINT) { principal ->
+            receiveText()
+            val (body, quoteId) = receiveCatching<AddComment>() ?: return@postExt
+
+            respond(
+                commentsUseCaseManager.addCommentsUseCase(body, quoteId, principal.user).run()
+            )
         }
     }
 }

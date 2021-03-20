@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddComment(
     @SerialName("comment_body") val commentBody: String,
+    @SerialName("quote_id") val quoteId: Int,
 )

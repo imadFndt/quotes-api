@@ -19,7 +19,14 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     install(ContentNegotiation) { json(json = Json { prettyPrint = true }) }
-    install(Koin) { modules(Modules.dbModule, Modules.serviceModule, Modules.controllersModule) }
+    install(Koin) {
+        modules(
+            Modules.dbModule,
+            Modules.managerModule,
+            Modules.useCaseManagerModule,
+            Modules.controllersModule
+        )
+    }
 
     val registrationController by inject<RegistrationController>()
     val quotesController by inject<QuotesController>()
@@ -27,6 +34,7 @@ fun Application.module() {
 
     install(Authentication) { authController.addBasicAuth(this) }
     routing {
-        listOf(registrationController, quotesController).forEach { it.route(this) }
+        registrationController.route(this)
+        quotesController.route(this)
     }
 }

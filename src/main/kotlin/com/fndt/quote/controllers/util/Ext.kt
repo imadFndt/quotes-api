@@ -1,6 +1,6 @@
 package com.fndt.quote.controllers.util
 
-import com.fndt.quote.controllers.UserRolePrincipal
+import com.fndt.quote.controllers.UserPrincipal
 import com.fndt.quote.domain.ServiceHolder
 import com.fndt.quote.domain.services.RegularUserService
 import io.ktor.application.*
@@ -35,7 +35,7 @@ suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int?
 }
 
 suspend fun <T : RegularUserService> ApplicationCall.getServiceOrRespondFail(serviceHolder: ServiceHolder): T? {
-    val principal = principal<UserRolePrincipal>()
+    val principal = principal<UserPrincipal>()
     return serviceHolder.getUserService(principal?.user?.role) ?: run {
         respondText("Request failed", status = HttpStatusCode.BadRequest)
         null
@@ -50,56 +50,54 @@ fun Route.routePathWithAuth(basePath: String, routingBlock: Route.() -> Route) {
     }
 }
 
-fun <T : RegularUserService> Route.getExt(
+fun Route.getExt(
     path: String? = null,
-    holder: ServiceHolder,
-    block: suspend ApplicationCall.(T) -> Unit
+    block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
-    return httpMethodsExt(path, holder, Route::get, Route::get, block)
+    return httpMethodsPrincipalExt(path, Route::get, Route::get, block)
 }
 
-fun <T : RegularUserService> Route.postExt(
+fun Route.postExt(
     path: String? = null,
-    holder: ServiceHolder,
-    block: suspend ApplicationCall.(T) -> Unit
+    block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
-    return httpMethodsExt(path, holder, Route::post, Route::post, block)
+    return httpMethodsPrincipalExt(path, Route::post, Route::post, block)
 }
 
-fun <T : RegularUserService> Route.deleteExt(
+fun Route.deleteExt(
     path: String? = null,
-    holder: ServiceHolder,
-    block: suspend ApplicationCall.(T) -> Unit
+    block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
-    return httpMethodsExt(path, holder, Route::delete, Route::delete, block)
+    return httpMethodsPrincipalExt(path, Route::delete, Route::delete, block)
 }
 
-fun <T : RegularUserService> Route.patchExt(
+fun Route.patchExt(
     path: String? = null,
-    holder: ServiceHolder,
-    block: suspend ApplicationCall.(T) -> Unit
+    block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
-    return httpMethodsExt(path, holder, Route::patch, Route::patch, block)
+    return httpMethodsPrincipalExt(path, Route::patch, Route::patch, block)
 }
 
-private inline fun <T : RegularUserService> Route.httpMethodsExt(
+private fun Route.httpMethodsPrincipalExt(
     path: String? = null,
-    holder: ServiceHolder,
-    noinline httpMethod: (Route.(PipelineInterceptor<Unit, ApplicationCall>) -> Route),
-    noinline httpMethodWithPath: (Route.(String, PipelineInterceptor<Unit, ApplicationCall>) -> Route),
-    crossinline block: suspend ApplicationCall.(T) -> Unit
+    httpMethod: Route.(PipelineInterceptor<Unit, ApplicationCall>) -> Route,
+    httpMethodWithPath: Route.(String, PipelineInterceptor<Unit, ApplicationCall>) -> Route,
+    block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
     return path?.let {
         httpMethodWithPath(it) {
-            val service = call.getServiceOrRespondFail<T>(holder) ?: return@httpMethodWithPath
-            call.block(service)
+            call.getPrincipalAndCallBlock(block)
         }
     } ?: run {
         httpMethod {
-            val service = call.getServiceOrRespondFail<T>(holder) ?: return@httpMethod
-            call.block(service)
+            call.getPrincipalAndCallBlock(block)
         }
     }
+}
+
+private suspend fun ApplicationCall.getPrincipalAndCallBlock(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
+    val principal = principal<UserPrincipal>() ?: throw IllegalStateException("Principal not found")
+    block(principal)
 }
 
 /*
