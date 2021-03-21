@@ -57,6 +57,10 @@ class PermissionManagerImpl : PermissionManager {
         return user.checkRole { it.role != AuthRole.NOT_AUTHORIZED }
     }
 
+    override fun hasTagSelectionsPermission(user: User?): Boolean {
+        return user.checkRole { it.role != AuthRole.NOT_AUTHORIZED }
+    }
+
     private fun User?.checkRole(block: (User) -> Boolean): Boolean {
         return this?.let { block(it) } ?: false
     }

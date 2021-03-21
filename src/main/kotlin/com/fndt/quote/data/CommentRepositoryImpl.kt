@@ -14,7 +14,7 @@ class CommentRepositoryImpl(dbProvider: DatabaseProvider) : CommentRepository {
     private val commentsTable: DatabaseProvider.Comments by dbProvider
     private val usersTable: DatabaseProvider.Users by dbProvider
 
-    override fun getComments(quoteId: Int): List<Comment> {
+    override fun get(quoteId: ID): List<Comment> {
         return commentsTable
             .select { DatabaseProvider.Comments.quoteId eq quoteId }
             .map {

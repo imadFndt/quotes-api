@@ -18,6 +18,6 @@ abstract class RequestUseCase<T>(
     final override suspend fun run(): T = requestManager.execute {
         if (isExecuted) throw IllegalStateException("Executed more than 1 time")
         if (!validate(requestingUser)) throw PermissionException("Permission denied")
-        makeRequest()
+        makeRequest().apply { isExecuted = true }
     }
 }

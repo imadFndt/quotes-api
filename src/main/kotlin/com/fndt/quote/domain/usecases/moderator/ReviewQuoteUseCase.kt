@@ -1,7 +1,6 @@
 package com.fndt.quote.domain.usecases.moderator
 
 import com.fndt.quote.domain.RequestManager
-import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -14,16 +13,14 @@ class ReviewQuoteUseCase(
     override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
-) : RequestUseCase<Quote>(requestManager) {
-    override suspend fun makeRequest(): Quote {
+) : RequestUseCase<Unit>(requestManager) {
+    override suspend fun makeRequest() {
         val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not found")
-        return if (decision) {
+        if (decision) {
             val newQuote = quote.copy(isPublic = true)
-            val id = quoteRepository.add(newQuote)
-            quoteRepository.findById(id) ?: throw IllegalStateException("Quote not found")
+            quoteRepository.add(newQuote)
         } else {
             quoteRepository.remove(quoteId)
-            quote
         }
     }
 

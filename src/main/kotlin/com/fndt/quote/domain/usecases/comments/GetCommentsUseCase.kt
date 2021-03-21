@@ -14,7 +14,7 @@ class GetCommentsUseCase(
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<List<Comment>>(requestManager) {
-    override suspend fun makeRequest(): List<Comment> = commentRepository.getComments(quoteId)
+    override suspend fun makeRequest(): List<Comment> = commentRepository.get(quoteId)
 
     override fun validate(user: User?): Boolean {
         return permissionManager.hasGetCommentPermission(requestingUser)

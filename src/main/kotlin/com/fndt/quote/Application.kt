@@ -1,9 +1,9 @@
 package com.fndt.quote
 
 import com.fndt.quote.controllers.AuthController
-import com.fndt.quote.controllers.PopularAndSearchController
+import com.fndt.quote.controllers.SelectionsController
 import com.fndt.quote.controllers.QuotesController
-import com.fndt.quote.controllers.RegistrationController
+import com.fndt.quote.controllers.UserController
 import com.fndt.quote.di.Modules
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -29,10 +29,10 @@ fun Application.module() {
         )
     }
 
-    val registrationController by inject<RegistrationController>()
+    val registrationController by inject<UserController>()
     val quotesController by inject<QuotesController>()
     val authController by inject<AuthController>()
-    val popularsAndSearch by inject<PopularAndSearchController>()
+    val popularsAndSearch by inject<SelectionsController>()
 
     install(Authentication) { authController.addBasicAuth(this) }
     routing {

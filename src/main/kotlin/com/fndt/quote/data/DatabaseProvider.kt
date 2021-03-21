@@ -40,7 +40,7 @@ object DatabaseProvider {
 
     object Quotes : AccessLimitableIntIdTable("Quotes") {
         val body = varchar("body", 200)
-        val createdAt = long("date")
+        val createdAt = long("created_at")
         val user = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
         override val isPublic = bool("is_public")
     }
@@ -71,7 +71,7 @@ object DatabaseProvider {
     object Users : IntIdTable() {
         val name = varchar("username", 200)
         val hashedPassword = varchar("password_hash", 200)
-        val role = enumeration("role", AuthRole::class)
+        val role = enumeration("user_role", AuthRole::class)
         val blockedUntil = long("blocked_until").nullable()
     }
 }

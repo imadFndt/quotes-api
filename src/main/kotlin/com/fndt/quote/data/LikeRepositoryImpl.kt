@@ -9,6 +9,7 @@ class LikeRepositoryImpl(dbProvider: DatabaseProvider) : LikeRepository {
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
 
     override fun add(like: Like) {
+        if (find(like) != null) return
         likesQuotesMapTable.insert { insert ->
             insert[quote] = like.quoteId
             insert[user] = like.userId

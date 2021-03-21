@@ -10,9 +10,7 @@ class AuthController(private val useCaseManager: UsersUseCaseFactory) {
             realm = "Ktor"
             validate { credentials ->
                 try {
-                    useCaseManager.authUseCase(credentials.name, credentials.password).run().let {
-                        UserPrincipal(it)
-                    }
+                    useCaseManager.authUseCase(credentials.name, credentials.password).run().let { UserPrincipal(it) }
                 } catch (e: IllegalStateException) {
                     null
                 }

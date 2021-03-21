@@ -15,7 +15,7 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
     return try {
         receive()
     } catch (e: SerializationException) {
-        respondText(text = "Malformed json", status = HttpStatusCode.UnsupportedMediaType)
+        respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
         null
     }
 }
@@ -23,21 +23,15 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
 suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int? {
     return try {
         parameters[parameterName]?.toInt() ?: run {
-            respondText("Missing or malformed id", status = HttpStatusCode.BadRequest)
             null
         }
     } catch (e: NumberFormatException) {
-        respondText("Malformed id", status = HttpStatusCode.BadRequest)
         null
     }
 }
 
 fun Route.routePathWithAuth(basePath: String, routingBlock: Route.() -> Route) {
-    route(basePath) {
-        authenticate {
-            routingBlock()
-        }
-    }
+    route(basePath) { authenticate { routingBlock() } }
 }
 
 fun Route.getExt(
@@ -87,7 +81,7 @@ private fun Route.httpMethodsPrincipalExt(
 
 private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
     try {
-        val principal = principal<UserPrincipal>() ?: throw IllegalStateException("Principal not found")
+        val principal = principal<UserPrincipal>() ?: throw IllegalStateException(MISSING_PRINCIPAL)
         block(principal)
     } catch (e: IllegalStateException) {
         respondText(e.message.toString(), status = HttpStatusCode.BadRequest)

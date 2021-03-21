@@ -5,8 +5,7 @@ import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 
 interface QuoteRepository {
-    fun getQuotes(): List<Quote>
-
+    fun get(): List<Quote>
     fun add(quote: Quote): ID
     fun remove(quoteId: Int)
     fun findById(id: Int): Quote?

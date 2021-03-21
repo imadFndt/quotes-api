@@ -4,22 +4,23 @@ import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.repository.QuoteRepository
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
 class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
-
     private val filterBuilder = QuoteFilterImpl.builder(dbProvider)
 
-    override fun getQuotes(): List<Quote> {
+    override fun get(): List<Quote> {
         return filterBuilder.build().getQuotes()
     }
 
-    override fun add(quote: Quote): ID {
+    override fun add(quote: Quote): ID = transaction {
         val quoteExists = findById(quote.id) != null
-        return if (quoteExists) update(quote) else insert(quote)
+        return@transaction if (quoteExists) update(quote) else insert(quote)
     }
 
     override fun remove(quoteId: Int) {
@@ -39,7 +40,7 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
         return quotesTable.insert { insert ->
             insert[body] = quote.body
             insert[createdAt] = quote.createdAt
-            insert[user] = quote.user.id
+            insert[user] = EntityID(quote.user.id, DatabaseProvider.Users)
             insert[isPublic] = quote.isPublic
         }[quotesTable.id].value
     }

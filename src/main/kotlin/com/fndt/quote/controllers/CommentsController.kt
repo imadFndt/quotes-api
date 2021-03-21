@@ -10,14 +10,14 @@ import io.ktor.routing.*
 
 class CommentsController(private val commentsUseCaseManager: CommentsUseCaseManager) : RoutingController {
     override fun route(routing: Routing) = routing.routePathWithAuth(COMMENTS_ENDPOINT) {
-        getExt(COMMENTS_ENDPOINT) { principal ->
+        getExt { principal ->
             getAndCheckIntParameter(ID)?.let {
                 respond(commentsUseCaseManager.getCommentsUseCase(it, principal.user).run())
             }
         }
-        postExt(COMMENTS_ENDPOINT) { principal ->
+        postExt { principal ->
             val quoteId = getAndCheckIntParameter(ID) ?: run {
-                respondText("Parameter fail", status = HttpStatusCode.BadRequest)
+                respondText(PARAMETER_FAIL, status = HttpStatusCode.BadRequest)
                 return@postExt
             }
             val body = receiveText()

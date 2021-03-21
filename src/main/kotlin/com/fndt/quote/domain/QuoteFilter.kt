@@ -15,7 +15,7 @@ abstract class QuoteFilter {
     abstract class Builder {
         protected var tag: Tag? = null
         protected var user: User? = null
-        protected var isPublic: Boolean? = true
+        protected var isPublic: Boolean? = null
         protected var orderPopulars: Boolean = false
         protected var query: String? = null
         protected var quoteId: ID? = null

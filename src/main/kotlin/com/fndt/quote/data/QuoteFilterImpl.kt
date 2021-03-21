@@ -4,6 +4,7 @@ import com.fndt.quote.data.util.nullableGroupBy
 import com.fndt.quote.data.util.toQuotes
 import com.fndt.quote.data.util.toTagNullable
 import com.fndt.quote.domain.QuoteFilter
+import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
@@ -15,6 +16,7 @@ class QuoteFilterImpl private constructor(
     private val isPublic: Boolean?,
     private val orderPopulars: Boolean,
     private val query: String?,
+    private val quoteId: ID?,
     dbProvider: DatabaseProvider,
 ) : QuoteFilter() {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
@@ -37,6 +39,7 @@ class QuoteFilterImpl private constructor(
         user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
         tag?.id?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
         query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
+        quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
         orderBy(DatabaseProvider.Quotes.createdAt, SortOrder.DESC)
     }
 
@@ -49,7 +52,8 @@ class QuoteFilterImpl private constructor(
         fun builder(dbProvider: DatabaseProvider) = FilterBuilder(dbProvider)
 
         class FilterBuilder(private val dbProvider: DatabaseProvider) : Builder() {
-            override fun build(): QuoteFilter = QuoteFilterImpl(tag, user, isPublic, orderPopulars, query, dbProvider)
+            override fun build(): QuoteFilter =
+                QuoteFilterImpl(tag, user, isPublic, orderPopulars, query, quoteId, dbProvider)
         }
     }
 }

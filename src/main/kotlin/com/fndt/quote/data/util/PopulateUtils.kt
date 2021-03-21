@@ -5,6 +5,7 @@ import com.fndt.quote.data.DatabaseProvider.Quotes.body
 import com.fndt.quote.data.DatabaseProvider.Quotes.createdAt
 import com.fndt.quote.data.DatabaseProvider.TagsOnQuotes.quote
 import com.fndt.quote.data.DatabaseProvider.TagsOnQuotes.tag
+import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
@@ -24,6 +25,7 @@ fun populateDb() = transaction {
         DatabaseProvider.LikesOnQuotes,
     )
     SchemaUtils.drop(*tables)
+    commit()
     SchemaUtils.create(*tables)
     DatabaseProvider.Users.batchInsert(usersList) { user ->
         this[DatabaseProvider.Users.id] = user.id
@@ -76,8 +78,8 @@ fun populateDb() = transaction {
 }
 
 internal val usersList = listOf(
-    User(id = 1, name = "a", password = "a".toHashed()),
-    User(id = 2, name = "b", password = "b".toHashed()),
+    User(id = 1, name = "moderator", password = "a".toHashed(), role = AuthRole.MODERATOR),
+    User(id = 2, name = "regular", password = "a".toHashed()),
     User(id = 3, name = "c", password = "c".toHashed()),
 )
 internal val quotesList = listOf(

@@ -1,11 +1,11 @@
 package com.fndt.quote.di
 
 import com.fndt.quote.controllers.AuthController
-import com.fndt.quote.controllers.PopularAndSearchController
+import com.fndt.quote.controllers.SelectionsController
 import com.fndt.quote.controllers.QuotesController
-import com.fndt.quote.controllers.RegistrationController
+import com.fndt.quote.controllers.UserController
 import com.fndt.quote.controllers.factory.CommentsUseCaseFactory
-import com.fndt.quote.controllers.factory.PopularAndSearchUseCaseFactory
+import com.fndt.quote.controllers.factory.SelectionUseCaseFactory
 import com.fndt.quote.controllers.factory.QuotesUseCaseFactory
 import com.fndt.quote.controllers.factory.UsersUseCaseFactory
 import com.fndt.quote.data.*
@@ -30,21 +30,21 @@ object Modules {
     }
     val managerModule = module {
         single<PermissionManager> { PermissionManagerImpl() }
-        single<RequestManager> { RequestManagerImpl() }
+        factory <RequestManager> { RequestManagerImpl() }
         single<UsersUseCaseManager> { UsersUseCaseFactory(get(), get(), get()) }
         single<QuoteFilter.Builder> { QuoteFilterImpl.Companion.FilterBuilder(get()) }
     }
     val useCaseManagerModule = module {
         factory { QuotesUseCaseFactory(get(), get(), get(), get(), get(), get()) }
         factory { CommentsUseCaseFactory(get(), get(), get(), get()) }
-        factory { PopularAndSearchUseCaseFactory(get(), get(), get()) }
+        factory { SelectionUseCaseFactory(get(), get(), get()) }
         factory { UsersUseCaseFactory(get(), get(), get()) }
     }
 
     val controllersModule = module {
         single { AuthController(get()) }
         single { QuotesController(get()) }
-        single { RegistrationController(get()) }
-        single { PopularAndSearchController(get()) }
+        single { UserController(get()) }
+        single { SelectionsController(get()) }
     }
 }
