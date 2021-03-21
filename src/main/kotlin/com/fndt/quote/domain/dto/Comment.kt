@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Comment(
-    val id: Int,
+    val id: ID = UNDEFINED,
     val body: String,
     @SerialName("quote_id") val quoteId: Int,
-    val date: Long,
-    val user: Int
+    @SerialName("created_at") val createdAt: Long,
+    val user: User
 )

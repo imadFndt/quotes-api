@@ -1,16 +1,15 @@
 package com.fndt.quote.controllers
 
 import com.fndt.quote.controllers.dto.UserCredentials
+import com.fndt.quote.controllers.factory.UsersUseCaseFactory
+import com.fndt.quote.controllers.util.REGISTRATION_ENDPOINT
 import com.fndt.quote.controllers.util.receiveCatching
-import com.fndt.quote.domain.manager.UsersUseCaseManager
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
-const val REGISTRATION_ENDPOINT = "/register"
-
-class RegistrationController(private val useCaseManager: UsersUseCaseManager) : RoutingController {
+class RegistrationController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing {
         suspend fun ApplicationCall.registerAndRespond() {
             val credentials = receiveCatching<UserCredentials>() ?: return

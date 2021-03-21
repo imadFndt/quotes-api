@@ -2,14 +2,8 @@ package com.fndt.quote.data.util
 
 import com.fndt.quote.data.DatabaseProvider
 import com.fndt.quote.domain.dto.*
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
 import java.security.MessageDigest
-
-fun Query.andWhere(andPart: SqlExpressionBuilder.() -> Op<Boolean>) = adjustWhere {
-    val expr = Op.build { andPart() }
-    if (this == null) expr
-    else this and expr
-}
 
 fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote {
     return Quote(
@@ -47,17 +41,46 @@ fun ResultRow.toLike(): Like = Like(
     this[DatabaseProvider.LikesOnQuotes.user].value
 )
 
-fun ResultRow.toComment(): Comment {
+fun ResultRow.toComment(user: User): Comment {
     return Comment(
         id = this[DatabaseProvider.Comments.id].value,
         body = this[DatabaseProvider.Comments.body],
         quoteId = this[DatabaseProvider.Comments.quoteId].value,
-        date = this[DatabaseProvider.Comments.createdAt],
-        user = this[DatabaseProvider.Comments.user].value
+        createdAt = this[DatabaseProvider.Comments.createdAt],
+        user = user
     )
+}
+
+// NOT REDUNDANT
+fun ResultRow.toTagNullable(): Tag? {
+    return try {
+        Tag(
+            id = this[DatabaseProvider.Tags.id].value,
+            name = this[DatabaseProvider.Tags.name],
+        )
+    } catch (e: NullPointerException) {
+        null
+    }
 }
 
 fun String.toHashed(): String {
     val digest = MessageDigest.getInstance("SHA-256")
     return digest.digest(this.toByteArray()).decodeToString()
+}
+
+inline fun <T, K, V> Iterable<T>.nullableGroupBy(keySelector: (T) -> K, valueTransform: (T) -> V?): Map<K, List<V>> {
+    return groupByTo(LinkedHashMap(), keySelector, valueTransform)
+}
+
+inline fun <T, K, V, M : MutableMap<in K, MutableList<V>>> Iterable<T>.groupByTo(
+    destination: M,
+    keySelector: (T) -> K,
+    valueTransform: (T) -> V?
+): M {
+    for (element in this) {
+        val key = keySelector(element)
+        val list = destination.getOrPut(key) { ArrayList() }
+        valueTransform(element)?.let { list.add(it) }
+    }
+    return destination
 }

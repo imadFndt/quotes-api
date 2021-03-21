@@ -1,4 +1,4 @@
-package com.fndt.quote.controllers
+package com.fndt.quote.controllers.dto
 
 import com.fndt.quote.domain.dto.User
 import io.ktor.auth.*

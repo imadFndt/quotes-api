@@ -12,22 +12,22 @@ import com.fndt.quote.domain.usecases.RequestUseCase
 class LikeUseCase(
     private val like: Like,
     private val likeAction: Boolean,
+    override val requestingUser: User,
     private val quoteRepository: QuoteRepository,
     private val userRepository: UserRepository,
     private val likeRepository: LikeRepository,
-    override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager,
-) : RequestUseCase<Like>(requestManager) {
-    override suspend fun makeRequest(): Like {
+) : RequestUseCase<Unit>(requestManager) {
+    override suspend fun makeRequest() {
         quoteRepository.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
-        userRepository.findUser(like.userId) ?: throw IllegalArgumentException("User does not exist")
+        userRepository.findUserByParams(like.userId) ?: throw IllegalArgumentException("User does not exist")
         val likeExists = likeRepository.find(like) != null
-        return when {
-            likeAction && !likeExists -> likeRepository.like(like)
-            !likeAction && likeExists -> likeRepository.unlike(like)
+        when {
+            likeAction && !likeExists -> likeRepository.add(like)
+            !likeAction && likeExists -> likeRepository.remove(like)
             else -> throw IllegalArgumentException("Like failed")
-        } ?: throw IllegalArgumentException("Like failed")
+        }
     }
 
     override fun validate(user: User?): Boolean {

@@ -1,4 +1,4 @@
-package com.fndt.quote.domain.manager.implementations
+package com.fndt.quote.controllers.factory
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
@@ -9,7 +9,7 @@ import com.fndt.quote.domain.usecases.UseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
 import com.fndt.quote.domain.usecases.users.RegisterUseCase
 
-class UsersUseCaseManagerImpl(
+class UsersUseCaseFactory(
     private val userRepository: UserRepository,
     private val permissionManager: PermissionManager,
     private val requestManager: RequestManager,

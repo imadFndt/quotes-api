@@ -5,13 +5,13 @@ import kotlinx.serialization.Transient
 
 @Serializable
 data class User(
-    val id: Int,
+    val id: ID = UNDEFINED,
     val name: String,
     val role: AuthRole = AuthRole.REGULAR,
     val blockedUntil: Long? = null
 ) {
     constructor(
-        id: Int,
+        id: ID = UNDEFINED,
         name: String,
         password: String,
         role: AuthRole = AuthRole.REGULAR,

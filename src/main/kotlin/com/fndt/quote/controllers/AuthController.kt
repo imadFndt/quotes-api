@@ -1,9 +1,10 @@
 package com.fndt.quote.controllers
 
-import com.fndt.quote.domain.manager.UsersUseCaseManager
+import com.fndt.quote.controllers.dto.UserPrincipal
+import com.fndt.quote.controllers.factory.UsersUseCaseFactory
 import io.ktor.auth.*
 
-class AuthController(private val useCaseManager: UsersUseCaseManager) {
+class AuthController(private val useCaseManager: UsersUseCaseFactory) {
     fun addBasicAuth(authentication: Authentication.Configuration) = authentication.apply {
         basic {
             realm = "Ktor"

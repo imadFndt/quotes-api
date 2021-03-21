@@ -8,19 +8,17 @@ import org.jetbrains.exposed.sql.*
 class LikeRepositoryImpl(dbProvider: DatabaseProvider) : LikeRepository {
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
 
-    override fun like(like: Like): Like? {
+    override fun add(like: Like) {
         likesQuotesMapTable.insert { insert ->
             insert[quote] = like.quoteId
             insert[user] = like.userId
         }
-        return find(like)
     }
 
-    override fun unlike(like: Like): Like {
+    override fun remove(like: Like) {
         likesQuotesMapTable.deleteWhere(op = findCondition(like)).let {
             if (it == 0) throw IllegalStateException("Delete failed")
         }
-        return like
     }
 
     override fun find(like: Like): Like? {
@@ -28,7 +26,7 @@ class LikeRepositoryImpl(dbProvider: DatabaseProvider) : LikeRepository {
     }
 
     override fun getLikesForQuote(quoteId: Int): List<Like> {
-        return likesQuotesMapTable.select { likesQuotesMapTable.quote eq quoteId }.map { it.toLike() }
+        return likesQuotesMapTable.select { DatabaseProvider.LikesOnQuotes.quote eq quoteId }.map { it.toLike() }
     }
 
     private fun findCondition(like: Like): (SqlExpressionBuilder.() -> Op<Boolean>) = {

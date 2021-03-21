@@ -5,6 +5,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import kotlin.reflect.KProperty
 
@@ -37,33 +38,33 @@ object DatabaseProvider {
         abstract val isPublic: Column<Boolean>
     }
 
-    object Quotes : DatabaseProvider.AccessLimitableIntIdTable("Quotes") {
+    object Quotes : AccessLimitableIntIdTable("Quotes") {
         val body = varchar("body", 200)
         val createdAt = long("date")
-        val user = reference("user_id", Users)
+        val user = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
         override val isPublic = bool("is_public")
     }
 
     object Comments : IntIdTable() {
         val body = varchar("body", 300)
-        val quoteId = reference("quote_id", Quotes)
+        val quoteId = reference("quote_id", Quotes, onDelete = ReferenceOption.CASCADE)
         val createdAt = long("date")
         val user = reference("user", Users)
     }
 
     object LikesOnQuotes : Table() {
-        val user = reference("user", Users)
-        val quote = reference("quote", Quotes)
+        val user = reference("user", Users, onDelete = ReferenceOption.CASCADE)
+        val quote = reference("quote", Quotes, onDelete = ReferenceOption.CASCADE)
     }
 
-    object Tags : DatabaseProvider.AccessLimitableIntIdTable("Tags") {
+    object Tags : AccessLimitableIntIdTable("Tags") {
         val name = varchar("name", 50)
         override val isPublic = bool("is_public")
     }
 
     object TagsOnQuotes : Table() {
-        val quote = reference("quote", Quotes)
-        val tag = reference("tag", Tags)
+        val quote = reference("quote", Quotes, onDelete = ReferenceOption.CASCADE)
+        val tag = reference("tag", Tags, onDelete = ReferenceOption.CASCADE)
     }
 
     // Compose PK is not supported, but name should be unique

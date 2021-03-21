@@ -17,7 +17,5 @@ class ChangeRoleUseCase(
 ) : RequestUseCase<Boolean>(requestManager) {
     override suspend fun makeRequest(): Boolean = userRepository.update(userId, role = newRole) != null
 
-    override fun validate(user: User?): Boolean {
-        return permissionManager.hasChangeRolePermission(user)
-    }
+    override fun validate(user: User?) = permissionManager.hasChangeRolePermission(user)
 }

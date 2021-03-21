@@ -16,7 +16,7 @@ class AuthUseCase(
     override val requestingUser: User? = null
 
     override suspend fun makeRequest(): User {
-        val user = userRepository.findUser(name = name, password = password)
+        val user = userRepository.findUserByParams(name = name, password = password)
         return user?.also { checkBan(user) } ?: throw IllegalStateException("Authentication filed")
     }
 

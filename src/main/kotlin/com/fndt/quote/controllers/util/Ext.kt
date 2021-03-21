@@ -1,8 +1,6 @@
 package com.fndt.quote.controllers.util
 
-import com.fndt.quote.controllers.UserPrincipal
-import com.fndt.quote.domain.ServiceHolder
-import com.fndt.quote.domain.services.RegularUserService
+import com.fndt.quote.controllers.dto.UserPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -30,14 +28,6 @@ suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int?
         }
     } catch (e: NumberFormatException) {
         respondText("Malformed id", status = HttpStatusCode.BadRequest)
-        null
-    }
-}
-
-suspend fun <T : RegularUserService> ApplicationCall.getServiceOrRespondFail(serviceHolder: ServiceHolder): T? {
-    val principal = principal<UserPrincipal>()
-    return serviceHolder.getUserService(principal?.user?.role) ?: run {
-        respondText("Request failed", status = HttpStatusCode.BadRequest)
         null
     }
 }
@@ -86,23 +76,22 @@ private fun Route.httpMethodsPrincipalExt(
 ): Route {
     return path?.let {
         httpMethodWithPath(it) {
-            call.getPrincipalAndCallBlock(block)
+            call.initBlockWithPrincipal(block)
         }
     } ?: run {
         httpMethod {
-            call.getPrincipalAndCallBlock(block)
+            call.initBlockWithPrincipal(block)
         }
     }
 }
 
-private suspend fun ApplicationCall.getPrincipalAndCallBlock(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
-    val principal = principal<UserPrincipal>() ?: throw IllegalStateException("Principal not found")
-    block(principal)
+private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
+    try {
+        val principal = principal<UserPrincipal>() ?: throw IllegalStateException("Principal not found")
+        block(principal)
+    } catch (e: IllegalStateException) {
+        respondText(e.message.toString(), status = HttpStatusCode.BadRequest)
+    } catch (e: IllegalArgumentException) {
+        respondText(e.message.toString(), status = HttpStatusCode.NotAcceptable)
+    }
 }
-
-/*
-curl --header "Content-Type: application/json" \
-  --request POST \
-  --data '{"body":"Тело цитаты","date":"30", "author": {"id":3,"name":"Копатыч"}}' \
-  http://0.0.0.0:8080/quotes
- */

@@ -1,7 +1,8 @@
-package com.fndt.quote.domain.manager.implementations
+package com.fndt.quote.controllers.factory
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Comment
+import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.CommentsUseCaseManager
 import com.fndt.quote.domain.manager.PermissionManager
@@ -13,7 +14,7 @@ import com.fndt.quote.domain.usecases.comments.GetCommentsUseCase
 
 typealias PermissionException = IllegalStateException
 
-class CommentsUseCaseManagerImpl(
+class CommentsUseCaseFactory(
     private val commentRepository: CommentRepository,
     private val quoteRepository: QuoteRepository,
     private val requestManager: RequestManager,
@@ -23,14 +24,13 @@ class CommentsUseCaseManagerImpl(
         return GetCommentsUseCase(quoteId, commentRepository, userRequesting, permissionManager, requestManager)
     }
 
-    override fun addCommentsUseCase(body: String, quoteId: Int, userRequesting: User): UseCase<Comment> {
+    override fun addCommentsUseCase(body: String, quoteId: ID, user: User): UseCase<Comment> {
         return AddCommentUseCase(
             body,
             quoteId,
-            userRequesting.id,
+            user,
             commentRepository,
             quoteRepository,
-            userRequesting,
             permissionManager,
             requestManager
         )

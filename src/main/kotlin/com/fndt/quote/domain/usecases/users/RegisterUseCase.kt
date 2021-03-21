@@ -16,8 +16,10 @@ class RegisterUseCase(
     override val requestingUser: User? = null
 
     override suspend fun makeRequest(): User {
-        userRepository.findUser(name = name)?.let { throw IllegalArgumentException("User already registered") }
-        return userRepository.insert(name, password) ?: throw IllegalStateException("Failed to register")
+        userRepository.findUserByParams(name = name)?.let { throw IllegalArgumentException("User already registered") }
+        val user = User(name = name, password = password)
+        return userRepository.findUserByParams(userId = userRepository.add(user))
+            ?: throw IllegalArgumentException("Failed to add user")
     }
 
     override fun validate(user: User?): Boolean {

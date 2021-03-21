@@ -19,4 +19,7 @@ interface PermissionManager {
 
     fun hasAuthPermission(user: User?): Boolean
     fun hasRegisterPermission(user: User?): Boolean
+
+    fun hasSearchPermission(user: User?): Boolean
+    fun hasPopularsPermission(user: User?): Boolean
 }

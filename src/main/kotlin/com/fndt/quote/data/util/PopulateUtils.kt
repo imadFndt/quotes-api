@@ -64,14 +64,6 @@ fun populateDb() = transaction {
             .firstOrNull()
             ?.let { it[DatabaseProvider.Tags.id] } ?: run { throw IllegalArgumentException() }
     }
-    DatabaseProvider.TagsOnQuotes.insert { insertStatement ->
-        insertStatement[quote] = 1
-        insertStatement[tag] = DatabaseProvider.Tags
-            .slice(DatabaseProvider.Tags.id)
-            .select { DatabaseProvider.Tags.name eq "Смешарики" }
-            .firstOrNull()
-            ?.let { it[DatabaseProvider.Tags.id] } ?: run { throw IllegalArgumentException() }
-    }
     DatabaseProvider.LikesOnQuotes.insert { insertStatement ->
         insertStatement[quote] = 2
         insertStatement[user] = 1
@@ -79,11 +71,6 @@ fun populateDb() = transaction {
     DatabaseProvider.LikesOnQuotes.insert { insertStatement ->
         insertStatement[quote] = 1
         insertStatement[user] = 1
-    }
-    DatabaseProvider.Users.batchInsert(usersList) { item ->
-        this[DatabaseProvider.Users.name] = item.name
-        this[DatabaseProvider.Users.hashedPassword] = item.hashedPassword
-        this[DatabaseProvider.Users.role] = item.role
     }
     commit()
 }

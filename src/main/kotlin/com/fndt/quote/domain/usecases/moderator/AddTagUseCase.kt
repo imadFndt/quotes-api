@@ -13,10 +13,9 @@ class AddTagUseCase(
     override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
-) :
-    RequestUseCase<Tag>(requestManager) {
-    override suspend fun makeRequest(): Tag {
-        return tagRepository.insert(tag.name) ?: throw IllegalStateException("Failed to add tag")
+) : RequestUseCase<Unit>(requestManager) {
+    override suspend fun makeRequest() {
+        tagRepository.add(tag)
     }
 
     override fun validate(user: User?): Boolean {

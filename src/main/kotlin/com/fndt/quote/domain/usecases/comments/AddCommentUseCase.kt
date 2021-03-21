@@ -11,17 +11,20 @@ import com.fndt.quote.domain.usecases.RequestUseCase
 class AddCommentUseCase(
     private val body: String,
     private val quoteId: Int,
-    private val userId: Int,
+    private val user: User,
     private val commentRepository: CommentRepository,
     private val quoteRepository: QuoteRepository,
-    override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Comment>(requestManager) {
+
+    override val requestingUser: User = user
+
     override suspend fun makeRequest(): Comment {
         quoteRepository.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
-        return commentRepository.insert(body, quoteId, userId)
-            ?: throw IllegalArgumentException("Comment not found")
+        val comment = Comment(body = body, quoteId = quoteId, createdAt = System.currentTimeMillis(), user = user)
+        val id = commentRepository.add(comment)
+        return commentRepository.findComment(id) ?: throw IllegalStateException("Failed to add comment")
     }
 
     override fun validate(user: User?): Boolean {

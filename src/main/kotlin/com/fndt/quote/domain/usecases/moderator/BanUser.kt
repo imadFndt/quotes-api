@@ -15,7 +15,7 @@ class BanUser(
     requestManager: RequestManager
 ) : RequestUseCase<User>(requestManager) {
     override suspend fun makeRequest(): User {
-        userRepository.findUser(userId) ?: throw IllegalStateException("User not found")
+        userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
         return userRepository.update(
             time = time?.let { System.currentTimeMillis() + it } ?: run { null },
             userId = userId

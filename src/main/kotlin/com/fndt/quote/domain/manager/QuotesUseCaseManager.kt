@@ -7,7 +7,7 @@ import com.fndt.quote.domain.usecases.UseCase
 
 interface QuotesUseCaseManager {
     fun getQuotesUseCase(
-        userId: Int? = null,
+        search: Int? = null,
         isPublic: Boolean? = null,
         orderPopulars: Boolean = false,
         tagId: Int? = null,

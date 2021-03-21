@@ -9,14 +9,15 @@ import com.fndt.quote.domain.usecases.RequestUseCase
 
 class AddQuoteUseCase(
     private val body: String,
-    private val authorId: Int,
     private val quoteRepository: QuoteRepository,
-    override val requestingUser: User?,
+    override val requestingUser: User,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Quote>(requestManager) {
     override suspend fun makeRequest(): Quote {
-        return quoteRepository.insert(body, authorId) ?: throw IllegalStateException()
+        val quote = Quote(body = body, createdAt = System.currentTimeMillis(), user = requestingUser)
+        val id = quoteRepository.add(quote)
+        return quoteRepository.findById(id) ?: throw IllegalStateException()
     }
 
     override fun validate(user: User?): Boolean {
