@@ -9,7 +9,7 @@ class PermissionManagerImpl : PermissionManager {
         return user.checkRole { it.role == AuthRole.ADMIN }
     }
 
-    override fun hasChangeTagVisibility(user: User?): Boolean {
+    override fun hasApproveTagVisibility(user: User?): Boolean {
         return user.checkRole { it.role == AuthRole.ADMIN }
     }
 

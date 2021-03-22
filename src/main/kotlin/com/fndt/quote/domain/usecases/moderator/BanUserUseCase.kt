@@ -10,16 +10,15 @@ const val BAN_TIME = 24 * 60 * 60 * 1000
 
 class BanUserUseCase(
     private val userId: Int,
-    private val isPermanent: Boolean,
     private val userRepository: UserRepository,
-    override val requestingUser: User?,
+    override val requestingUser: User,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
-) : RequestUseCase<User>(requestManager) {
+) : RequestUseCase<Unit>(requestManager) {
 
-    override suspend fun makeRequest(): User {
+    override suspend fun makeRequest() {
         userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
-        return userRepository.update(
+        userRepository.update(
             time = System.currentTimeMillis() + BAN_TIME ?: run { null },
             userId = userId
         ) ?: throw IllegalStateException("Update failed")

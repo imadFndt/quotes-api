@@ -10,7 +10,7 @@ class ReviewQuoteUseCase(
     private val quoteId: Int,
     private val decision: Boolean,
     private val quoteRepository: QuoteRepository,
-    override val requestingUser: User?,
+    override val requestingUser: User,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {

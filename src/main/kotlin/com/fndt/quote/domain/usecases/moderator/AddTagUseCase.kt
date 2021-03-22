@@ -8,13 +8,14 @@ import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
 class AddTagUseCase(
-    private val tag: Tag,
+    private val tagName: String,
     private val tagRepository: TagRepository,
     override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
     override suspend fun makeRequest() {
+        val tag = Tag(name = tagName)
         tagRepository.add(tag)
     }
 

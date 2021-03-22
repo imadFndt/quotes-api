@@ -22,21 +22,13 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
                 respondText(WRONG_PARAMETERS)
                 return@postExt
             }
-            try {
-                useCaseFactory.addQuotesUseCase(quote.body, principal.user).run()
-                respondText(SUCCESS)
-            } catch (e: IllegalStateException) {
-                respondText(e.message.toString(), status = HttpStatusCode.BadRequest)
-            }
+            useCaseFactory.addQuotesUseCase(quote.body, principal.user).run()
+            respondText(SUCCESS)
         }
         postExt(LIKE_ENDPOINT) { principal ->
             val (quoteId, action) = receiveCatching<LikeRequest>() ?: return@postExt
-            try {
-                useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
-                respondText(LIKE_SUCCESS)
-            } catch (e: IllegalStateException) {
-                respondText(LIKE_FAILURE, status = HttpStatusCode.Conflict)
-            }
+            useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
+            respondText(LIKE_SUCCESS)
         }
     }
 }

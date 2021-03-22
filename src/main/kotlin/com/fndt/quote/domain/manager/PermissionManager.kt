@@ -4,7 +4,7 @@ import com.fndt.quote.domain.dto.User
 
 interface PermissionManager {
     fun hasChangeRolePermission(user: User?): Boolean
-    fun hasChangeTagVisibility(user: User?): Boolean
+    fun hasApproveTagVisibility(user: User?): Boolean
 
     fun hasGetCommentPermission(user: User?): Boolean
     fun hasAddCommentPermission(user: User?): Boolean

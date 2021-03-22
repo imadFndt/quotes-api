@@ -15,7 +15,6 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
     return try {
         receive()
     } catch (e: SerializationException) {
-        respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
         null
     }
 }

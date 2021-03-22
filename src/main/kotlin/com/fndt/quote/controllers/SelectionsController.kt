@@ -16,7 +16,7 @@ class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) 
             }
             respond(useCaseFactory.getSearchUseCase(query, principal.user).run())
         }
-        getExt(TAG_SELECTION_ENDPOINT) { principal ->
+        getExt(TAG_ENDPOINT) { principal ->
             val tagId = getAndCheckIntParameter(TAG_ARG) ?: run {
                 respondText("$MISSING_PARAMETER $TAG_ARG", status = HttpStatusCode.BadRequest)
                 return@getExt

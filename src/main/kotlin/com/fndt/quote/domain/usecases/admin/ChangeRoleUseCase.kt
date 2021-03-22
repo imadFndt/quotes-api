@@ -14,8 +14,10 @@ class ChangeRoleUseCase(
     override val requestingUser: User?,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager,
-) : RequestUseCase<Boolean>(requestManager) {
-    override suspend fun makeRequest(): Boolean = userRepository.update(userId, role = newRole) != null
+) : RequestUseCase<Unit>(requestManager) {
+    override suspend fun makeRequest() {
+        userRepository.update(userId, role = newRole)
+    }
 
     override fun validate(user: User?) = permissionManager.hasChangeRolePermission(user)
 }
