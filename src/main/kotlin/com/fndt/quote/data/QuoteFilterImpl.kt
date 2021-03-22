@@ -49,11 +49,15 @@ class QuoteFilterImpl private constructor(
     }
 
     companion object {
-        fun builder(dbProvider: DatabaseProvider) = FilterBuilder(dbProvider)
+        fun factory(dbProvider: DatabaseProvider) = BuilderFactory(dbProvider)
 
         class FilterBuilder(private val dbProvider: DatabaseProvider) : Builder() {
             override fun build(): QuoteFilter =
                 QuoteFilterImpl(tag, user, isPublic, orderPopulars, query, quoteId, dbProvider)
+        }
+
+        class BuilderFactory(private val dbProvider: DatabaseProvider) : Builder.Factory {
+            override fun create() = FilterBuilder(dbProvider)
         }
     }
 }

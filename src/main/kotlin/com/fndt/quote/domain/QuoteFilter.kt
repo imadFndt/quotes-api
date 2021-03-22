@@ -45,5 +45,9 @@ abstract class QuoteFilter {
         }
 
         abstract fun build(): QuoteFilter
+
+        interface Factory {
+            fun create(): Builder
+        }
     }
 }

@@ -23,7 +23,8 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
                 respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
                 return@postExt
             }
-            useCaseFactory.getChangeRoleUseCase(id, role, principal.user)
+            useCaseFactory.getChangeRoleUseCase(id, role, principal.user).run()
+            respond(SUCCESS)
         }
     }
 }

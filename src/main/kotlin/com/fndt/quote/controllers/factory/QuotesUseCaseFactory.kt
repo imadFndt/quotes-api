@@ -15,7 +15,7 @@ import com.fndt.quote.domain.usecases.quotes.GetQuotesUseCase
 import com.fndt.quote.domain.usecases.quotes.LikeUseCase
 
 class QuotesUseCaseFactory(
-    private val filterBuilder: QuoteFilter.Builder,
+    private val builderFactory: QuoteFilter.Builder.Factory,
     private val likeRepository: LikeRepository,
     private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
@@ -23,7 +23,7 @@ class QuotesUseCaseFactory(
     private val permissionManager: PermissionManager,
 ) {
     fun getQuotesUseCase(requestingUser: User, searchUser: User? = null): UseCase<List<Quote>> {
-        return GetQuotesUseCase(searchUser, filterBuilder, requestingUser, permissionManager, requestManager)
+        return GetQuotesUseCase(searchUser, builderFactory.create(), requestingUser, permissionManager, requestManager)
     }
 
     fun addQuotesUseCase(body: String, userRequesting: User): UseCase<Quote> {

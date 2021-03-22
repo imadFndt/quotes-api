@@ -80,7 +80,7 @@ fun populateDb() = transaction {
 internal val usersList = listOf(
     User(id = 1, name = "moderator", password = "a".toHashed(), role = AuthRole.MODERATOR),
     User(id = 2, name = "regular", password = "a".toHashed()),
-    User(id = 3, name = "c", password = "c".toHashed()),
+    User(id = 3, name = "admin", password = "a".toHashed(), role = AuthRole.ADMIN),
 )
 internal val quotesList = listOf(
     Quote(id = 1, body = "Я просто выгляжу как лось, а в душе я бабочка.", createdAt = 0, user = usersList[0]),

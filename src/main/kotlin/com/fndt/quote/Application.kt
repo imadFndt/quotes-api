@@ -1,9 +1,6 @@
 package com.fndt.quote
 
-import com.fndt.quote.controllers.AuthController
-import com.fndt.quote.controllers.SelectionsController
-import com.fndt.quote.controllers.QuotesController
-import com.fndt.quote.controllers.UserController
+import com.fndt.quote.controllers.*
 import com.fndt.quote.di.Modules
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -19,7 +16,14 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    install(ContentNegotiation) { json(json = Json { prettyPrint = true }) }
+    install(ContentNegotiation) {
+        json(
+            json = Json {
+
+                prettyPrint = true
+            }
+        )
+    }
     install(Koin) {
         modules(
             Modules.dbModule,
@@ -31,13 +35,21 @@ fun Application.module() {
 
     val registrationController by inject<UserController>()
     val quotesController by inject<QuotesController>()
+    val commentsController by inject<CommentsController>()
     val authController by inject<AuthController>()
-    val popularsAndSearch by inject<SelectionsController>()
+    val selectionsController by inject<SelectionsController>()
+    val moderatorController by inject<ModeratorController>()
+    val adminController by inject<AdminController>()
 
     install(Authentication) { authController.addBasicAuth(this) }
     routing {
-        registrationController.route(this)
-        quotesController.route(this)
-        popularsAndSearch.route(this)
+        listOf(
+            registrationController,
+            quotesController,
+            commentsController,
+            selectionsController,
+            moderatorController,
+            adminController
+        ).forEach { it.route(this) }
     }
 }

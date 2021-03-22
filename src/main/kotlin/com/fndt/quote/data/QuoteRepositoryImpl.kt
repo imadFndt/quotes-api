@@ -10,9 +10,9 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
-class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
+class QuoteRepositoryImpl(private val dbProvider: DatabaseProvider) : QuoteRepository {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
-    private val filterBuilder = QuoteFilterImpl.builder(dbProvider)
+    private val filterBuilder get() = QuoteFilterImpl.factory(dbProvider).create()
 
     override fun get(): List<Quote> {
         return filterBuilder.build().getQuotes()

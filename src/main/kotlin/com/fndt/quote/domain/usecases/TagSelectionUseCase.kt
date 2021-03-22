@@ -1,6 +1,6 @@
 package com.fndt.quote.domain.usecases
 
-import com.fndt.quote.controllers.factory.PermissionException
+import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.domain.QuoteFilter
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
