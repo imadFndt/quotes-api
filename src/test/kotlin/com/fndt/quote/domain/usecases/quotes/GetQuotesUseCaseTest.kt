@@ -24,14 +24,12 @@ internal class GetQuotesUseCaseTest {
     @MockK(relaxed = true)
     lateinit var requestManager: RequestManager
 
-    private val dummyBody: String = "a"
-
     private lateinit var useCase: GetQuotesUseCase
 
     @BeforeEach
     fun init() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
-        requestManager.mockRunBlocking()
+        MockKAnnotations.init(this)
+        requestManager.mockRunBlocking<Unit>()
         coEvery { permissionManager.hasGetQuotesPermission(any()) } returns true
     }
 

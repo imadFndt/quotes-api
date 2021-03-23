@@ -6,7 +6,6 @@ import com.fndt.quote.data.*
 import com.fndt.quote.domain.QuoteFilter
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.manager.PermissionManager
-import com.fndt.quote.domain.manager.UsersUseCaseManager
 import com.fndt.quote.domain.manager.implementations.PermissionManagerImpl
 import com.fndt.quote.domain.repository.*
 import org.koin.dsl.module
@@ -24,7 +23,7 @@ object Modules {
     val managerModule = module {
         factory<PermissionManager> { PermissionManagerImpl() }
         factory<RequestManager> { RequestManagerImpl() }
-        factory<UsersUseCaseManager> { UsersUseCaseFactory(get(), get(), get()) }
+        factory { UsersUseCaseFactory(get(), get(), get()) }
         factory<QuoteFilter.Builder.Factory> { QuoteFilterImpl.factory(get()) }
     }
     val useCaseManagerModule = module {

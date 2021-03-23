@@ -44,13 +44,13 @@ internal class LikeUseCaseTest {
     @BeforeEach
     fun init() {
         MockKAnnotations.init(this, relaxUnitFun = true)
-        requestManager.mockRunBlocking()
+        requestManager.mockRunBlocking<Unit>()
         every { permissionManager.hasLikePermission(any()) } returns true
     }
 
     @Test
     fun `regular like`() = runBlocking {
-        useCase = getConditions(true, findLikeReturn = null)
+        useCase = getConditions(true)
 
         useCase.run()
 

@@ -33,8 +33,8 @@ internal class AddQuoteUseCaseTest {
 
     @BeforeEach
     fun init() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
-        requestManager.mockRunBlocking()
+        MockKAnnotations.init(this)
+        requestManager.mockRunBlocking<Unit>()
         coEvery { permissionManager.hasAddQuotePermission(any()) } returns true
     }
 

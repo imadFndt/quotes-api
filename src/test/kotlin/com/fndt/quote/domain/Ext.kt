@@ -19,7 +19,7 @@ fun getDummyQuote(body: String, role: AuthRole): Quote {
     )
 }
 
-fun RequestManager.mockRunBlocking() {
-    val slot = slot<suspend () -> Unit>()
+fun <T> RequestManager.mockRunBlocking() {
+    val slot = slot<suspend () -> T>()
     coEvery { execute(capture(slot)) } answers { runBlocking { slot.captured.invoke() } }
 }
