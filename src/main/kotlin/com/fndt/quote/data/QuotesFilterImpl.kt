@@ -3,22 +3,13 @@ package com.fndt.quote.data
 import com.fndt.quote.data.util.nullableGroupBy
 import com.fndt.quote.data.util.toQuotes
 import com.fndt.quote.data.util.toTagNullable
-import com.fndt.quote.domain.QuoteFilter
-import com.fndt.quote.domain.dto.ID
+import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.dto.Quote
-import com.fndt.quote.domain.dto.Tag
-import com.fndt.quote.domain.dto.User
 import org.jetbrains.exposed.sql.*
 
-class QuoteFilterImpl private constructor(
-    private val tag: Tag?,
-    private val user: User?,
-    private val isPublic: Boolean?,
-    private val orderPopulars: Boolean,
-    private val query: String?,
-    private val quoteId: ID?,
-    dbProvider: DatabaseProvider,
-) : QuoteFilter() {
+class QuotesFilterImpl(
+    dbProvider: DatabaseProvider
+) : QuotesFilter() {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
     private val usersTable: DatabaseProvider.Users by dbProvider
     private val tagQuoteMapTable: DatabaseProvider.TagsOnQuotes by dbProvider
@@ -48,16 +39,7 @@ class QuoteFilterImpl private constructor(
             .count().toInt()
     }
 
-    companion object {
-        fun factory(dbProvider: DatabaseProvider) = BuilderFactory(dbProvider)
-
-        class FilterBuilder(private val dbProvider: DatabaseProvider) : Builder() {
-            override fun build(): QuoteFilter =
-                QuoteFilterImpl(tag, user, isPublic, orderPopulars, query, quoteId, dbProvider)
-        }
-
-        class BuilderFactory(private val dbProvider: DatabaseProvider) : Builder.Factory {
-            override fun create() = FilterBuilder(dbProvider)
-        }
+    class FilterFactory(private val dbProvider: DatabaseProvider) : Factory {
+        override fun create(): QuotesFilter = QuotesFilterImpl(dbProvider)
     }
 }

@@ -10,12 +10,12 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
-class QuoteRepositoryImpl(private val dbProvider: DatabaseProvider) : QuoteRepository {
+class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
-    private val filterBuilder get() = QuoteFilterImpl.factory(dbProvider).create()
+    private val filterFactory = QuotesFilterImpl.FilterFactory(dbProvider)
 
     override fun get(): List<Quote> {
-        return filterBuilder.build().getQuotes()
+        return filterFactory.create().getQuotes()
     }
 
     override fun add(quote: Quote): ID = transaction {
@@ -28,12 +28,11 @@ class QuoteRepositoryImpl(private val dbProvider: DatabaseProvider) : QuoteRepos
     }
 
     override fun findById(id: Int): Quote? {
-        return filterBuilder.setQuoteId(id).build().findQuote()
+        return filterFactory.create().apply { quoteId = id }.findQuote()
     }
 
     override fun findByUser(user: User): List<Quote> {
-        return filterBuilder.setUser(user).build()
-            .getQuotes()
+        return filterFactory.create().apply { this.user = user }.getQuotes()
     }
 
     private fun insert(quote: Quote): ID {

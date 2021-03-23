@@ -1,7 +1,7 @@
 package com.fndt.quote.domain.usecases
 
 import com.fndt.quote.domain.PermissionException
-import com.fndt.quote.domain.QuoteFilter
+import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Quote
@@ -11,7 +11,7 @@ import com.fndt.quote.domain.repository.TagRepository
 
 class TagSelectionUseCase(
     private val tagId: Int,
-    private val filterBuilder: QuoteFilter.Builder,
+    private val filter: QuotesFilter,
     private val tagRepository: TagRepository,
     override val requestingUser: User,
     private val permissionManager: PermissionManager,
@@ -22,8 +22,11 @@ class TagSelectionUseCase(
         val tag = tagRepository.findById(tagId) ?: throw IllegalStateException("Tag not found")
         val access = if (requestingUser.role == AuthRole.REGULAR) true else null
         if (!tag.isPublic && requestingUser.role == AuthRole.REGULAR) throw PermissionException("Permission denied")
-        return filterBuilder.setTag(tag).setAccess(access).setOrderPopulars(true).build()
-            .getQuotes()
+        return filter.apply {
+            this.tag = tag
+            isPublic = access
+            orderPopulars = true
+        }.getQuotes()
     }
 
     override fun validate(user: User?): Boolean {

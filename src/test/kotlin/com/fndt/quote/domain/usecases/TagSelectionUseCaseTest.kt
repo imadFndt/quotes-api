@@ -1,6 +1,6 @@
 package com.fndt.quote.domain.usecases
 
-import com.fndt.quote.domain.QuoteFilter
+import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Tag
@@ -13,7 +13,8 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
+import io.mockk.impl.annotations.SpyK
+import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,8 +25,8 @@ internal class TagSelectionUseCaseTest {
     @MockK(relaxed = true)
     lateinit var permissionManager: PermissionManager
 
-    @MockK(relaxed = true)
-    lateinit var filterBuilder: QuoteFilter.Builder
+    @SpyK
+    var filterBuilder: QuotesFilter = spyk()
 
     @MockK(relaxed = true)
     lateinit var tagRepository: TagRepository
@@ -48,7 +49,7 @@ internal class TagSelectionUseCaseTest {
 
         useCase.run()
 
-        verify { filterBuilder.setAccess(true) }
+        assert(filterBuilder.isPublic == true)
     }
 
     @Test
@@ -57,7 +58,7 @@ internal class TagSelectionUseCaseTest {
 
         useCase.run()
 
-        verify { filterBuilder.setAccess(null) }
+        assert(filterBuilder.isPublic == null)
     }
 
     @Test
