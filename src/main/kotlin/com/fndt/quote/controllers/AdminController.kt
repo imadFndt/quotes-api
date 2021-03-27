@@ -10,6 +10,11 @@ import io.ktor.routing.*
 
 class AdminController(private val useCaseFactory: AdminUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing.routePathWithAuth("") {
+        reviewTag()
+        changeRole()
+    }
+
+    private fun Route.reviewTag() {
         postExt(REVIEW_TAG_ENDPOINT) { principal ->
             val (decision, id) = receiveCatching<QuoteReview>() ?: run {
                 respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
@@ -18,6 +23,9 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
             useCaseFactory.getApproveTagUseCase(id, decision, principal.user)
             respondText(SUCCESS)
         }
+    }
+
+    private fun Route.changeRole() {
         postExt(ROLE_ENDPOINT) { principal ->
             val (role, id) = receiveCatching<UpdateRole>() ?: run {
                 respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)

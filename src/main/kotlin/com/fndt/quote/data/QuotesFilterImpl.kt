@@ -3,9 +3,15 @@ package com.fndt.quote.data
 import com.fndt.quote.data.util.nullableGroupBy
 import com.fndt.quote.data.util.toQuotes
 import com.fndt.quote.data.util.toTagNullable
-import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.dto.Quote
-import org.jetbrains.exposed.sql.*
+import com.fndt.quote.domain.filter.QuoteFilterArguments
+import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.domain.filter.QuotesFilter
+import com.fndt.quote.domain.filter.QuotesOrder
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class QuotesFilterImpl(
     dbProvider: DatabaseProvider
@@ -16,22 +22,33 @@ class QuotesFilterImpl(
     private val tagsTable: DatabaseProvider.Tags by dbProvider
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
 
-    override fun getQuotes(): List<Quote> {
+    override fun getQuotes(args: QuoteFilterArguments): List<Quote> {
         return (quotesTable leftJoin usersTable leftJoin tagQuoteMapTable leftJoin tagsTable)
             .selectAll()
-            .applySelectors()
+            .apply { applySelectors(args) }
             .nullableGroupBy({ it.toQuotes(likesCount = fetchLikes(it[DatabaseProvider.Quotes.id].value)) }) { it.toTagNullable() }
             .entries.map { (quote, tags) -> quote.copy(tags = tags) }
-            .run { if (orderPopulars) sortedByDescending { it.likes } else this }
+            .run { applyOrder(args) }
     }
 
-    private fun Query.applySelectors() = apply {
-        isPublic?.let { andWhere { DatabaseProvider.Quotes.isPublic eq it } }
-        user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
-        tag?.id?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
-        query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
-        quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
-        orderBy(DatabaseProvider.Quotes.createdAt, SortOrder.DESC)
+    private fun Query.applySelectors(args: QuoteFilterArguments) = apply {
+        when (args.access) {
+            QuotesAccess.PRIVATE -> andWhere { DatabaseProvider.Quotes.isPublic eq false }
+            QuotesAccess.PUBLIC -> andWhere { DatabaseProvider.Quotes.isPublic eq true }
+            QuotesAccess.ALL -> Unit
+        }
+        with(args) {
+            user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
+            tag?.id?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
+            query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
+            quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
+            authorId?.let { andWhere { TODO() } }
+        }
+    }
+
+    private fun List<Quote>.applyOrder(args: QuoteFilterArguments): List<Quote> = when (args.order) {
+        QuotesOrder.POPULARS -> sortedByDescending { it.likes }
+        QuotesOrder.LATEST -> sortedByDescending { it.createdAt }
     }
 
     private fun fetchLikes(quoteId: Int): Int {

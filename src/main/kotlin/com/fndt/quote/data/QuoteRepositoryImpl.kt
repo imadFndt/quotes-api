@@ -3,6 +3,7 @@ package com.fndt.quote.data
 import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.repository.QuoteRepository
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.deleteWhere
@@ -14,8 +15,8 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
     private val filterFactory = QuotesFilterImpl.FilterFactory(dbProvider)
 
-    override fun get(): List<Quote> {
-        return filterFactory.create().getQuotes()
+    override fun get(args: QuoteFilterArguments): List<Quote> {
+        return filterFactory.create().getQuotes(args)
     }
 
     override fun add(quote: Quote): ID = transaction {
@@ -28,11 +29,11 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
     }
 
     override fun findById(id: Int): Quote? {
-        return filterFactory.create().apply { quoteId = id }.findQuote()
+        return filterFactory.create().findQuote(QuoteFilterArguments(quoteId = id))
     }
 
     override fun findByUser(user: User): List<Quote> {
-        return filterFactory.create().apply { this.user = user }.getQuotes()
+        return filterFactory.create().getQuotes(QuoteFilterArguments(user = user))
     }
 
     private fun insert(quote: Quote): ID {

@@ -10,8 +10,16 @@ import io.ktor.routing.*
 
 class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing {
+        authenticate()
+        getUserInfo()
+    }
+
+    private fun Route.authenticate() {
         route(REGISTRATION_ENDPOINT) { get { call.registerAndRespond() } }
-        getExt(ROLE_ENDPOINT) { principal -> respond(principal.user) }
+    }
+
+    private fun Route.getUserInfo() {
+        getExt(ROLE_ENDPOINT) { respond(it.user) }
     }
 
     private suspend fun ApplicationCall.registerAndRespond() {

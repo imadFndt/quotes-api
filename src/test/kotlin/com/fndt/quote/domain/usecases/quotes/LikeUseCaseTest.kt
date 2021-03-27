@@ -50,7 +50,7 @@ internal class LikeUseCaseTest {
 
     @Test
     fun `regular like`() = runBlocking {
-        useCase = getConditions(true)
+        useCase = getConditions(true, findLikeReturn = null)
 
         useCase.run()
 

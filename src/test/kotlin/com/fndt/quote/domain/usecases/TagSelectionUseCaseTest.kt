@@ -1,20 +1,22 @@
 package com.fndt.quote.domain.usecases
 
-import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.filter.QuoteFilterArguments
+import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.getDummyUser
 import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.mockRunBlocking
+import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.SpyK
-import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,8 +27,8 @@ internal class TagSelectionUseCaseTest {
     @MockK(relaxed = true)
     lateinit var permissionManager: PermissionManager
 
-    @SpyK
-    var filterBuilder: QuotesFilter = spyk()
+    @MockK(relaxed = true)
+    lateinit var quoteRepository: QuoteRepository
 
     @MockK(relaxed = true)
     lateinit var tagRepository: TagRepository
@@ -35,6 +37,8 @@ internal class TagSelectionUseCaseTest {
     lateinit var requestManager: RequestManager
 
     private lateinit var useCase: TagSelectionUseCase
+
+    private val tag = Tag(0, "a", true)
 
     @BeforeEach
     fun init() {
@@ -46,19 +50,21 @@ internal class TagSelectionUseCaseTest {
     @Test
     fun success() = runBlocking {
         useCase = setUpConditions()
+        val args = QuoteFilterArguments(tag = tag, access = QuotesAccess.PUBLIC, order = QuotesOrder.LATEST)
 
         useCase.run()
 
-        assert(filterBuilder.isPublic == true)
+        verify { quoteRepository.get(args) }
     }
 
     @Test
     fun `success moderator`() = runBlocking {
         useCase = setUpConditions(userRole = AuthRole.MODERATOR)
+        val args = QuoteFilterArguments(tag = tag, access = QuotesAccess.ALL, order = QuotesOrder.LATEST)
 
         useCase.run()
 
-        assert(filterBuilder.isPublic == null)
+        verify { quoteRepository.get(args) }
     }
 
     @Test
@@ -70,19 +76,19 @@ internal class TagSelectionUseCaseTest {
 
     @Test
     fun `user tries to look at private tag`() {
-        useCase = setUpConditions(Tag(0, "a", false))
+        useCase = setUpConditions(tag.copy(isPublic = false))
 
         assertThrows<IllegalStateException> { runBlocking { useCase.run() } }
     }
 
     private fun setUpConditions(
-        findTagReturn: Tag? = Tag(0, "a", true),
+        findTagReturn: Tag? = tag,
         userRole: AuthRole = AuthRole.REGULAR
     ): TagSelectionUseCase {
         every { tagRepository.findById(any()) } returns findTagReturn
         return TagSelectionUseCase(
             1,
-            filterBuilder,
+            quoteRepository,
             tagRepository,
             getDummyUser(userRole),
             permissionManager,

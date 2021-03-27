@@ -30,7 +30,7 @@ suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int?
     }
 }
 
-fun Route.routePathWithAuth(basePath: String, routingBlock: Route.() -> Route) {
+fun Route.routePathWithAuth(basePath: String, routingBlock: Route.() -> Unit) {
     route(basePath) { authenticate { routingBlock() } }
 }
 

@@ -3,8 +3,8 @@ package com.fndt.quote.di
 import com.fndt.quote.controllers.*
 import com.fndt.quote.controllers.factory.*
 import com.fndt.quote.data.*
-import com.fndt.quote.domain.QuotesFilter
 import com.fndt.quote.domain.RequestManager
+import com.fndt.quote.domain.filter.QuotesFilter
 import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.manager.implementations.PermissionManagerImpl
 import com.fndt.quote.domain.repository.*
@@ -26,7 +26,7 @@ object Modules {
         factory<QuotesFilter.Factory> { QuotesFilterImpl.FilterFactory(get()) }
     }
     val useCaseManagerModule = module {
-        factory { QuotesUseCaseFactory(get(), get(), get(), get(), get(), get()) }
+        factory { QuotesUseCaseFactory(get(), get(), get(), get(), get()) }
         factory { CommentsUseCaseFactory(get(), get(), get(), get()) }
         factory { SelectionUseCaseFactory(get(), get(), get(), get()) }
         factory { UsersUseCaseFactory(get(), get(), get()) }

@@ -16,7 +16,16 @@ import io.ktor.util.pipeline.*
 class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : RoutingController {
 
     override fun route(routing: Routing) = routing.routePathWithAuth(QUOTES_ENDPOINT) {
+        getQuotes()
+        addQuote()
+        likeQuote()
+    }
+
+    private fun Route.getQuotes() {
         getExt { principal -> respond(useCaseFactory.getQuotesUseCase(principal.user).run()) }
+    }
+
+    private fun Route.addQuote() {
         postExt { principal ->
             val quote = receiveCatching<AddQuote>() ?: run {
                 respondText(WRONG_PARAMETERS)
@@ -25,6 +34,9 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
             useCaseFactory.addQuotesUseCase(quote.body, principal.user).run()
             respondText(SUCCESS)
         }
+    }
+
+    private fun Route.likeQuote() {
         postExt(LIKE_ENDPOINT) { principal ->
             val (quoteId, action) = receiveCatching<LikeRequest>() ?: return@postExt
             useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
