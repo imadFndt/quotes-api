@@ -8,7 +8,8 @@ data class User(
     val id: ID = UNDEFINED,
     val name: String,
     val role: AuthRole = AuthRole.REGULAR,
-    val blockedUntil: Long? = null
+    val blockedUntil: Long? = null,
+    var profileUrl: String = DefaultAvatars.MONKEY.url
 ) {
     constructor(
         id: ID = UNDEFINED,

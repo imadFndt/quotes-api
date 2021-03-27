@@ -10,6 +10,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 import kotlinx.serialization.SerializationException
+import java.io.File
 
 // todo suspend nullable lambda
 suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
