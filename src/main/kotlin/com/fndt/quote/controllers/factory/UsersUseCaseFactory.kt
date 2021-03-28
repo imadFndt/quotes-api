@@ -2,8 +2,8 @@ package com.fndt.quote.controllers.factory
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.manager.ProfilePictureManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.UseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
@@ -14,7 +14,7 @@ import java.io.File
 class UsersUseCaseFactory(
     private val profilePictureManager: ProfilePictureManager,
     private val userRepository: UserRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     private val requestManager: RequestManager,
 ) {
     fun authUseCase(name: String, password: String): UseCase<User> {

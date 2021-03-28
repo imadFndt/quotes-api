@@ -4,7 +4,7 @@ import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.CommentRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.usecases.UseCase
@@ -15,7 +15,7 @@ class CommentsUseCaseFactory(
     private val commentRepository: CommentRepository,
     private val quoteRepository: QuoteRepository,
     private val requestManager: RequestManager,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
 ) {
     fun getCommentsUseCase(quoteId: Int, userRequesting: User?): UseCase<List<Comment>> {
         return GetCommentsUseCase(quoteId, commentRepository, userRequesting, permissionManager, requestManager)

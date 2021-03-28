@@ -2,7 +2,7 @@ package com.fndt.quote.domain.usecases.admin
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
@@ -11,7 +11,7 @@ class ApproveTagVisibilityUseCase(
     private val decision: Boolean,
     private val tagRepository: TagRepository,
     override val requestingUser: User?,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
     override suspend fun makeRequest() {
@@ -19,5 +19,5 @@ class ApproveTagVisibilityUseCase(
         if (decision) tagRepository.add(tag) else tagRepository.remove(tag.id)
     }
 
-    override fun validate(user: User?) = permissionManager.hasApproveTagVisibility(user)
+    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
 }

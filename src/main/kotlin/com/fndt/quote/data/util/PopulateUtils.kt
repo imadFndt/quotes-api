@@ -21,6 +21,7 @@ fun populateDb() = transaction {
         DatabaseProvider.TagsOnQuotes,
         DatabaseProvider.Comments,
         DatabaseProvider.LikesOnQuotes,
+        DatabaseProvider.Authors,
     )
     SchemaUtils.drop(*tables)
     commit()

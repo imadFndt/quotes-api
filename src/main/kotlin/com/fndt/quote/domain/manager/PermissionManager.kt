@@ -2,6 +2,7 @@ package com.fndt.quote.domain.manager
 
 import com.fndt.quote.domain.dto.User
 
+@Deprecated("Deprecated to grouped parameters")
 interface PermissionManager {
     fun hasChangeRolePermission(user: User?): Boolean
     fun hasApproveTagVisibility(user: User?): Boolean

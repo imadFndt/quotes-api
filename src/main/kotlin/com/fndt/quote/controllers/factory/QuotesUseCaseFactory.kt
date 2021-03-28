@@ -4,7 +4,7 @@ import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -20,7 +20,7 @@ class QuotesUseCaseFactory(
     private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
     private val requestManager: RequestManager,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
 ) {
     fun getQuotesUseCase(requestingUser: User, searchUserId: Int? = null): UseCase<List<Quote>> {
         return GetQuotesUseCase(

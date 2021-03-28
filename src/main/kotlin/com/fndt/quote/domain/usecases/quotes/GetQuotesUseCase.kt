@@ -6,7 +6,7 @@ import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
@@ -16,7 +16,7 @@ class GetQuotesUseCase(
     private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
     override val requestingUser: User,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<List<Quote>>(requestManager) {
     override suspend fun makeRequest(): List<Quote> {
@@ -28,6 +28,6 @@ class GetQuotesUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasGetQuotesPermission(requestingUser)
+        return permissionManager.isAuthorized(requestingUser)
     }
 }

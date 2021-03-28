@@ -3,7 +3,7 @@ package com.fndt.quote.domain.usecases.comments
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.CommentRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
@@ -14,7 +14,7 @@ class AddCommentUseCase(
     private val user: User,
     private val commentRepository: CommentRepository,
     private val quoteRepository: QuoteRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Comment>(requestManager) {
 
@@ -28,6 +28,7 @@ class AddCommentUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasAddCommentPermission(requestingUser)
+        // TODO CHECK BAN
+        return permissionManager.isAuthorized(requestingUser)
     }
 }

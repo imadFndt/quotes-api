@@ -4,6 +4,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.PermissionManager
 
+@Deprecated("Deprecated to grouped parameters")
 class PermissionManagerImpl : PermissionManager {
     override fun hasChangeRolePermission(user: User?): Boolean {
         return user.checkRole { it.role == AuthRole.ADMIN }

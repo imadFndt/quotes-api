@@ -55,7 +55,7 @@ class QuotesFilterImpl(
             tag?.id?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
             query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
             quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
-            authorId?.let { andWhere { TODO() } }
+            authorId?.let { andWhere { DatabaseProvider.Quotes.author eq it } }
         }
     }
 

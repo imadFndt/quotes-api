@@ -3,7 +3,7 @@ package com.fndt.quote.controllers.factory
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.UseCase
@@ -13,7 +13,7 @@ import com.fndt.quote.domain.usecases.admin.ChangeRoleUseCase
 class AdminUseCaseFactory(
     private val userRepository: UserRepository,
     private val tagRepository: TagRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     private val requestManager: RequestManager
 ) {
     fun getApproveTagUseCase(tagId: Int, decision: Boolean, requestingUser: User): UseCase<Unit> {

@@ -3,7 +3,7 @@ package com.fndt.quote.domain.usecases.quotes
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
@@ -16,7 +16,7 @@ class LikeUseCase(
     private val quoteRepository: QuoteRepository,
     private val userRepository: UserRepository,
     private val likeRepository: LikeRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager,
 ) : RequestUseCase<Unit>(requestManager) {
     override suspend fun makeRequest() {
@@ -31,6 +31,6 @@ class LikeUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasLikePermission(user)
+        return permissionManager.isAuthorized(user)
     }
 }

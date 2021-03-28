@@ -2,7 +2,7 @@ package com.fndt.quote.domain.usecases.users
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
@@ -10,7 +10,7 @@ class AuthUseCase(
     private val name: String,
     private val password: String,
     private val userRepository: UserRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager,
 ) : RequestUseCase<User>(requestManager) {
     override val requestingUser: User? = null
@@ -21,7 +21,7 @@ class AuthUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasAuthPermission(requestingUser)
+        return permissionManager.isAuthorized(requestingUser)
     }
 
     private fun checkBan(user: User): User? {

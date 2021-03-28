@@ -2,7 +2,7 @@ package com.fndt.quote.domain.usecases.moderator
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
@@ -12,7 +12,7 @@ class BanUserUseCase(
     private val userId: Int,
     private val userRepository: UserRepository,
     override val requestingUser: User,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
 
@@ -25,6 +25,6 @@ class BanUserUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasBanUserPermission(user)
+        return permissionManager.hasModeratorPermission(user)
     }
 }

@@ -2,7 +2,7 @@ package com.fndt.quote.controllers.factory
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
@@ -15,7 +15,7 @@ class ModeratorUseCaseFactory(
     private val tagRepository: TagRepository,
     private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     private val requestManager: RequestManager
 ) {
     fun getAddTagUseCase(tagName: String, requestingUser: User): UseCase<Unit> {

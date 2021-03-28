@@ -2,8 +2,8 @@ package com.fndt.quote.domain.usecases.users
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.manager.ProfilePictureManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 import java.io.File
@@ -13,7 +13,7 @@ class ChangeProfilePictureUseCase(
     override val requestingUser: User,
     private val pictureManager: ProfilePictureManager,
     private val userRepository: UserRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
 
@@ -27,6 +27,6 @@ class ChangeProfilePictureUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasChangeProfilePicturePermission(user)
+        return permissionManager.isAuthorized(user)
     }
 }

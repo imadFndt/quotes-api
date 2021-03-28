@@ -8,7 +8,7 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesOrder
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 
@@ -17,7 +17,7 @@ class TagSelectionUseCase(
     private val quoteRepository: QuoteRepository,
     private val tagRepository: TagRepository,
     override val requestingUser: User,
-    private val permissionManager: PermissionManager,
+    private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<List<Quote>>(requestManager) {
 
@@ -29,6 +29,6 @@ class TagSelectionUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.hasTagSelectionsPermission(user)
+        return permissionManager.isAuthorized(user)
     }
 }
