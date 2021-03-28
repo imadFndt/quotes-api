@@ -3,6 +3,7 @@ package com.fndt.quote.domain.usecases.comments
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.dto.isBanned
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.CommentRepository
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -28,7 +29,6 @@ class AddCommentUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        // TODO CHECK BAN
-        return permissionManager.isAuthorized(requestingUser)
+        return permissionManager.isAuthorized(requestingUser) && user?.isBanned == false
     }
 }

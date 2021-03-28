@@ -3,12 +3,14 @@ package com.fndt.quote.data
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.ProfilePictureManager
 import java.io.File
+import javax.imageio.ImageIO
 
 class ProfilePictureManagerImpl : ProfilePictureManager {
-    override val imagesScheme: String = ".files/images"
+    override val imagesScheme: String = "files/images"
 
     override fun saveProfilePicture(file: File, user: User) {
-        file.copyTo(getProfilePictureFile(user), true)
+        val a = file.copyTo(getProfilePictureFile(user), true)
+        println(a.exists())
         file.delete()
     }
 
@@ -20,7 +22,9 @@ class ProfilePictureManagerImpl : ProfilePictureManager {
         file.delete()
     }
 
+    override suspend fun getResolution(file: File): Pair<Int, Int> = with(ImageIO.read(file)) { width to height }
+
     private fun getProfilePictureFile(user: User): File {
-        return File(imagesScheme, "${user.name}.$acceptedExtension")
+        return File(imagesScheme, "${user.id}.$acceptedExtension")
     }
 }

@@ -18,7 +18,7 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-val uploadDir = "./files"
+const val uploadDir = "./files"
 
 class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing {
@@ -59,6 +59,8 @@ class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingC
         multipart.forEachPart { part ->
             when (part) {
                 is PartData.FileItem -> {
+                    if (part.contentType != ContentType.Image.PNG) throw IllegalArgumentException("bad image")
+                    part.contentDisposition
                     val (title, ext) = File(part.originalFileName).nameAndExtension
                     val file = File(
                         uploadDir,
@@ -68,7 +70,6 @@ class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingC
                         file.outputStream().buffered().use { output -> input.copyToSuspend(output) }
                     }
                     result = file
-                    // File is ready
                 }
                 else -> Unit
             }

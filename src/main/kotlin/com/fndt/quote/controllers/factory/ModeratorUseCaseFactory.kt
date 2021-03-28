@@ -8,7 +8,7 @@ import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.UseCase
 import com.fndt.quote.domain.usecases.moderator.AddTagUseCase
-import com.fndt.quote.domain.usecases.moderator.BanUserUseCase
+import com.fndt.quote.domain.usecases.moderator.BanReadOnlyUserUseCase
 import com.fndt.quote.domain.usecases.moderator.ReviewQuoteUseCase
 
 class ModeratorUseCaseFactory(
@@ -23,7 +23,7 @@ class ModeratorUseCaseFactory(
     }
 
     fun getBanUseCase(quoteId: Int, requestingUser: User): UseCase<Unit> {
-        return BanUserUseCase(quoteId, userRepository, requestingUser, permissionManager, requestManager)
+        return BanReadOnlyUserUseCase(quoteId, userRepository, requestingUser, permissionManager, requestManager)
     }
 
     fun getReviewQuoteUseCase(quoteId: Int, decision: Boolean, requestingUser: User): UseCase<Unit> {

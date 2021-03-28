@@ -4,7 +4,8 @@ import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.getDummyQuote
 import com.fndt.quote.domain.getDummyUser
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.assertThrows
 internal class AddQuoteUseCaseTest {
 
     @MockK(relaxed = true)
-    lateinit var permissionManager: PermissionManager
+    lateinit var permissionManager: UserPermissionManager
 
     @MockK(relaxed = true)
     lateinit var quoteRepository: QuoteRepository
@@ -38,9 +39,10 @@ internal class AddQuoteUseCaseTest {
 
     @BeforeEach
     fun init() {
+        UrlSchemeProvider.initScheme("test/")
         MockKAnnotations.init(this)
         requestManager.mockRunBlocking<Unit>()
-        coEvery { permissionManager.hasAddQuotePermission(any()) } returns true
+        coEvery { permissionManager.isAuthorized(any()) } returns true
     }
 
     @Test
@@ -57,7 +59,6 @@ internal class AddQuoteUseCaseTest {
 
     @Test
     fun `add test failure`() {
-        coEvery { permissionManager.hasAddQuotePermission(any()) } returns true
         val requestUser = getDummyUser(AuthRole.REGULAR)
         coEvery { quoteRepository.findById(any()) } returns null
         useCase = AddQuoteUseCase(

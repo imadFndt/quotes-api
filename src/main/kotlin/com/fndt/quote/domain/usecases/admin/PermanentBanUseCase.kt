@@ -7,19 +7,22 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
-class ChangeRoleUseCase(
+class PermanentBanUseCase(
     private val userId: Int,
-    private val newRole: AuthRole,
     private val userRepository: UserRepository,
-    override val requestingUser: User?,
+    override val requestingUser: User,
     private val permissionManager: UserPermissionManager,
-    requestManager: RequestManager,
+    requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
+
+    lateinit var targetUser: User
+
     override suspend fun makeRequest() {
-        val user = userRepository.findUserByParams(userId = userId) ?: throw IllegalStateException("User not found")
-        val updatedUser = user.copy(role = newRole)
-        userRepository.add(updatedUser)
+        userRepository.remove(targetUser.id)
     }
 
-    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
+    override fun validate(user: User?): Boolean {
+        targetUser = userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
+        return permissionManager.hasAdminPermission(user) && targetUser.role != AuthRole.ADMIN
+    }
 }

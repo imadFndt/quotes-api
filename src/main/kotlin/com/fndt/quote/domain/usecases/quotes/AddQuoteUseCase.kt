@@ -4,6 +4,7 @@ import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.dto.isBanned
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -29,7 +30,6 @@ class AddQuoteUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        // TODO CHECK BAN
-        return permissionManager.isAuthorized(user)
+        return permissionManager.isAuthorized(user) && user?.isBanned != false
     }
 }

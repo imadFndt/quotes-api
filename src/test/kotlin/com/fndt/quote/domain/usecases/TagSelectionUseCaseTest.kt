@@ -8,10 +8,12 @@ import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.getDummyUser
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
+import com.fndt.quote.domain.usecases.selections.TagSelectionUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
@@ -25,7 +27,7 @@ import org.junit.jupiter.api.assertThrows
 internal class TagSelectionUseCaseTest {
 
     @MockK(relaxed = true)
-    lateinit var permissionManager: PermissionManager
+    lateinit var permissionManager: UserPermissionManager
 
     @MockK(relaxed = true)
     lateinit var quoteRepository: QuoteRepository
@@ -42,15 +44,16 @@ internal class TagSelectionUseCaseTest {
 
     @BeforeEach
     fun init() {
+        UrlSchemeProvider.initScheme("test/")
         MockKAnnotations.init(this)
         requestManager.mockRunBlocking<User>()
-        coEvery { permissionManager.hasTagSelectionsPermission(any()) } returns true
+        coEvery { permissionManager.isAuthorized(any()) } returns true
     }
 
     @Test
     fun success() = runBlocking {
         useCase = setUpConditions()
-        val args = QuoteFilterArguments(tag = tag, access = QuotesAccess.PUBLIC, order = QuotesOrder.LATEST)
+        val args = QuoteFilterArguments(tagId = tag.id, access = QuotesAccess.PUBLIC, order = QuotesOrder.LATEST)
 
         useCase.run()
 
@@ -60,7 +63,7 @@ internal class TagSelectionUseCaseTest {
     @Test
     fun `success moderator`() = runBlocking {
         useCase = setUpConditions(userRole = AuthRole.MODERATOR)
-        val args = QuoteFilterArguments(tag = tag, access = QuotesAccess.ALL, order = QuotesOrder.LATEST)
+        val args = QuoteFilterArguments(tagId = tag.id, access = QuotesAccess.ALL, order = QuotesOrder.LATEST)
 
         useCase.run()
 

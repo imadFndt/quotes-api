@@ -2,6 +2,7 @@ package com.fndt.quote.controllers
 
 import com.fndt.quote.controllers.factory.SelectionUseCaseFactory
 import com.fndt.quote.controllers.util.*
+import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -10,6 +11,8 @@ class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) 
     override fun route(routing: Routing) = routing.routePathWithAuth("") {
         getPopulars()
         search()
+        getTagSelection()
+        getAuthorSelection()
     }
 
     private fun Route.getPopulars() {
@@ -28,11 +31,15 @@ class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) 
 
     private fun Route.getTagSelection() {
         getExt(TAG_ENDPOINT) { principal ->
-            val tagId = getAndCheckIntParameter(TAG_ARG) ?: run {
-                respondText("$MISSING_PARAMETER $TAG_ARG", status = HttpStatusCode.BadRequest)
-                return@getExt
-            }
+            val tagId = getAndCheckIntParameter(ID) ?: return@getExt
             respond(useCaseFactory.getTagSelectionUseCase(tagId, principal.user).run())
+        }
+    }
+
+    private fun Route.getAuthorSelection() {
+        getExt(AUTHOR_ENDPOINT) { principal ->
+            val authorId = getAndCheckIntParameter(ID) ?: return@getExt
+            respond(useCaseFactory.getAuthorSelectionUseCase(authorId, principal.user).run())
         }
     }
 }

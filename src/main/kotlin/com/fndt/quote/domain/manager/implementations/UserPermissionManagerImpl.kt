@@ -5,6 +5,9 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 
 class UserPermissionManagerImpl : UserPermissionManager {
+
+    override fun isAuthAllowed() = true
+
     override fun isRegisterAllowed() = true
 
     override fun isAuthorized(user: User?) = user.checkRole { it.role != AuthRole.NOT_AUTHORIZED }
@@ -15,7 +18,5 @@ class UserPermissionManagerImpl : UserPermissionManager {
 
     override fun hasAdminPermission(user: User?) = user.checkRole { it.role == AuthRole.ADMIN }
 
-    private fun User?.checkRole(block: (User) -> Boolean): Boolean {
-        return this?.let { block(it) } ?: false
-    }
+    private fun User?.checkRole(block: (User) -> Boolean) = this?.let { block(it) } ?: false
 }

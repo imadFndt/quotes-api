@@ -31,10 +31,11 @@ object Modules {
         factory<QuotesFilter.Factory> { QuotesFilterImpl.FilterFactory(get()) }
         factory<ProfilePictureManager> { ProfilePictureManagerImpl() }
     }
+
     val useCaseManagerModule = module {
         factory { QuotesUseCaseFactory(get(), get(), get(), get(), get(), get()) }
         factory { CommentsUseCaseFactory(get(), get(), get(), get()) }
-        factory { SelectionUseCaseFactory(get(), get(), get(), get()) }
+        factory { SelectionUseCaseFactory(get(), get(), get(), get(), get()) }
         factory { UsersUseCaseFactory(get(), get(), get(), get()) }
         factory { ModeratorUseCaseFactory(get(), get(), get(), get(), get()) }
         factory { AdminUseCaseFactory(get(), get(), get(), get()) }

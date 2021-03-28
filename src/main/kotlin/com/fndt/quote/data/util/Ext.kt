@@ -6,7 +6,11 @@ import org.jetbrains.exposed.sql.ResultRow
 import java.security.MessageDigest
 
 // URL SCHEME
-fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int, author: Author): Quote {
+fun ResultRow.toQuotes(
+    tagList: List<Tag> = emptyList(),
+    likesCount: Int,
+    author: Author,
+): Quote {
     return Quote(
         id = this[DatabaseProvider.Quotes.id].value,
         body = this[DatabaseProvider.Quotes.body],

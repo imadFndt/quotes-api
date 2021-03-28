@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
 class QuotesFilterImpl(
-    dbProvider: DatabaseProvider
+    dbProvider: DatabaseProvider,
 ) : QuotesFilter() {
     private val quotesTable: DatabaseProvider.Quotes by dbProvider
     private val usersTable: DatabaseProvider.Users by dbProvider
@@ -32,7 +32,7 @@ class QuotesFilterImpl(
             .nullableGroupBy({
                 it.toQuotes(
                     likesCount = fetchLikes(it[DatabaseProvider.Quotes.id].value),
-                    author = findAuthor(it[DatabaseProvider.Quotes.author].value)
+                    author = findAuthor(it[DatabaseProvider.Quotes.author].value),
                 )
             }) { it.toTagNullable() }
             .entries.map { (quote, tags) -> quote.copy(tags = tags) }
@@ -52,7 +52,7 @@ class QuotesFilterImpl(
         }
         with(args) {
             user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
-            tag?.id?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
+            tagId?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
             query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
             quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
             authorId?.let { andWhere { DatabaseProvider.Quotes.author eq it } }
@@ -69,7 +69,9 @@ class QuotesFilterImpl(
             .count().toInt()
     }
 
-    class FilterFactory(private val dbProvider: DatabaseProvider) : Factory {
+    class FilterFactory(
+        private val dbProvider: DatabaseProvider,
+    ) : Factory {
         override fun create(): QuotesFilter = QuotesFilterImpl(dbProvider)
     }
 }

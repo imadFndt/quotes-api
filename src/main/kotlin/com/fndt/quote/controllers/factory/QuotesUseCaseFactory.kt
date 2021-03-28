@@ -11,8 +11,8 @@ import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.UseCase
 import com.fndt.quote.domain.usecases.quotes.AddQuoteUseCase
-import com.fndt.quote.domain.usecases.quotes.GetQuotesUseCase
 import com.fndt.quote.domain.usecases.quotes.LikeUseCase
+import com.fndt.quote.domain.usecases.selections.GetQuotesUseCase
 
 class QuotesUseCaseFactory(
     private val authorRepository: AuthorRepository,

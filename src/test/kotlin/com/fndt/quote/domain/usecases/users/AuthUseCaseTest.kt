@@ -2,7 +2,8 @@ package com.fndt.quote.domain.usecases.users
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.UserRepository
 import io.mockk.MockKAnnotations
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.assertThrows
 
 internal class AuthUseCaseTest {
     @MockK(relaxed = true)
-    lateinit var permissionManager: PermissionManager
+    lateinit var permissionManager: UserPermissionManager
 
     @MockK(relaxed = true)
     lateinit var userRepository: UserRepository
@@ -31,9 +32,10 @@ internal class AuthUseCaseTest {
 
     @BeforeEach
     fun init() {
+        UrlSchemeProvider.initScheme("test/")
         MockKAnnotations.init(this)
         requestManager.mockRunBlocking<User>()
-        coEvery { permissionManager.hasAuthPermission(any()) } returns true
+        coEvery { permissionManager.isAuthAllowed() } returns true
     }
 
     @Test
@@ -56,17 +58,5 @@ internal class AuthUseCaseTest {
         )
         useCase = AuthUseCase(login, password, userRepository, permissionManager, requestManager)
         assertThrows<IllegalStateException> { runBlocking { useCase.run() } }
-    }
-
-    @Test
-    fun `auth old ban`() {
-        every { userRepository.findUserByParams(name = any(), password = any()) } returns User(
-            1,
-            login,
-            password,
-            blockedUntil = System.currentTimeMillis() - 100000
-        )
-        useCase = AuthUseCase(login, password, userRepository, permissionManager, requestManager)
-        runBlocking { useCase.run() }
     }
 }

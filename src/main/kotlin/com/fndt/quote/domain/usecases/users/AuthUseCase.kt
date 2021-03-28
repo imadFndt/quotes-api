@@ -17,22 +17,10 @@ class AuthUseCase(
 
     override suspend fun makeRequest(): User {
         val user = userRepository.findUserByParams(name = name, password = password)
-        return user?.let { checkBan(user) } ?: throw IllegalStateException("Authentication filed")
+        return user ?: throw IllegalStateException("Authentication filed")
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(requestingUser)
-    }
-
-    private fun checkBan(user: User): User? {
-        user.blockedUntil?.let { blockedUntil ->
-            return if (System.currentTimeMillis() > blockedUntil) {
-                userRepository.update(user.id, time = null)
-                userRepository.findUserByParams(userId = user.id)
-            } else {
-                null
-            }
-        }
-        return user
+        return permissionManager.isAuthAllowed()
     }
 }

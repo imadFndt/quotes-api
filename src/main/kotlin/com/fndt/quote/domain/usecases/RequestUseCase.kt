@@ -4,9 +4,7 @@ import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
 
-abstract class RequestUseCase<T>(
-    private val requestManager: RequestManager
-) : UseCase<T> {
+abstract class RequestUseCase<T>(private val requestManager: RequestManager) : UseCase<T> {
     protected abstract val requestingUser: User?
 
     var isExecuted = false

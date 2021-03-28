@@ -7,7 +7,8 @@ import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.getDummyQuote
 import com.fndt.quote.domain.getDummyUser
-import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
@@ -34,7 +35,7 @@ internal class LikeUseCaseTest {
     lateinit var likeRepository: LikeRepository
 
     @MockK(relaxed = true)
-    lateinit var permissionManager: PermissionManager
+    lateinit var permissionManager: UserPermissionManager
 
     @MockK(relaxed = true)
     lateinit var requestManager: RequestManager
@@ -43,9 +44,10 @@ internal class LikeUseCaseTest {
 
     @BeforeEach
     fun init() {
+        UrlSchemeProvider.initScheme("test/")
         MockKAnnotations.init(this, relaxUnitFun = true)
         requestManager.mockRunBlocking<Unit>()
-        every { permissionManager.hasLikePermission(any()) } returns true
+        every { permissionManager.isAuthorized(any()) } returns true
     }
 
     @Test

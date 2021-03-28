@@ -1,5 +1,6 @@
 package com.fndt.quote.controllers
 
+import com.fndt.quote.controllers.dto.PermanentBan
 import com.fndt.quote.controllers.dto.QuoteReview
 import com.fndt.quote.controllers.dto.UpdateRole
 import com.fndt.quote.controllers.factory.AdminUseCaseFactory
@@ -12,6 +13,7 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
     override fun route(routing: Routing) = routing.routePathWithAuth("") {
         reviewTag()
         changeRole()
+        permanentBan()
     }
 
     private fun Route.reviewTag() {
@@ -32,6 +34,17 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
                 return@postExt
             }
             useCaseFactory.getChangeRoleUseCase(id, role, principal.user).run()
+            respond(SUCCESS)
+        }
+    }
+
+    private fun Route.permanentBan() {
+        postExt(PERMANENT_BAN_ENDPOINT) { principal ->
+            val (userId) = receiveCatching<PermanentBan>() ?: run {
+                respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
+                return@postExt
+            }
+            useCaseFactory.getPermanentBanUseCase(userId, principal.user).run()
             respond(SUCCESS)
         }
     }

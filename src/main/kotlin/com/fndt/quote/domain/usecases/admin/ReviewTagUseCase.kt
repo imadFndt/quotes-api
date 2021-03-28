@@ -6,7 +6,7 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
-class ApproveTagVisibilityUseCase(
+class ReviewTagUseCase(
     private val tagId: Int,
     private val decision: Boolean,
     private val tagRepository: TagRepository,

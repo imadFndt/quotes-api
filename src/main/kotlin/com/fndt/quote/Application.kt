@@ -2,6 +2,7 @@ package com.fndt.quote
 
 import com.fndt.quote.controllers.*
 import com.fndt.quote.di.Modules
+import com.fndt.quote.domain.manager.UrlSchemeProvider
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -13,22 +14,21 @@ import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
 import java.io.File
 
-var URL_IMAGE_SCHEME: String? = null
-
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
 fun Application.module() {
-    URL_IMAGE_SCHEME =
-        "http://${environment.config.propertyOrNull("ktor.deployment.host")?.getString() ?: "0.0.0.0"}/images/"
+    val host = environment.config.propertyOrNull("ktor.deployment.host")?.getString() ?: "0.0.0.0"
+    val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
+    UrlSchemeProvider.initScheme("$host:$port")
     install(ContentNegotiation) { json(Json { prettyPrint = true }) }
     install(Koin) {
         modules(
             Modules.dbModule,
             Modules.managerModule,
             Modules.useCaseManagerModule,
-            Modules.controllersModule
+            Modules.controllersModule,
         )
     }
 

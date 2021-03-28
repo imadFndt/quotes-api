@@ -23,9 +23,11 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
 suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int? {
     return try {
         parameters[parameterName]?.toInt() ?: run {
+            respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
             null
         }
     } catch (e: NumberFormatException) {
+        respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
         null
     }
 }
@@ -68,15 +70,8 @@ private fun Route.httpMethodsPrincipalExt(
     httpMethodWithPath: Route.(String, PipelineInterceptor<Unit, ApplicationCall>) -> Route,
     block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
-    return path?.let {
-        httpMethodWithPath(it) {
-            call.initBlockWithPrincipal(block)
-        }
-    } ?: run {
-        httpMethod {
-            call.initBlockWithPrincipal(block)
-        }
-    }
+    return path?.let { httpMethodWithPath(it) { call.initBlockWithPrincipal(block) } }
+        ?: run { httpMethod { call.initBlockWithPrincipal(block) } }
 }
 
 private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
