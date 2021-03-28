@@ -10,7 +10,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 import kotlinx.serialization.SerializationException
-import java.io.File
 
 // todo suspend nullable lambda
 suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
@@ -90,5 +89,14 @@ private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend Applic
         respondText(e.message.toString(), status = HttpStatusCode.BadRequest)
     } catch (e: IllegalArgumentException) {
         respondText(e.message.toString(), status = HttpStatusCode.NotAcceptable)
+    }
+}
+
+suspend fun tryResult(block: suspend () -> Unit): Pair<String, HttpStatusCode> {
+    return try {
+        block()
+        SUCCESS to HttpStatusCode.OK
+    } catch (e: Exception) {
+        FAILURE to HttpStatusCode.NotAcceptable
     }
 }

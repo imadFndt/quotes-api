@@ -2,6 +2,7 @@ package com.fndt.quote.data
 
 import com.fndt.quote.data.util.populateDb
 import com.fndt.quote.domain.dto.AuthRole
+import com.fndt.quote.domain.dto.AvatarScheme
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
@@ -30,6 +31,7 @@ object DatabaseProvider {
             LikesOnQuotes::javaClass.get().kotlin -> LikesOnQuotes as T
             TagsOnQuotes::javaClass.get().kotlin -> TagsOnQuotes as T
             Users::javaClass.get().kotlin -> Users as T
+            Authors::javaClass.get().kotlin -> Authors as T
             else -> throw IllegalArgumentException()
         }
     }
@@ -42,6 +44,7 @@ object DatabaseProvider {
         val body = varchar("body", 200)
         val createdAt = long("created_at")
         val user = reference("user_id", Users, onDelete = ReferenceOption.CASCADE)
+        val author = reference("author", Authors)
         override val isPublic = bool("is_public")
     }
 
@@ -69,9 +72,14 @@ object DatabaseProvider {
 
     // Compose PK is not supported, but name should be unique
     object Users : IntIdTable() {
-        val name = varchar("username", 200)
-        val hashedPassword = varchar("password_hash", 200)
+        val name = varchar("username", 50)
+        val hashedPassword = varchar("password_hash", 50)
         val role = enumeration("user_role", AuthRole::class)
         val blockedUntil = long("blocked_until").nullable()
+        val avatarScheme = enumeration("avatar", AvatarScheme::class)
+    }
+
+    object Authors : IntIdTable() {
+        val name = varchar("name", 30)
     }
 }

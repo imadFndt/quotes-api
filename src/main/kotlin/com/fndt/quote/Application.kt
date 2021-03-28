@@ -13,11 +13,15 @@ import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
 import java.io.File
 
+var URL_IMAGE_SCHEME: String? = null
+
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
 fun Application.module() {
+    URL_IMAGE_SCHEME =
+        "http://${environment.config.propertyOrNull("ktor.deployment.host")?.getString() ?: "0.0.0.0"}/images/"
     install(ContentNegotiation) { json(Json { prettyPrint = true }) }
     install(Koin) {
         modules(

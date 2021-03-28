@@ -5,6 +5,7 @@ import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
@@ -14,18 +15,29 @@ import com.fndt.quote.domain.usecases.quotes.GetQuotesUseCase
 import com.fndt.quote.domain.usecases.quotes.LikeUseCase
 
 class QuotesUseCaseFactory(
+    private val authorRepository: AuthorRepository,
     private val likeRepository: LikeRepository,
     private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
     private val requestManager: RequestManager,
     private val permissionManager: PermissionManager,
 ) {
-    fun getQuotesUseCase(requestingUser: User, searchUser: User? = null): UseCase<List<Quote>> {
-        return GetQuotesUseCase(searchUser, quoteRepository, requestingUser, permissionManager, requestManager)
+    fun getQuotesUseCase(requestingUser: User, searchUserId: Int? = null): UseCase<List<Quote>> {
+        return GetQuotesUseCase(
+            searchUserId, userRepository, quoteRepository, requestingUser, permissionManager, requestManager
+        )
     }
 
-    fun addQuotesUseCase(body: String, userRequesting: User): UseCase<Quote> {
-        return AddQuoteUseCase(body, quoteRepository, userRequesting, permissionManager, requestManager)
+    fun addQuotesUseCase(body: String, authorName: String, userRequesting: User): UseCase<Quote> {
+        return AddQuoteUseCase(
+            body,
+            authorName,
+            quoteRepository,
+            authorRepository,
+            userRequesting,
+            permissionManager,
+            requestManager
+        )
     }
 
     fun likeQuoteUseCase(like: Like, likeAction: Boolean, userRequesting: User): UseCase<Unit> {

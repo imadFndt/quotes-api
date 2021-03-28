@@ -23,4 +23,6 @@ interface PermissionManager {
     fun hasSearchPermission(user: User?): Boolean
     fun hasPopularsPermission(user: User?): Boolean
     fun hasTagSelectionsPermission(user: User?): Boolean
+
+    fun hasChangeProfilePicturePermission(user: User?): Boolean
 }

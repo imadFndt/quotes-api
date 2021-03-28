@@ -23,15 +23,19 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
 
     private fun Route.getQuotes() {
         getExt { principal -> respond(useCaseFactory.getQuotesUseCase(principal.user).run()) }
+        getExt("/{$ID}") { principal ->
+            val userId = getAndCheckIntParameter(ID)
+            respond(useCaseFactory.getQuotesUseCase(principal.user, searchUserId = userId).run())
+        }
     }
 
     private fun Route.addQuote() {
         postExt { principal ->
-            val quote = receiveCatching<AddQuote>() ?: run {
+            val (quote, authorName) = receiveCatching<AddQuote>() ?: run {
                 respondText(WRONG_PARAMETERS)
                 return@postExt
             }
-            useCaseFactory.addQuotesUseCase(quote.body, principal.user).run()
+            useCaseFactory.addQuotesUseCase(quote, authorName, principal.user).run()
             respondText(SUCCESS)
         }
     }

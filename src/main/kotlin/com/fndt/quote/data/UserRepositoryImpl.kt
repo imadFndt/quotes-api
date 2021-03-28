@@ -33,12 +33,17 @@ class UserRepositoryImpl(dbProvider: DatabaseProvider) : UserRepository {
         }.let { findUserByParams(it) }
     }
 
+    private fun update(user: User): ID {
+        usersTable.update({ usersTable.id eq user.id }) {
+            it[role] = user.role
+            it[blockedUntil] = user.blockedUntil
+        }
+        return user.id
+    }
+
     override fun add(user: User): ID {
-        return usersTable.insert { insert ->
-            insert[name] = user.name
-            insert[hashedPassword] = user.hashedPassword.toHashed()
-            insert[role] = AuthRole.REGULAR
-        }[usersTable.id].value
+        val userExists = findUserByParams(userId = user.id) != null
+        return if (userExists) update(user) else insert(user)
     }
 
     override fun findUserByParams(userId: Int?, name: String?, password: String?, withPassword: Boolean): User? {
@@ -47,5 +52,13 @@ class UserRepositoryImpl(dbProvider: DatabaseProvider) : UserRepository {
             .apply { name?.let { andWhere { DatabaseProvider.Users.name eq name } } }
             .apply { password?.let { andWhere { DatabaseProvider.Users.hashedPassword eq password.toHashed() } } }
             .firstOrNull()?.toUser(withPassword)
+    }
+
+    private fun insert(user: User): ID {
+        return usersTable.insert { insert ->
+            insert[name] = user.name
+            insert[hashedPassword] = user.hashedPassword.toHashed()
+            insert[role] = AuthRole.REGULAR
+        }[usersTable.id].value
     }
 }

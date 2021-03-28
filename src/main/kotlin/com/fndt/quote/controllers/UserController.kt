@@ -18,6 +18,8 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
+val uploadDir = "./files"
+
 class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing {
         updateAvatar()
@@ -33,65 +35,71 @@ class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingC
         getExt(ROLE_ENDPOINT) { respond(it.user) }
     }
 
-    val uploadDir = "./files"
-
     private fun Route.updateAvatar() = routePathWithAuth("/avatar") {
         postExt { principal ->
-            val multipart = receiveMultipart()
-            multipart.forEachPart { part ->
-                when (part) {
-                    is PartData.FileItem -> {
-                        val (title, ext) = File(part.originalFileName).nameAndExtension
-                        val file = File(
-                            uploadDir,
-                            "upload-${System.currentTimeMillis()}-${principal.user.id}-${title.hashCode()}.$ext"
-                        )
-                        part.streamProvider().use { input ->
-                            file.outputStream().buffered().use { output -> input.copyToSuspend(output) }
-                        }
-                        // File is ready
-                    }
-                    else -> Unit
-                }
-                part.dispose()
+            val (text, status) = tryResult {
+                val file = downloadImage()
+                useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
             }
-        }
-    }
-
-    private suspend fun InputStream.copyToSuspend(
-        out: OutputStream,
-        bufferSize: Int = DEFAULT_BUFFER_SIZE,
-        yieldSize: Int = 4 * 1024 * 1024,
-        dispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): Long {
-        return withContext(dispatcher) {
-            val buffer = ByteArray(bufferSize)
-            var bytesCopied = 0L
-            var bytesAfterYield = 0L
-            while (true) {
-                val bytes = read(buffer).takeIf { it >= 0 } ?: break
-                out.write(buffer, 0, bytes)
-                if (bytesAfterYield >= yieldSize) {
-                    yield()
-                    bytesAfterYield %= yieldSize
-                }
-                bytesCopied += bytes
-                bytesAfterYield += bytes
-            }
-            return@withContext bytesCopied
+            respondText(text = text, status = status)
         }
     }
 
     private suspend fun ApplicationCall.registerAndRespond() {
         val credentials = receiveCatching<UserCredentials>() ?: return
-        val result = try {
+        val (text, status) = tryResult {
             useCaseManager.registerUseCase(credentials.login, credentials.password).run()
-            SUCCESS to HttpStatusCode.OK
-        } catch (e: Exception) {
-            FAILURE to HttpStatusCode.NotAcceptable
         }
-        respondText(text = result.first, status = result.second)
+        respondText(text = text, status = status)
+    }
+
+    private suspend fun ApplicationCall.downloadImage(): File {
+        val multipart = receiveMultipart()
+        var result: File? = null
+        multipart.forEachPart { part ->
+            when (part) {
+                is PartData.FileItem -> {
+                    val (title, ext) = File(part.originalFileName).nameAndExtension
+                    val file = File(
+                        uploadDir,
+                        "upload-${System.currentTimeMillis()}-${title.hashCode()}.$ext"
+                    )
+                    part.streamProvider().use { input ->
+                        file.outputStream().buffered().use { output -> input.copyToSuspend(output) }
+                    }
+                    result = file
+                    // File is ready
+                }
+                else -> Unit
+            }
+            part.dispose()
+        }
+        return result ?: throw IllegalStateException()
     }
 }
 
 private val File.nameAndExtension: Pair<String, String> get() = nameWithoutExtension to extension
+
+private suspend fun InputStream.copyToSuspend(
+    out: OutputStream,
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
+    yieldSize: Int = 4 * 1024 * 1024,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+): Long {
+    return withContext(dispatcher) {
+        val buffer = ByteArray(bufferSize)
+        var bytesCopied = 0L
+        var bytesAfterYield = 0L
+        while (true) {
+            val bytes = read(buffer).takeIf { it >= 0 } ?: break
+            out.write(buffer, 0, bytes)
+            if (bytesAfterYield >= yieldSize) {
+                yield()
+                bytesAfterYield %= yieldSize
+            }
+            bytesCopied += bytes
+            bytesAfterYield += bytes
+        }
+        return@withContext bytesCopied
+    }
+}

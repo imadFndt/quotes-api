@@ -6,6 +6,7 @@ import com.fndt.quote.data.*
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.filter.QuotesFilter
 import com.fndt.quote.domain.manager.PermissionManager
+import com.fndt.quote.domain.manager.ProfilePictureManager
 import com.fndt.quote.domain.manager.implementations.PermissionManagerImpl
 import com.fndt.quote.domain.repository.*
 import org.koin.dsl.module
@@ -19,17 +20,19 @@ object Modules {
         single<QuoteRepository> { QuoteRepositoryImpl(get()) }
         single<TagRepository> { TagRepositoryImpl(get()) }
         single<UserRepository> { UserRepositoryImpl(get()) }
+        single<AuthorRepository> { AuthorRepositoryImpl(get()) }
     }
     val managerModule = module {
         factory<PermissionManager> { PermissionManagerImpl() }
         factory<RequestManager> { RequestManagerImpl() }
         factory<QuotesFilter.Factory> { QuotesFilterImpl.FilterFactory(get()) }
+        factory<ProfilePictureManager> { ProfilePictureManagerImpl() }
     }
     val useCaseManagerModule = module {
-        factory { QuotesUseCaseFactory(get(), get(), get(), get(), get()) }
+        factory { QuotesUseCaseFactory(get(), get(), get(), get(), get(), get()) }
         factory { CommentsUseCaseFactory(get(), get(), get(), get()) }
         factory { SelectionUseCaseFactory(get(), get(), get(), get()) }
-        factory { UsersUseCaseFactory(get(), get(), get()) }
+        factory { UsersUseCaseFactory(get(), get(), get(), get()) }
         factory { ModeratorUseCaseFactory(get(), get(), get(), get(), get()) }
         factory { AdminUseCaseFactory(get(), get(), get(), get()) }
     }

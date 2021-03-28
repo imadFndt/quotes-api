@@ -10,6 +10,7 @@ typealias ID = Int
 data class Quote(
     val id: ID = UNDEFINED,
     var body: String,
+    val author: Author,
     @SerialName("created_at") val createdAt: Long,
     var user: User,
     var likes: Int = 0,

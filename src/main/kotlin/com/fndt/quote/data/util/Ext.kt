@@ -5,15 +5,17 @@ import com.fndt.quote.domain.dto.*
 import org.jetbrains.exposed.sql.ResultRow
 import java.security.MessageDigest
 
-fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int): Quote {
+// URL SCHEME
+fun ResultRow.toQuotes(tagList: List<Tag> = emptyList(), likesCount: Int, author: Author): Quote {
     return Quote(
         id = this[DatabaseProvider.Quotes.id].value,
         body = this[DatabaseProvider.Quotes.body],
         createdAt = this[DatabaseProvider.Quotes.createdAt],
         isPublic = this[DatabaseProvider.Quotes.isPublic],
-        user = this.toUser(),
+        user = toUser(),
         likes = likesCount,
         tags = tagList,
+        author = author
     )
 }
 
@@ -23,7 +25,8 @@ fun ResultRow.toUser(withPassword: Boolean = false): User {
         id = this[DatabaseProvider.Users.id].value,
         name = this[DatabaseProvider.Users.name],
         role = role,
-        blockedUntil = this[DatabaseProvider.Users.blockedUntil]
+        blockedUntil = this[DatabaseProvider.Users.blockedUntil],
+        avatarScheme = this[DatabaseProvider.Users.avatarScheme]
     ).also {
         if (withPassword) it.hashedPassword = this[DatabaseProvider.Users.hashedPassword]
     }
@@ -50,6 +53,11 @@ fun ResultRow.toComment(user: User): Comment {
         user = user
     )
 }
+
+fun ResultRow.toAuthor() = Author(
+    this[DatabaseProvider.Authors.id].value,
+    this[DatabaseProvider.Authors.name],
+)
 
 // NOT REDUNDANT
 fun ResultRow.toTagNullable(): Tag? {

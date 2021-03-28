@@ -8,18 +8,23 @@ import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.manager.PermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
+import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
 
 class GetQuotesUseCase(
-    private val searchUser: User? = null,
+    private val searchUserId: Int? = null,
+    private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
     override val requestingUser: User,
     private val permissionManager: PermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<List<Quote>>(requestManager) {
     override suspend fun makeRequest(): List<Quote> {
+        val user = searchUserId?.let {
+            userRepository.findUserByParams(userId = searchUserId) ?: throw IllegalStateException("User not found")
+        }
         val access = if (requestingUser.role == AuthRole.REGULAR) QuotesAccess.PUBLIC else QuotesAccess.ALL
-        return quoteRepository.get(QuoteFilterArguments(access = access, user = searchUser))
+        return quoteRepository.get(QuoteFilterArguments(access = access, user = user))
     }
 
     override fun validate(user: User?): Boolean {
