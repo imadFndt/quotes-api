@@ -42,6 +42,7 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
             insert[createdAt] = quote.createdAt
             insert[user] = EntityID(quote.user.id, DatabaseProvider.Users)
             insert[isPublic] = quote.isPublic
+            insert[author] = quote.author.id
         }[quotesTable.id].value
     }
 

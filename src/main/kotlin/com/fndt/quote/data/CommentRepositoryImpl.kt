@@ -6,6 +6,7 @@ import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.repository.CommentRepository
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -17,6 +18,7 @@ class CommentRepositoryImpl(dbProvider: DatabaseProvider) : CommentRepository {
     override fun get(quoteId: ID): List<Comment> {
         return commentsTable
             .select { DatabaseProvider.Comments.quoteId eq quoteId }
+            .orderBy(DatabaseProvider.Comments.createdAt, SortOrder.ASC)
             .map {
                 val user = findUser(it[DatabaseProvider.Comments.user].value) ?: throw IllegalStateException("No user")
                 it.toComment(user)

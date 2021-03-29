@@ -24,7 +24,10 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
     private fun Route.getQuotes() {
         getExt { principal -> respond(useCaseFactory.getQuotesUseCase(principal.user).run()) }
         getExt("/{$ID}") { principal ->
-            val userId = getAndCheckIntParameter(ID)
+            val userId = getAndCheckIntParameter(ID) ?: run {
+                respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
+                return@getExt
+            }
             respond(useCaseFactory.getQuotesUseCase(principal.user, searchUserId = userId).run())
         }
     }

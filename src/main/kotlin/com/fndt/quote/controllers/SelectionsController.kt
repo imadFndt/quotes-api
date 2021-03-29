@@ -2,6 +2,9 @@ package com.fndt.quote.controllers
 
 import com.fndt.quote.controllers.factory.SelectionUseCaseFactory
 import com.fndt.quote.controllers.util.*
+import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.domain.filter.QuotesOrder
+import com.fndt.quote.domain.usecases.selections.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -13,6 +16,54 @@ class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) 
         search()
         getTagSelection()
         getAuthorSelection()
+        getQuotes()
+    }
+
+    private fun Route.getQuotes() {
+        getExt("/testo") { principal ->
+            val query = parameters[QUERY_KEY]
+
+            val author = try {
+                parameters[AUTHOR_KEY]?.toInt()
+            } catch (e: NumberFormatException) {
+                respondText(MISSING_PARAMETER, status = HttpStatusCode.NotAcceptable)
+                return@getExt
+            }
+            val user = try {
+                parameters[USER_KEY]?.toInt()
+            } catch (e: NumberFormatException) {
+                respondText(MISSING_PARAMETER, status = HttpStatusCode.NotAcceptable)
+                return@getExt
+            }
+            val tag = try {
+                parameters[TAG_KEY]?.toInt()
+            } catch (e: NumberFormatException) {
+                respondText(MISSING_PARAMETER, status = HttpStatusCode.NotAcceptable)
+                return@getExt
+            }
+
+            val order = parameters[ORDER_KEY]?.let {
+                QuotesOrder.findKey(it) ?: run {
+                    respondText(MISSING_PARAMETER, status = HttpStatusCode.NotAcceptable)
+                    return@getExt
+                }
+            }
+            val access = parameters[ACCESS_KEY]?.let {
+                QuotesAccess.findKey(it) ?: run {
+                    respondText(MISSING_PARAMETER, status = HttpStatusCode.NotAcceptable)
+                    return@getExt
+                }
+            }
+            val args = mapOf(
+                QUERY_KEY to query,
+                AUTHOR_KEY to author,
+                USER_KEY to user,
+                TAG_KEY to tag,
+                ORDER_KEY to order,
+                ACCESS_KEY to access
+            )
+            respond(useCaseFactory.getSelectionsUseCase(args, principal.user).run())
+        }
     }
 
     private fun Route.getPopulars() {

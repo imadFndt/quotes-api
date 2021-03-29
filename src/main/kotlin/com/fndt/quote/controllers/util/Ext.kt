@@ -20,14 +20,10 @@ suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
     }
 }
 
-suspend fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int? {
+fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int? {
     return try {
-        parameters[parameterName]?.toInt() ?: run {
-            respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
-            null
-        }
+        parameters[parameterName]?.toInt()
     } catch (e: NumberFormatException) {
-        respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
         null
     }
 }

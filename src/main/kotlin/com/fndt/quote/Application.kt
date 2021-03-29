@@ -22,7 +22,14 @@ fun Application.module() {
     val host = environment.config.propertyOrNull("ktor.deployment.host")?.getString() ?: "0.0.0.0"
     val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
     UrlSchemeProvider.initScheme("$host:$port")
-    install(ContentNegotiation) { json(Json { prettyPrint = true }) }
+    install(ContentNegotiation) {
+        json(
+            Json {
+                prettyPrint = true
+                encodeDefaults = true
+            }
+        )
+    }
     install(Koin) {
         modules(
             Modules.dbModule,

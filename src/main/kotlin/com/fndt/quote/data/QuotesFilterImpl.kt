@@ -10,10 +10,7 @@ import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesFilter
 import com.fndt.quote.domain.filter.QuotesOrder
-import org.jetbrains.exposed.sql.Query
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 
 class QuotesFilterImpl(
     dbProvider: DatabaseProvider,
@@ -25,10 +22,18 @@ class QuotesFilterImpl(
     private val likesQuotesMapTable: DatabaseProvider.LikesOnQuotes by dbProvider
     private val authorTable: DatabaseProvider.Authors by dbProvider
 
+    private val tablesJoin get() = (quotesTable leftJoin usersTable leftJoin tagQuoteMapTable leftJoin tagsTable leftJoin authorTable)
+
     override fun getQuotes(args: QuoteFilterArguments): List<Quote> {
-        return (quotesTable leftJoin usersTable leftJoin tagQuoteMapTable leftJoin tagsTable leftJoin authorTable)
+        val ids = tablesJoin
+            .slice(quotesTable.id)
             .selectAll()
-            .apply { applySelectors(args) }
+            .apply {
+                applySelectors(args)
+            }.map { it[DatabaseProvider.Quotes.id].value }
+
+        return tablesJoin
+            .select { quotesTable.id inList ids }
             .nullableGroupBy({
                 it.toQuotes(
                     likesCount = fetchLikes(it[DatabaseProvider.Quotes.id].value),
@@ -53,7 +58,7 @@ class QuotesFilterImpl(
         with(args) {
             user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
             tagId?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
-            query?.let { andWhere { DatabaseProvider.Quotes.body like "%$it%" } }
+            query?.toLowerCase()?.let { andWhere { DatabaseProvider.Quotes.body.lowerCase() like "%$it%" } }
             quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
             authorId?.let { andWhere { DatabaseProvider.Quotes.author eq it } }
         }
@@ -69,9 +74,7 @@ class QuotesFilterImpl(
             .count().toInt()
     }
 
-    class FilterFactory(
-        private val dbProvider: DatabaseProvider,
-    ) : Factory {
+    class FilterFactory(private val dbProvider: DatabaseProvider) : Factory {
         override fun create(): QuotesFilter = QuotesFilterImpl(dbProvider)
     }
 }

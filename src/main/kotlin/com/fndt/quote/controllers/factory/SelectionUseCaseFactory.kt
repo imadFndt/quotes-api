@@ -7,13 +7,12 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
+import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.UseCase
-import com.fndt.quote.domain.usecases.selections.AuthorSelectionUseCase
-import com.fndt.quote.domain.usecases.selections.PopularsUseCase
-import com.fndt.quote.domain.usecases.selections.SearchUseCase
-import com.fndt.quote.domain.usecases.selections.TagSelectionUseCase
+import com.fndt.quote.domain.usecases.selections.*
 
 class SelectionUseCaseFactory(
+    private val userRepository: UserRepository,
     private val quoteRepository: QuoteRepository,
     private val authorRepository: AuthorRepository,
     private val tagRepository: TagRepository,
@@ -35,6 +34,19 @@ class SelectionUseCaseFactory(
     fun getAuthorSelectionUseCase(authorId: Int, user: User): AuthorSelectionUseCase {
         return AuthorSelectionUseCase(
             authorId, quoteRepository, authorRepository, user, permissionManager, requestManager
+        )
+    }
+
+    fun getSelectionsUseCase(arguments: Map<String, Any?>, user: User): SelectionUseCase {
+        return SelectionUseCase(
+            arguments,
+            userRepository,
+            authorRepository,
+            tagRepository,
+            quoteRepository,
+            user,
+            permissionManager,
+            requestManager
         )
     }
 }

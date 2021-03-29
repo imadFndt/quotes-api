@@ -19,7 +19,7 @@ class CommentsController(private val useCaseFactory: CommentsUseCaseFactory) : R
         getExt { principal ->
             getAndCheckIntParameter(ID)?.let {
                 respond(useCaseFactory.getCommentsUseCase(it, principal.user).run())
-            }
+            } ?: respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
         }
     }
 

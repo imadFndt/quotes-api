@@ -6,7 +6,6 @@ import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesAccess
-import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
@@ -27,7 +26,7 @@ class TagSelectionUseCase(
         get() = !targetTag.isPublic && requestingUser.role == AuthRole.REGULAR
 
     override fun getArguments(): QuoteFilterArguments {
-        return QuoteFilterArguments(tagId = targetTag.id, access = targetAccess, order = QuotesOrder.LATEST)
+        return QuoteFilterArguments(tagId = targetTag.id, access = targetAccess)
     }
 
     override fun validate(user: User?): Boolean {

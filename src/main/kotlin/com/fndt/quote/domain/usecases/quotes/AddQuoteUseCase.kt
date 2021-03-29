@@ -30,6 +30,6 @@ class AddQuoteUseCase(
     }
 
     override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(user) && user?.isBanned != false
+        return permissionManager.isAuthorized(user) && user?.isBanned == false
     }
 }
