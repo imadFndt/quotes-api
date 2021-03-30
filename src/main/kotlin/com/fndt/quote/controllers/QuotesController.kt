@@ -16,20 +16,8 @@ import io.ktor.util.pipeline.*
 class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : RoutingController {
 
     override fun route(routing: Routing) = routing.routePathWithAuth(QUOTES_ENDPOINT) {
-        getQuotes()
         addQuote()
         likeQuote()
-    }
-
-    private fun Route.getQuotes() {
-        getExt { principal -> respond(useCaseFactory.getQuotesUseCase(principal.user).run()) }
-        getExt("/{$ID}") { principal ->
-            val userId = getAndCheckIntParameter(ID) ?: run {
-                respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
-                return@getExt
-            }
-            respond(useCaseFactory.getQuotesUseCase(principal.user, searchUserId = userId).run())
-        }
     }
 
     private fun Route.addQuote() {

@@ -6,22 +6,18 @@ import com.fndt.quote.controllers.util.*
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.manager.UrlSchemeProvider
-import com.fndt.quote.domain.usecases.selections.*
+import com.fndt.quote.domain.usecases.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 
 class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) : RoutingController {
-    override fun route(routing: Routing) = routing.routePathWithAuth("") {
-        getPopulars()
-        search()
-        getTagSelection()
-        getAuthorSelection()
+    override fun route(routing: Routing) = routing.routePathWithAuth(QUOTES_ENDPOINT) {
         getQuotes()
     }
 
-    private fun Route.getQuotes() = getExt("/testo") { principal ->
+    private fun Route.getQuotes() = getExt { principal ->
         val args = mutableMapOf<String, Any?>()
         args[QUERY_KEY] = parameters[QUERY_KEY] as? Any
 
@@ -54,33 +50,5 @@ class SelectionsController(private val useCaseFactory: SelectionUseCaseFactory) 
 
         useCaseFactory.getSelectionsUseCase(args, principal.user).run()
             .also { respond(it.toOutQuoteList(UrlSchemeProvider)) }
-    }
-
-    private fun Route.getPopulars() {
-        getExt(POPULARS_ENDPOINT) { principal -> respond(useCaseFactory.getPopularsUseCase(principal.user).run()) }
-    }
-
-    private fun Route.search() {
-        getExt(SEARCH_ENDPOINT) { principal ->
-            val query = parameters[QUERY_ARG] ?: run {
-                respondText(QUERY_NOT_RECEIVED, status = HttpStatusCode.NotAcceptable)
-                return@getExt
-            }
-            respond(useCaseFactory.getSearchUseCase(query, principal.user).run())
-        }
-    }
-
-    private fun Route.getTagSelection() {
-        getExt(TAG_ENDPOINT) { principal ->
-            val tagId = getAndCheckIntParameter(ID) ?: return@getExt
-            respond(useCaseFactory.getTagSelectionUseCase(tagId, principal.user).run())
-        }
-    }
-
-    private fun Route.getAuthorSelection() {
-        getExt(AUTHOR_ENDPOINT) { principal ->
-            val authorId = getAndCheckIntParameter(ID) ?: return@getExt
-            respond(useCaseFactory.getAuthorSelectionUseCase(authorId, principal.user).run())
-        }
     }
 }

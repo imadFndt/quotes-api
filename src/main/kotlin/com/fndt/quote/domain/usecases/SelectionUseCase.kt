@@ -1,4 +1,4 @@
-package com.fndt.quote.domain.usecases.selections
+package com.fndt.quote.domain.usecases
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.*
@@ -10,7 +10,6 @@ import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
 import kotlin.math.ceil
 
 const val AUTHOR_KEY = "author"
@@ -88,7 +87,7 @@ class SelectionUseCase(
     private fun List<Quote>.toPaged(): Quotes {
         val startIndex = targetPerPage * (targetPage - 1)
         val endIndex =
-            (startIndex + targetPerPage).let { if (it > size) size - 1 else it }
+            (startIndex + targetPerPage).let { if (it > size) size else it }
         val pagedList = subList(startIndex, endIndex)
         val pages = ceil(size.toDouble() / targetPerPage).toInt()
         return Quotes(page = targetPage, totalPages = pages, quotes = pagedList)
