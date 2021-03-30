@@ -11,6 +11,10 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 
+@Deprecated(
+    "Deprecated to complex filter",
+    replaceWith = ReplaceWith("SelectionUseCase")
+)
 class AuthorSelectionUseCase(
     private val authorId: Int,
     quoteRepository: QuoteRepository,

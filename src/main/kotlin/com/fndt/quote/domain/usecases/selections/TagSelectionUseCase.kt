@@ -10,6 +10,7 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 
+@Deprecated("Deprecated to complex filter")
 class TagSelectionUseCase(
     private val tagId: Int,
     quoteRepository: QuoteRepository,

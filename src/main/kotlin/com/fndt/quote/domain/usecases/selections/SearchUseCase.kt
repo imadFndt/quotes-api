@@ -6,6 +6,7 @@ import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 
+@Deprecated("Deprecated to complex filter")
 class SearchUseCase(
     private val query: String,
     quotesRepository: QuoteRepository,

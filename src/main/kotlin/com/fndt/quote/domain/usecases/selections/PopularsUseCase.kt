@@ -7,6 +7,7 @@ import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 
+@Deprecated("Deprecated to complex filter")
 class PopularsUseCase(
     quoteRepository: QuoteRepository,
     override val requestingUser: User,

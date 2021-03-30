@@ -11,6 +11,7 @@ import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.RequestUseCase
+import kotlin.math.ceil
 
 const val AUTHOR_KEY = "author"
 const val USER_KEY = "user"
@@ -18,6 +19,8 @@ const val TAG_KEY = "tag"
 const val ORDER_KEY = "order"
 const val ACCESS_KEY = "access"
 const val QUERY_KEY = "query"
+const val PAGE_KEY = "page"
+const val PER_PAGE_KEY = "per_page"
 
 class SelectionUseCase(
     private val arguments: Map<String, Any?>,
@@ -28,7 +31,7 @@ class SelectionUseCase(
     override val requestingUser: User,
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager,
-) : RequestUseCase<List<Quote>>(requestManager) {
+) : RequestUseCase<Quotes>(requestManager) {
 
     private var targetAuthor: Author? = null
     private var targetUser: User? = null
@@ -36,27 +39,26 @@ class SelectionUseCase(
     private var targetAccess: QuotesAccess = QuotesAccess.PUBLIC
     private var targetOrder: QuotesOrder = QuotesOrder.LATEST
     private var targetQuery: String? = null
+    private var targetPage: Int = 1
+    private var targetPerPage: Int = 20
 
     private val User.isRegularUsingPrivateData
         get() = role == AuthRole.REGULAR && (
             targetTag?.isPublic == false || targetAccess == QuotesAccess.PRIVATE || targetAccess == QuotesAccess.ALL
             )
 
-    override suspend fun makeRequest(): List<Quote> {
+    override suspend fun makeRequest(): Quotes {
         val filterArgs = QuoteFilterArguments(
             order = targetOrder,
             user = targetUser,
             authorId = targetAuthor?.id,
             tagId = targetTag?.id,
             query = targetQuery,
-            access = targetAccess
-        ).apply {
-            order = targetOrder
-            this.user = targetUser
-            this.authorId = targetAuthor?.id
-            this.tagId = targetTag?.id
+            access = targetAccess,
+        )
+        quoteRepository.get(filterArgs).also {
+            return it.toPaged()
         }
-        return quoteRepository.get(filterArgs)
     }
 
     override fun validate(user: User?): Boolean {
@@ -65,17 +67,30 @@ class SelectionUseCase(
     }
 
     private fun Map<String, Any?>.interpret() {
-        targetAuthor = (this["author"] as? ID)?.let { id ->
+        targetAuthor = (this[AUTHOR_KEY] as? ID)?.let { id ->
             authorRepository.findById(id) ?: throw IllegalStateException("Author not found")
         }
-        targetUser = (this["user"] as? ID)?.let { id ->
+        targetUser = (this[USER_KEY] as? ID)?.let { id ->
             userRepository.findUserByParams(id) ?: throw IllegalStateException("User not found")
         }
-        targetTag = (this["tag"] as? ID)?.let { id ->
+        targetTag = (this[TAG_KEY] as? ID)?.let { id ->
             tagRepository.findById(id) ?: throw IllegalStateException("Tag not found")
         }
-        targetOrder = this["order"] as? QuotesOrder ?: QuotesOrder.LATEST
-        targetAccess = this["access"] as? QuotesAccess ?: QuotesAccess.PUBLIC
-        targetQuery = this["query"] as? String
+        targetOrder = this[ORDER_KEY] as? QuotesOrder ?: QuotesOrder.LATEST
+        targetAccess = this[ACCESS_KEY] as? QuotesAccess ?: QuotesAccess.PUBLIC
+        targetQuery = this[QUERY_KEY] as? String
+        targetPage = this[PAGE_KEY] as? Int ?: targetPage
+        if (targetPage < 1) throw IllegalStateException("Bad page value")
+        targetPerPage = this[PER_PAGE_KEY] as? Int ?: targetPerPage
+        if (targetPerPage < 1) throw IllegalStateException("Bad per page value")
+    }
+
+    private fun List<Quote>.toPaged(): Quotes {
+        val startIndex = targetPerPage * (targetPage - 1)
+        val endIndex =
+            (startIndex + targetPerPage).let { if (it > size) size - 1 else it }
+        val pagedList = subList(startIndex, endIndex)
+        val pages = ceil(size.toDouble() / targetPerPage).toInt()
+        return Quotes(page = targetPage, totalPages = pages, quotes = pagedList)
     }
 }
