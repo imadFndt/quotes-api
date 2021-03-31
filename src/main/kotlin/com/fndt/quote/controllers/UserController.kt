@@ -23,17 +23,15 @@ const val uploadDir = "./files"
 class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing {
         updateAvatar()
-        authenticate()
+        register()
         getUserInfo()
     }
 
-    private fun Route.authenticate() {
-        route(REGISTRATION_ENDPOINT) { get { call.registerAndRespond() } }
+    private fun Route.register() {
+        get(REGISTRATION_ENDPOINT) { call.registerAndRespond() }
     }
 
-    private fun Route.getUserInfo() {
-        getExt(ROLE_ENDPOINT) { respond(it.user) }
-    }
+    private fun Route.getUserInfo() = routePathWithAuth(ROLE_ENDPOINT) { getExt { respond(it.user) } }
 
     private fun Route.updateAvatar() = routePathWithAuth("/avatar") {
         postExt { principal ->

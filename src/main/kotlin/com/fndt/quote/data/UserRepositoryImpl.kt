@@ -37,6 +37,7 @@ class UserRepositoryImpl(dbProvider: DatabaseProvider) : UserRepository {
             insert[name] = user.name
             insert[hashedPassword] = user.hashedPassword.toHashed()
             insert[role] = AuthRole.REGULAR
+            insert[avatarScheme] = user.avatarScheme
         }[usersTable.id].value
     }
 
@@ -44,6 +45,7 @@ class UserRepositoryImpl(dbProvider: DatabaseProvider) : UserRepository {
         usersTable.update({ usersTable.id eq user.id }) {
             it[role] = user.role
             it[blockedUntil] = user.blockedUntil
+            it[avatarScheme] = user.avatarScheme
         }
         return user.id
     }
