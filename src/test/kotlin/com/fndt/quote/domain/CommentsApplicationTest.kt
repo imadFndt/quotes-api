@@ -32,12 +32,16 @@ class CommentsApplicationTest {
 
     @Test
     fun `ban and comment`(): Unit = withTestApplication(Application::module) {
-        val user = getUserByCredentials(regularCredentials)
+        val (newLogin, newPassword) = "b" to "b"
+        register(newLogin, newPassword)
+
+        val credentials = "$newLogin:$newPassword"
+        val user = getUserByCredentials(credentials)
 
         banUser(user.id, moderatorCredentials).run {
             assertEquals(HttpStatusCode.OK, response.status())
         }
 
-        assertThrows<PermissionException> { addComment(quoteId, AddComment("b"), regularCredentials) }
+        assertThrows<PermissionException> { addComment(quoteId, AddComment("b"), credentials) }
     }
 }

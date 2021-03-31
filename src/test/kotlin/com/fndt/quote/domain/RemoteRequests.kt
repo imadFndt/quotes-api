@@ -1,9 +1,6 @@
 package com.fndt.quote.domain
 
-import com.fndt.quote.controllers.dto.AddComment
-import com.fndt.quote.controllers.dto.AddQuote
-import com.fndt.quote.controllers.dto.LikeRequest
-import com.fndt.quote.controllers.dto.QuoteReview
+import com.fndt.quote.controllers.dto.*
 import com.fndt.quote.controllers.dto.out.OutQuote
 import com.fndt.quote.controllers.dto.out.OutQuoteList
 import com.fndt.quote.controllers.util.*
@@ -12,11 +9,20 @@ import com.fndt.quote.domain.dto.User
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
+import kotlinx.serialization.json.encodeToJsonElement
 
 @InternalAPI
 fun TestApplicationEngine.getUserByCredentials(credentials: String): User {
     val call = handleRequestWithAuth(HttpMethod.Get, ROLE_ENDPOINT, credentials)
     return serializer.parseResponse(call.response)
+}
+
+@InternalAPI
+fun TestApplicationEngine.register(login: String, password: String): TestApplicationCall {
+    return handleRequest(HttpMethod.Get, REGISTRATION_ENDPOINT) {
+        addJsonHeader()
+        setBody(serializer.encodeToJsonElement(UserCredentials(login, password)).toString())
+    }
 }
 
 @InternalAPI

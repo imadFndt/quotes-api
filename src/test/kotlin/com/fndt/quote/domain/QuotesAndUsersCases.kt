@@ -1,8 +1,6 @@
 package com.fndt.quote.domain
 
 import com.fndt.quote.controllers.dto.LikeRequest
-import com.fndt.quote.controllers.dto.UserCredentials
-import com.fndt.quote.controllers.util.REGISTRATION_ENDPOINT
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.module
@@ -10,7 +8,6 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
-import kotlinx.serialization.json.encodeToJsonElement
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -25,12 +22,7 @@ class QuotesAndUsersCases {
 
     @Test
     fun registration() = withTestApplication(Application::module) {
-        with(
-            handleRequest(HttpMethod.Get, REGISTRATION_ENDPOINT) {
-                addJsonHeader()
-                setBody(serializer.encodeToJsonElement(UserCredentials("a", "a")).toString())
-            }
-        ) {
+        register("a", "a").run {
             assertEquals(HttpStatusCode.OK, response.status())
         }
     }
