@@ -42,12 +42,13 @@ class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) :
     }
 
     private fun Route.banUser() {
-        postExt(BAN_ENDPOINT) { principal ->
+        postExt("$BAN_ENDPOINT/{$QUOTE_ID}") { principal ->
             val quoteId = getAndCheckIntParameter(QUOTE_ID) ?: run {
                 respondText(text = MISSING_PARAMETER, status = HttpStatusCode.BadRequest)
                 return@postExt
             }
-            useCaseFactory.getBanUseCase(quoteId, principal.user)
+            useCaseFactory.getBanUseCase(quoteId, principal.user).run()
+            respondText(SUCCESS)
         }
     }
 
