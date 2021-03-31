@@ -1,28 +1,21 @@
 package com.fndt.quote.domain.usecases.users
 
-import com.fndt.quote.domain.RequestManager
+import com.fndt.quote.domain.UseCaseTestInit
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.UrlSchemeProvider
-import com.fndt.quote.domain.manager.UserPermissionManager
-import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.UserRepository
-import io.mockk.*
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class RegisterUseCaseTest {
-
-    @MockK(relaxed = true)
-    lateinit var permissionManager: UserPermissionManager
+internal class RegisterUseCaseTest : UseCaseTestInit() {
 
     @MockK(relaxed = true)
     lateinit var userRepository: UserRepository
-
-    @MockK(relaxed = true)
-    lateinit var requestManager: RequestManager
 
     private lateinit var useCase: RegisterUseCase
 
@@ -32,11 +25,8 @@ internal class RegisterUseCaseTest {
     private val users = mutableListOf<User>()
 
     @BeforeEach
-    fun init() {
-        UrlSchemeProvider.initScheme("test/")
-        MockKAnnotations.init(this)
-        requestManager.mockRunBlocking<User>()
-        coEvery { permissionManager.isRegisterAllowed() } returns true
+    override fun init() {
+        super.init()
 
         val intSlot = slot<Int>()
         every { userRepository.findUserByParams(capture(intSlot)) } answers { users.find { it.id == intSlot.captured } }

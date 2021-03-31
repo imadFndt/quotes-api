@@ -17,8 +17,10 @@ class CommentsUseCaseFactory(
     private val requestManager: RequestManager,
     private val permissionManager: UserPermissionManager,
 ) {
-    fun getCommentsUseCase(quoteId: Int, userRequesting: User?): UseCase<List<Comment>> {
-        return GetCommentsUseCase(quoteId, commentRepository, userRequesting, permissionManager, requestManager)
+    fun getCommentsUseCase(quoteId: Int, userRequesting: User): UseCase<List<Comment>> {
+        return GetCommentsUseCase(
+            quoteId, quoteRepository, commentRepository, userRequesting, permissionManager, requestManager
+        )
     }
 
     fun addCommentsUseCase(body: String, quoteId: ID, user: User): UseCase<Comment> {

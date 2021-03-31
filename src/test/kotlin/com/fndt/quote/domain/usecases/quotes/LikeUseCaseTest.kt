@@ -1,28 +1,23 @@
 package com.fndt.quote.domain.usecases.quotes
 
-import com.fndt.quote.domain.RequestManager
+import com.fndt.quote.domain.UseCaseTestInit
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.getDummyQuote
 import com.fndt.quote.domain.getDummyUser
-import com.fndt.quote.domain.manager.UrlSchemeProvider
-import com.fndt.quote.domain.manager.UserPermissionManager
-import com.fndt.quote.domain.mockRunBlocking
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
-import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class LikeUseCaseTest {
+internal class LikeUseCaseTest : UseCaseTestInit() {
     private val like = Like(1, 1)
 
     @MockK(relaxed = true)
@@ -34,21 +29,7 @@ internal class LikeUseCaseTest {
     @MockK(relaxed = true)
     lateinit var likeRepository: LikeRepository
 
-    @MockK(relaxed = true)
-    lateinit var permissionManager: UserPermissionManager
-
-    @MockK(relaxed = true)
-    lateinit var requestManager: RequestManager
-
     private lateinit var useCase: LikeUseCase
-
-    @BeforeEach
-    fun init() {
-        UrlSchemeProvider.initScheme("test/")
-        MockKAnnotations.init(this, relaxUnitFun = true)
-        requestManager.mockRunBlocking<Unit>()
-        every { permissionManager.isAuthorized(any()) } returns true
-    }
 
     @Test
     fun `regular like`() = runBlocking {

@@ -22,7 +22,7 @@ class AddCommentUseCase(
     override val requestingUser: User = user
 
     override suspend fun makeRequest(): Comment {
-        quoteRepository.findById(quoteId) ?: throw IllegalArgumentException("Quote does not exist")
+        quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote does not exist")
         val comment = Comment(body = body, quoteId = quoteId, createdAt = System.currentTimeMillis(), user = user)
         val id = commentRepository.add(comment)
         return commentRepository.findComment(id) ?: throw IllegalStateException("Failed to add comment")
