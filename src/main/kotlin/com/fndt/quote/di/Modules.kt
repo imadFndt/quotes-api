@@ -28,7 +28,10 @@ object Modules {
         factory<UserPermissionManager> { UserPermissionManagerImpl() }
         factory<RequestManager> { RequestManagerImpl() }
         factory<QuotesFilter.Factory> { QuotesFilterImpl.FilterFactory(get()) }
-        factory<ProfilePictureManager> { ProfilePictureManagerImpl() }
+    }
+
+    fun imagesModule(path: String) = module {
+        factory<ProfilePictureManager> { ProfilePictureManagerImpl(path) }
     }
 
     val useCaseManagerModule = module {
@@ -44,9 +47,12 @@ object Modules {
         single { AuthController(get()) }
         single { QuotesController(get()) }
         single { CommentsController(get()) }
-        single { UserController(get()) }
         single { SelectionsController(get()) }
         single { ModeratorController(get()) }
         single { AdminController(get()) }
+    }
+
+    fun userControllerModule(uploadDir: String) = module {
+        single { UserController(get(), uploadDir) }
     }
 }

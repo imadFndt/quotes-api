@@ -1,8 +1,10 @@
 package com.fndt.quote.controllers
 
 import com.fndt.quote.controllers.dto.UserCredentials
+import com.fndt.quote.controllers.dto.out.toOutUser
 import com.fndt.quote.controllers.factory.UsersUseCaseFactory
 import com.fndt.quote.controllers.util.*
+import com.fndt.quote.domain.manager.UrlSchemeProvider
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -18,9 +20,10 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-const val uploadDir = "./files"
-
-class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingController {
+class UserController(
+    private val useCaseManager: UsersUseCaseFactory,
+    private val uploadDir: String
+) : RoutingController {
     override fun route(routing: Routing) = routing {
         updateAvatar()
         register()
@@ -31,13 +34,17 @@ class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingC
         get(REGISTRATION_ENDPOINT) { call.registerAndRespond() }
     }
 
-    private fun Route.getUserInfo() = routePathWithAuth(ROLE_ENDPOINT) { getExt { respond(it.user) } }
+    private fun Route.getUserInfo() = routePathWithAuth(ROLE_ENDPOINT) {
+        getExt { respond(it.user.toOutUser(UrlSchemeProvider)) }
+    }
 
     private fun Route.updateAvatar() = routePathWithAuth("/avatar") {
         postExt { principal ->
             val (text, status) = tryResult {
                 val file = downloadImage()
+                application.environment.log.info("File downloaded")
                 useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
+                application.environment.log.info("File processed")
             }
             respondText(text = text, status = status)
         }
@@ -61,8 +68,7 @@ class UserController(private val useCaseManager: UsersUseCaseFactory) : RoutingC
                     part.contentDisposition
                     val (title, ext) = File(part.originalFileName).nameAndExtension
                     val file = File(
-                        uploadDir,
-                        "upload-${System.currentTimeMillis()}-${title.hashCode()}.$ext"
+                        uploadDir, "upload-${System.currentTimeMillis()}-${title.hashCode()}.$ext"
                     )
                     part.streamProvider().use { input ->
                         file.outputStream().buffered().use { output -> input.copyToSuspend(output) }

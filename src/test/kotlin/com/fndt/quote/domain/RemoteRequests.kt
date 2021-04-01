@@ -3,16 +3,16 @@ package com.fndt.quote.domain
 import com.fndt.quote.controllers.dto.*
 import com.fndt.quote.controllers.dto.out.OutQuote
 import com.fndt.quote.controllers.dto.out.OutQuoteList
+import com.fndt.quote.controllers.dto.out.OutUser
 import com.fndt.quote.controllers.util.*
 import com.fndt.quote.domain.dto.Comment
-import com.fndt.quote.domain.dto.User
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
 import kotlinx.serialization.json.encodeToJsonElement
 
 @InternalAPI
-fun TestApplicationEngine.getUserByCredentials(credentials: String): User {
+fun TestApplicationEngine.getUserByCredentials(credentials: String): OutUser {
     val call = handleRequestWithAuth(HttpMethod.Get, ROLE_ENDPOINT, credentials)
     return serializer.parseResponse(call.response)
 }

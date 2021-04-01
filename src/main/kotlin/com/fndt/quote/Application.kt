@@ -12,15 +12,16 @@ import io.ktor.serialization.*
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.Koin
 import org.koin.ktor.ext.inject
+import org.slf4j.event.Level
 import java.io.File
 
-fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
-}
-
 fun Application.module() {
-    val host = environment.config.propertyOrNull("ktor.deployment.host")?.getString() ?: "0.0.0.0"
+    val host = environment.config.propertyOrNull("ktor.deployment.myUrlProperty")?.getString() ?: "0.0.0.0"
     val port = environment.config.propertyOrNull("ktor.deployment.port")?.getString() ?: "8080"
+
+    val imagesPath = environment.config.propertyOrNull("ktor.deployment.imagesFolder")?.getString() ?: "images"
+    val filePath = environment.config.propertyOrNull("ktor.deployment.filePath")?.getString() ?: "webapp"
+
     UrlSchemeProvider.initScheme("$host:$port")
     install(ContentNegotiation) {
         json(
@@ -34,8 +35,10 @@ fun Application.module() {
         modules(
             Modules.dbModule,
             Modules.managerModule,
+            Modules.imagesModule("$filePath/$imagesPath"),
             Modules.useCaseManagerModule,
             Modules.controllersModule,
+            Modules.userControllerModule("./$filePath")
         )
     }
 
@@ -47,6 +50,10 @@ fun Application.module() {
     val moderatorController by inject<ModeratorController>()
     val adminController by inject<AdminController>()
 
+    install(CallLogging) {
+        level = Level.INFO
+    }
+
     install(Authentication) { authController.addBasicAuth(this) }
     routing {
         listOf(
@@ -57,13 +64,13 @@ fun Application.module() {
             moderatorController,
             adminController
         ).forEach { it.route(this) }
-        routeImages()
+        routeImages(filePath, imagesPath)
     }
 }
 
-fun Routing.routeImages() {
+fun Routing.routeImages(mainFolder: String, subfolder: String) {
     static("images") {
-        staticRootFolder = File("./files")
-        files("images")
+        staticRootFolder = File("./$mainFolder")
+        files(subfolder)
     }
 }

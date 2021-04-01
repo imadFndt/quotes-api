@@ -13,6 +13,6 @@ object UrlSchemeProvider {
 
     fun getUrlFor(user: User) = buildString {
         append(scheme)
-        append(if (user.avatarScheme == AvatarScheme.CUSTOM) user.id.toString() else user.avatarScheme.fileName)
+        append(if (user.avatarScheme == AvatarScheme.CUSTOM) "${user.id}.$SUPPORTED_EXTENSION" else user.avatarScheme.fileName)
     }
 }

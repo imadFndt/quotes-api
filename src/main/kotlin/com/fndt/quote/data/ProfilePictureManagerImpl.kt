@@ -5,8 +5,7 @@ import com.fndt.quote.domain.manager.ProfilePictureManager
 import java.io.File
 import javax.imageio.ImageIO
 
-class ProfilePictureManagerImpl : ProfilePictureManager {
-    override val imagesScheme: String = "files/images"
+class ProfilePictureManagerImpl(override val imagesScheme: String) : ProfilePictureManager {
 
     override fun saveProfilePicture(file: File, user: User) {
         val a = file.copyTo(getProfilePictureFile(user), true)

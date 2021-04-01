@@ -83,11 +83,12 @@ private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend Applic
     }
 }
 
-suspend fun tryResult(block: suspend () -> Unit): Pair<String, HttpStatusCode> {
+suspend fun ApplicationCall.tryResult(block: suspend () -> Unit): Pair<String, HttpStatusCode> {
     return try {
         block()
         SUCCESS to HttpStatusCode.OK
     } catch (e: Exception) {
+        application.environment.log.info("Caught exception ${e.message}")
         FAILURE to HttpStatusCode.NotAcceptable
     }
 }
