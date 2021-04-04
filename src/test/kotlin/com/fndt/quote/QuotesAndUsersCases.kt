@@ -1,9 +1,9 @@
 package com.fndt.quote
 
-import com.fndt.quote.rest.dto.LikeRequest
 import com.fndt.quote.domain.*
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.rest.dto.LikeRequest
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*

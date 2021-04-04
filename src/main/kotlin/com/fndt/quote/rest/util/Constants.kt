@@ -1,9 +1,6 @@
 package com.fndt.quote.rest.util
 
 const val ID = "id"
-const val QUERY_ARG = "query"
-const val TAG_ARG = "tag"
-const val TAG_NAME_ARG = "name"
 const val QUOTE_ID = "id"
 
 const val QUOTES_ENDPOINT = "/quotes"

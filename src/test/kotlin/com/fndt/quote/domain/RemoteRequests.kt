@@ -19,7 +19,7 @@ fun TestApplicationEngine.getUserByCredentials(credentials: String): OutUser {
 
 @InternalAPI
 fun TestApplicationEngine.register(login: String, password: String): TestApplicationCall {
-    return handleRequest(HttpMethod.Get, REGISTRATION_ENDPOINT) {
+    return handleRequest(HttpMethod.Post, REGISTRATION_ENDPOINT) {
         addJsonHeader()
         setBody(serializer.encodeToJsonElement(UserCredentials(login, password)).toString())
     }

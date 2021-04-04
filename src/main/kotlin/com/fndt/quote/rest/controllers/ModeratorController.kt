@@ -5,10 +5,9 @@ import com.fndt.quote.rest.dto.AddTag
 import com.fndt.quote.rest.dto.QuoteReview
 import com.fndt.quote.rest.factory.ModeratorUseCaseFactory
 import com.fndt.quote.rest.util.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.request.*
 import io.ktor.routing.*
-import io.ktor.util.*
+import kotlinx.coroutines.flow.catch
 
 class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing.routePathWithAuth("") {
@@ -20,46 +19,38 @@ class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) :
 
     private fun Route.addTag() {
         postExt(TAG_ENDPOINT) { principal ->
-            val (tagName) = receiveCatching<AddTag>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.BadRequest)
-                return@postExt
-            }
-            useCaseFactory.getAddTagUseCase(tagName, principal.user)
-            respondText(SUCCESS)
+            processRequest {
+                val (tagName) = receive<AddTag>()
+                useCaseFactory.getAddTagUseCase(tagName, principal.user)
+            }.catch(defaultCatch())
+                .collectSuccessResponse(this)
         }
     }
 
     private fun Route.addQuoteToTag() {
         postExt("$TAG_ENDPOINT$ADD_ENDPOINT") { principal ->
-            parameters.toMap()
-            val (quoteId, tagId) = receiveCatching<AddQuoteToTag>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.BadRequest)
-                return@postExt
-            }
-            useCaseFactory.getAddQuoteToTagUseCase(quoteId, tagId, principal.user).run()
-            respond(SUCCESS)
+            processRequest {
+                val (quoteId, tagId) = receive<AddQuoteToTag>()
+                useCaseFactory.getAddQuoteToTagUseCase(quoteId, tagId, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 
     private fun Route.banUser() {
         postExt("$BAN_ENDPOINT/{$QUOTE_ID}") { principal ->
-            val quoteId = getAndCheckIntParameter(QUOTE_ID) ?: run {
-                respondText(text = MISSING_PARAMETER, status = HttpStatusCode.BadRequest)
-                return@postExt
-            }
-            useCaseFactory.getBanUseCase(quoteId, principal.user).run()
-            respondText(SUCCESS)
+            processRequest {
+                val quoteId = parameters[QUOTE_ID]!!.toInt()
+                useCaseFactory.getBanUseCase(quoteId, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 
     private fun Route.reviewQuote() {
         postExt(REVIEW_QUOTE_ENDPOINT) { principal ->
-            val (decision, quoteId) = receiveCatching<QuoteReview>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
-                return@postExt
-            }
-            useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
-            respondText(SUCCESS)
+            processRequest {
+                val (decision, quoteId) = receive<QuoteReview>()
+                useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 }

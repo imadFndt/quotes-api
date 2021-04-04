@@ -1,13 +1,15 @@
 package com.fndt.quote.rest.controllers
 
+import com.fndt.quote.rest.util.defaultCatch
 import com.fndt.quote.rest.dto.AddComment
 import com.fndt.quote.rest.factory.CommentsUseCaseFactory
+import com.fndt.quote.rest.util.processRequest
 import com.fndt.quote.rest.util.*
-import io.ktor.auth.*
-import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 
 class CommentsController(private val useCaseFactory: CommentsUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing.routePathWithAuth(COMMENTS_ENDPOINT) {
@@ -17,24 +19,23 @@ class CommentsController(private val useCaseFactory: CommentsUseCaseFactory) : R
 
     private fun Route.getComments() {
         getExt { principal ->
-            getAndCheckIntParameter(ID)?.let {
+            processRequest {
+                parameters[ID]!!.toInt()
+            }.catch(defaultCatch()).collect {
                 respond(useCaseFactory.getCommentsUseCase(it, principal.user).run())
-            } ?: respondText("$MISSING_PARAMETER $ID", status = HttpStatusCode.BadRequest)
+            }
         }
     }
 
     private fun Route.addComment() {
         postExt { principal ->
-            val quoteId = getAndCheckIntParameter(ID) ?: run {
-                respondText(PARAMETER_FAIL, status = HttpStatusCode.BadRequest)
-                return@postExt
+            processRequest {
+                val quoteId = parameters[ID]!!.toInt()
+                val (body) = receive<AddComment>()
+                useCaseFactory.addCommentsUseCase(body, quoteId, principal.user).run()
+            }.catch(defaultCatch()).collect {
+                respond(SUCCESS)
             }
-            val (body) = receiveCatching<AddComment>() ?: run {
-                respondText(PARAMETER_FAIL, status = HttpStatusCode.BadRequest)
-                return@postExt
-            }
-            val result = useCaseFactory.addCommentsUseCase(body, quoteId, principal.user).run()
-            respond(result)
         }
     }
 }

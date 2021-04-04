@@ -5,10 +5,8 @@ import com.fndt.quote.rest.dto.QuoteReview
 import com.fndt.quote.rest.dto.UpdateRole
 import com.fndt.quote.rest.factory.AdminUseCaseFactory
 import com.fndt.quote.rest.util.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.request.*
 import io.ktor.routing.*
-import java.util.*
 
 class AdminController(private val useCaseFactory: AdminUseCaseFactory) : RoutingController {
     override fun route(routing: Routing) = routing.routePathWithAuth("") {
@@ -19,34 +17,28 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
 
     private fun Route.reviewTag() {
         postExt(REVIEW_TAG_ENDPOINT) { principal ->
-            val (decision, id) = receiveCatching<QuoteReview>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
-                return@postExt
-            }
-            useCaseFactory.getApproveTagUseCase(id, decision, principal.user)
-            respondText(SUCCESS)
+            processRequest {
+                val (decision, id) = receive<QuoteReview>()
+                useCaseFactory.getApproveTagUseCase(id, decision, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 
     private fun Route.changeRole() {
         postExt(ROLE_ENDPOINT) { principal ->
-            val (role, id) = receiveCatching<UpdateRole>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
-                return@postExt
-            }
-            useCaseFactory.getChangeRoleUseCase(id, role, principal.user).run()
-            respond(SUCCESS)
+            processRequest {
+                val (role, id) = receive<UpdateRole>()
+                useCaseFactory.getChangeRoleUseCase(id, role, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 
     private fun Route.permanentBan() {
         postExt(PERMANENT_BAN_ENDPOINT) { principal ->
-            val (userId) = receiveCatching<PermanentBan>() ?: run {
-                respondText(text = BAD_JSON, status = HttpStatusCode.UnsupportedMediaType)
-                return@postExt
-            }
-            useCaseFactory.getPermanentBanUseCase(userId, principal.user).run()
-            respond(SUCCESS)
+            processRequest {
+                val (userId) = receive<PermanentBan>()
+                useCaseFactory.getPermanentBanUseCase(userId, principal.user).run()
+            }.defaultPostChain(this)
         }
     }
 }

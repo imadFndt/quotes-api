@@ -1,7 +1,7 @@
 package com.fndt.quote
 
-import com.fndt.quote.rest.dto.AddComment
 import com.fndt.quote.domain.*
+import com.fndt.quote.rest.dto.AddComment
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
