@@ -8,7 +8,7 @@ import com.fndt.quote.domain.dto.isBanned
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class AddQuoteUseCase(
     private val body: String,

@@ -2,7 +2,7 @@ package com.fndt.quote.rest.dto.out
 
 import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.rest.UrlSchemeProvider
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

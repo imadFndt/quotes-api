@@ -5,28 +5,9 @@ import com.fndt.quote.rest.dto.UserPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
-import kotlinx.serialization.SerializationException
-
-// todo suspend nullable lambda
-suspend inline fun <reified T : Any> ApplicationCall.receiveCatching(): T? {
-    return try {
-        receive()
-    } catch (e: SerializationException) {
-        null
-    }
-}
-
-fun ApplicationCall.getAndCheckIntParameter(parameterName: String): Int? {
-    return try {
-        parameters[parameterName]?.toInt()
-    } catch (e: NumberFormatException) {
-        null
-    }
-}
 
 fun Route.routePathWithAuth(basePath: String, routingBlock: Route.() -> Unit) {
     route(basePath) { authenticate { routingBlock() } }
@@ -44,20 +25,6 @@ fun Route.postExt(
     block: suspend ApplicationCall.(UserPrincipal) -> Unit
 ): Route {
     return httpMethodsPrincipalExt(path, Route::post, Route::post, block)
-}
-
-fun Route.deleteExt(
-    path: String? = null,
-    block: suspend ApplicationCall.(UserPrincipal) -> Unit
-): Route {
-    return httpMethodsPrincipalExt(path, Route::delete, Route::delete, block)
-}
-
-fun Route.patchExt(
-    path: String? = null,
-    block: suspend ApplicationCall.(UserPrincipal) -> Unit
-): Route {
-    return httpMethodsPrincipalExt(path, Route::patch, Route::patch, block)
 }
 
 private fun Route.httpMethodsPrincipalExt(
@@ -80,15 +47,5 @@ private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend Applic
         respondText(e.message.toString(), status = HttpStatusCode.BadRequest)
     } catch (e: IllegalArgumentException) {
         respondText(e.message.toString(), status = HttpStatusCode.NotAcceptable)
-    }
-}
-
-suspend fun ApplicationCall.tryResult(block: suspend () -> Unit): Pair<String, HttpStatusCode> {
-    return try {
-        block()
-        SUCCESS to HttpStatusCode.OK
-    } catch (e: Exception) {
-        application.environment.log.info("Caught exception ${e.message}")
-        FAILURE to HttpStatusCode.NotAcceptable
     }
 }

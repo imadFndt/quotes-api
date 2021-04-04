@@ -7,7 +7,7 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.LikeRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class LikeUseCase(
     private val like: Like,

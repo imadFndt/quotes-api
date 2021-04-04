@@ -4,7 +4,7 @@ import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class AuthUseCase(
     private val name: String,

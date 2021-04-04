@@ -6,7 +6,7 @@ import com.fndt.quote.domain.dto.User
 interface UserRepository {
     fun getUsers(): List<User>
     fun add(user: User): ID
-    fun remove(userId: Int)
+    fun remove(user: User)
 
     fun findUserByParams(
         userId: Int? = null,

@@ -2,8 +2,8 @@ package com.fndt.quote.rest.controllers
 
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesOrder
-import com.fndt.quote.domain.manager.UrlSchemeProvider
-import com.fndt.quote.domain.usecases.*
+import com.fndt.quote.domain.usecases.quotes.*
+import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.dto.out.toOutQuoteList
 import com.fndt.quote.rest.factory.SelectionUseCaseFactory
 import com.fndt.quote.rest.util.*

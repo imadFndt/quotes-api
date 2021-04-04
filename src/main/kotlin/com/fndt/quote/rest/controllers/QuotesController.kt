@@ -20,7 +20,7 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
             processRequest {
                 val (quote, authorName) = receive<AddQuote>()
                 useCaseFactory.addQuotesUseCase(quote, authorName, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 
@@ -29,7 +29,7 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
             processRequest {
                 val (quoteId, action) = receive<LikeRequest>()
                 useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 }

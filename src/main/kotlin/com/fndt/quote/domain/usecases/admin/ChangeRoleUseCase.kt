@@ -5,7 +5,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class ChangeRoleUseCase(
     private val userId: Int,

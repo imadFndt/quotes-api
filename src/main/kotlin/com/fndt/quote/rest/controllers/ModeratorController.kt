@@ -32,7 +32,7 @@ class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) :
             processRequest {
                 val (quoteId, tagId) = receive<AddQuoteToTag>()
                 useCaseFactory.getAddQuoteToTagUseCase(quoteId, tagId, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 
@@ -41,7 +41,7 @@ class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) :
             processRequest {
                 val quoteId = parameters[QUOTE_ID]!!.toInt()
                 useCaseFactory.getBanUseCase(quoteId, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 
@@ -50,7 +50,7 @@ class ModeratorController(private val useCaseFactory: ModeratorUseCaseFactory) :
             processRequest {
                 val (decision, quoteId) = receive<QuoteReview>()
                 useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 }

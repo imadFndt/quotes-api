@@ -1,6 +1,6 @@
 package com.fndt.quote.rest.controllers
 
-import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.dto.UserCredentials
 import com.fndt.quote.rest.dto.out.toOutUser
 import com.fndt.quote.rest.factory.UsersUseCaseFactory
@@ -35,7 +35,7 @@ class UserController(
             call.processRequest {
                 val credentials = receive<UserCredentials>()
                 useCaseManager.registerUseCase(credentials.login, credentials.password).run()
-            }.defaultPostChain(call)
+            }.respondPostDefault(call)
         }
     }
 
@@ -48,7 +48,7 @@ class UserController(
             processRequest {
                 val file = downloadImage(uploadDir)
                 useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 }

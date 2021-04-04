@@ -1,4 +1,4 @@
-package com.fndt.quote.domain.usecases
+package com.fndt.quote.domain.usecases.quotes
 
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.*
@@ -10,6 +10,7 @@ import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 import kotlin.math.ceil
 
 const val AUTHOR_KEY = "author"

@@ -2,7 +2,7 @@ package com.fndt.quote.domain
 
 import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesOrder
-import com.fndt.quote.domain.usecases.*
+import com.fndt.quote.domain.usecases.quotes.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement

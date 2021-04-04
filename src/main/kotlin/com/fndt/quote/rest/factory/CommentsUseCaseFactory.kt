@@ -7,7 +7,7 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.CommentRepository
 import com.fndt.quote.domain.repository.QuoteRepository
-import com.fndt.quote.domain.usecases.UseCase
+import com.fndt.quote.domain.usecases.base.UseCase
 import com.fndt.quote.domain.usecases.comments.AddCommentUseCase
 import com.fndt.quote.domain.usecases.comments.GetCommentsUseCase
 

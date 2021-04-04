@@ -21,7 +21,7 @@ suspend fun <T> Flow<T>.collectSuccessResponse(call: ApplicationCall) {
     }
 }
 
-suspend fun <T> Flow<T>.defaultPostChain(call: ApplicationCall) {
+suspend fun <T> Flow<T>.respondPostDefault(call: ApplicationCall) {
     catch(call.defaultCatch())
         .collect { call.respond(SUCCESS) }
 }

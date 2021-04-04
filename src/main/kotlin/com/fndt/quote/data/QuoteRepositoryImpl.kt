@@ -24,8 +24,8 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
         return@transaction if (quoteExists) update(quote) else insert(quote)
     }
 
-    override fun remove(quoteId: Int) {
-        quotesTable.deleteWhere { quotesTable.id eq quoteId }
+    override fun remove(quote: Quote) {
+        quotesTable.deleteWhere { quotesTable.id eq quote.id }
     }
 
     override fun findById(id: Int): Quote? {

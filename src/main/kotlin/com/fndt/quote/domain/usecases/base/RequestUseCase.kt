@@ -1,4 +1,4 @@
-package com.fndt.quote.domain.usecases
+package com.fndt.quote.domain.usecases.base
 
 import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.domain.RequestManager

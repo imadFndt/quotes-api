@@ -5,7 +5,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class PermanentBanUseCase(
     private val userId: Int,
@@ -26,6 +26,6 @@ class PermanentBanUseCase(
     }
 
     override suspend fun makeRequest() {
-        userRepository.remove(targetUser.id)
+        userRepository.remove(targetUser)
     }
 }

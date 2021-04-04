@@ -18,8 +18,8 @@ class TagRepositoryImpl(dbProvider: DatabaseProvider) : TagRepository {
         return if (tagExists) update(tag) else insert(tag)
     }
 
-    override fun remove(tagId: Int): Int {
-        return tagsTable.deleteWhere { tagsTable.id eq tagId }
+    override fun remove(tag: Tag): Int {
+        return tagsTable.deleteWhere { tagsTable.id eq tag.id }
     }
 
     private fun insert(tag: Tag): ID {

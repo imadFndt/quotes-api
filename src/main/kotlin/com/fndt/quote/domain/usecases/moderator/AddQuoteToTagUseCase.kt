@@ -6,7 +6,7 @@ import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.TagSelectionRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class AddQuoteToTagUseCase(
     private val quoteId: Int,

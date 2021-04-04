@@ -7,7 +7,7 @@ import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.TagSelectionRepository
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.UseCase
+import com.fndt.quote.domain.usecases.base.UseCase
 import com.fndt.quote.domain.usecases.moderator.AddQuoteToTagUseCase
 import com.fndt.quote.domain.usecases.moderator.AddTagUseCase
 import com.fndt.quote.domain.usecases.moderator.BanReadOnlyUserUseCase

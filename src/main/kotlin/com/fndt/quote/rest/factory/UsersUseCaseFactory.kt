@@ -5,7 +5,7 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.ProfilePictureManager
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.UseCase
+import com.fndt.quote.domain.usecases.base.UseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
 import com.fndt.quote.domain.usecases.users.ChangeProfilePictureUseCase
 import com.fndt.quote.domain.usecases.users.RegisterUseCase

@@ -6,7 +6,7 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.CommentRepository
 import com.fndt.quote.domain.repository.QuoteRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class GetCommentsUseCase(
     private val quoteId: Int,

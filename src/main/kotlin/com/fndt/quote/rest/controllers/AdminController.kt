@@ -20,7 +20,7 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
             processRequest {
                 val (decision, id) = receive<QuoteReview>()
                 useCaseFactory.getApproveTagUseCase(id, decision, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 
@@ -29,7 +29,7 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
             processRequest {
                 val (role, id) = receive<UpdateRole>()
                 useCaseFactory.getChangeRoleUseCase(id, role, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 
@@ -38,7 +38,7 @@ class AdminController(private val useCaseFactory: AdminUseCaseFactory) : Routing
             processRequest {
                 val (userId) = receive<PermanentBan>()
                 useCaseFactory.getPermanentBanUseCase(userId, principal.user).run()
-            }.defaultPostChain(this)
+            }.respondPostDefault(this)
         }
     }
 }

@@ -9,11 +9,11 @@ typealias ID = Int
 @Serializable
 data class Quote(
     val id: ID = UNDEFINED,
-    var body: String,
+    val body: String,
     val author: Author,
     @SerialName("created_at") val createdAt: Long,
-    var user: User,
-    var likes: Int = 0,
-    var tags: List<Tag> = emptyList(),
+    val user: User,
+    val likes: Int = 0,
+    val tags: List<Tag> = emptyList(),
     val isPublic: Boolean = false
 )

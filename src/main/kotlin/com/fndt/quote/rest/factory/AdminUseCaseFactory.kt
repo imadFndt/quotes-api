@@ -6,10 +6,10 @@ import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.UseCase
 import com.fndt.quote.domain.usecases.admin.ChangeRoleUseCase
 import com.fndt.quote.domain.usecases.admin.PermanentBanUseCase
 import com.fndt.quote.domain.usecases.admin.ReviewTagUseCase
+import com.fndt.quote.domain.usecases.base.UseCase
 
 class AdminUseCaseFactory(
     private val userRepository: UserRepository,

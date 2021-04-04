@@ -3,7 +3,7 @@ package com.fndt.quote.rest.dto.out
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.Tag
-import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.rest.UrlSchemeProvider
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

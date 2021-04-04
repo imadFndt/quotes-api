@@ -7,7 +7,7 @@ import com.fndt.quote.domain.repository.AuthorRepository
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.repository.TagRepository
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.SelectionUseCase
+import com.fndt.quote.domain.usecases.quotes.SelectionUseCase
 
 class SelectionUseCaseFactory(
     private val userRepository: UserRepository,

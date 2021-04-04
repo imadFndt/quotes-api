@@ -8,7 +8,7 @@ import com.fndt.quote.domain.filter.QuoteFilterArguments
 interface QuoteRepository {
     fun get(args: QuoteFilterArguments): List<Quote>
     fun add(quote: Quote): ID
-    fun remove(quoteId: Int)
+    fun remove(quote: Quote)
     fun findById(id: Int): Quote?
     fun findByUser(user: User): List<Quote>
 }

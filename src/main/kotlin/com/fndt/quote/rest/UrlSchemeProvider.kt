@@ -1,7 +1,8 @@
-package com.fndt.quote.domain.manager
+package com.fndt.quote.rest
 
 import com.fndt.quote.domain.dto.AvatarScheme
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.manager.SUPPORTED_EXTENSION
 
 object UrlSchemeProvider {
     lateinit var scheme: String
@@ -13,6 +14,11 @@ object UrlSchemeProvider {
 
     fun getUrlFor(user: User) = buildString {
         append(scheme)
-        append(if (user.avatarScheme == AvatarScheme.CUSTOM) "${user.id}.$SUPPORTED_EXTENSION" else user.avatarScheme.fileName)
+        append(user.toProfilePictureName())
     }
+}
+
+private fun User.toProfilePictureName(): String = when (avatarScheme) {
+    AvatarScheme.PANDA -> "panda.$SUPPORTED_EXTENSION"
+    AvatarScheme.CUSTOM -> "$id.$SUPPORTED_EXTENSION"
 }

@@ -5,7 +5,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 const val BAN_TIME = 24 * 60 * 60 * 1000
 

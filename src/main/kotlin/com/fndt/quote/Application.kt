@@ -1,7 +1,7 @@
 package com.fndt.quote
 
 import com.fndt.quote.di.Modules
-import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.controllers.*
 import io.ktor.application.*
 import io.ktor.auth.*

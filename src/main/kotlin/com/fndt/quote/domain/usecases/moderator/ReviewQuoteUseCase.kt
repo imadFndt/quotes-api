@@ -1,10 +1,11 @@
 package com.fndt.quote.domain.usecases.moderator
 
 import com.fndt.quote.domain.RequestManager
+import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.QuoteRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class ReviewQuoteUseCase(
     private val quoteId: Int,
@@ -21,11 +22,10 @@ class ReviewQuoteUseCase(
 
     override suspend fun makeRequest() {
         val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not found")
-        if (decision) {
-            val newQuote = quote.copy(isPublic = true)
-            quoteRepository.add(newQuote)
-        } else {
-            quoteRepository.remove(quoteId)
-        }
+        if (decision) quoteRepository.add(quote.approved()) else quoteRepository.remove(quote)
     }
+}
+
+private fun Quote.approved(): Quote {
+    return copy(isPublic = true)
 }

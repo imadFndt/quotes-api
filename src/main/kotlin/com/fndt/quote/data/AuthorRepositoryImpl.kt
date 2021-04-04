@@ -18,8 +18,8 @@ class AuthorRepositoryImpl(databaseProvider: DatabaseProvider) : AuthorRepositor
         return if (authorExists) update(author) else insert(author)
     }
 
-    override fun remove(authorId: Int): Int {
-        return authorTable.deleteWhere { authorTable.id eq authorId }
+    override fun remove(author: Author): Int {
+        return authorTable.deleteWhere { authorTable.id eq author.id }
     }
 
     override fun findById(authorId: ID): Author? {

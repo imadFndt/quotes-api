@@ -1,10 +1,11 @@
 package com.fndt.quote.domain.usecases.admin
 
 import com.fndt.quote.domain.RequestManager
+import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class ReviewTagUseCase(
     private val tagId: Int,
@@ -19,6 +20,10 @@ class ReviewTagUseCase(
 
     override suspend fun makeRequest() {
         val tag = tagRepository.findById(tagId) ?: throw IllegalStateException("Tag not found")
-        if (decision) tagRepository.add(tag) else tagRepository.remove(tag.id)
+        if (decision) tagRepository.add(tag.approved()) else tagRepository.remove(tag)
     }
+}
+
+private fun Tag.approved(): Tag {
+    return copy(isPublic = true)
 }

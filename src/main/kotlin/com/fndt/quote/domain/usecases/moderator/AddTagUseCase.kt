@@ -5,7 +5,7 @@ import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.TagRepository
-import com.fndt.quote.domain.usecases.RequestUseCase
+import com.fndt.quote.domain.usecases.base.RequestUseCase
 
 class AddTagUseCase(
     private val tagName: String,
