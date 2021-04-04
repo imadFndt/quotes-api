@@ -19,6 +19,11 @@ class LikeUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager,
 ) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthorized(user)
+    }
+
     override suspend fun makeRequest() {
         quoteRepository.findById(like.quoteId) ?: throw IllegalArgumentException("Quote does not exist")
         userRepository.findUserByParams(like.userId) ?: throw IllegalArgumentException("User does not exist")
@@ -28,9 +33,5 @@ class LikeUseCase(
             !likeAction && likeExists -> likeRepository.remove(like)
             else -> throw IllegalArgumentException("Like failed")
         }
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(user)
     }
 }

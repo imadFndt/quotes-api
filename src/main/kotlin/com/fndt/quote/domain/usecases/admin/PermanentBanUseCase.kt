@@ -17,12 +17,15 @@ class PermanentBanUseCase(
 
     lateinit var targetUser: User
 
-    override suspend fun makeRequest() {
-        userRepository.remove(targetUser.id)
+    override fun onStartRequest() {
+        targetUser = userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
     }
 
     override fun validate(user: User?): Boolean {
-        targetUser = userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
         return permissionManager.hasAdminPermission(user) && targetUser.role != AuthRole.ADMIN
+    }
+
+    override suspend fun makeRequest() {
+        userRepository.remove(targetUser.id)
     }
 }

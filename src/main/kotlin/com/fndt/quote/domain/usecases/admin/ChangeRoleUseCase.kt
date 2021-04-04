@@ -15,11 +15,16 @@ class ChangeRoleUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager,
 ) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
+
     override suspend fun makeRequest() {
         val user = userRepository.findUserByParams(userId = userId) ?: throw IllegalStateException("User not found")
-        val updatedUser = user.copy(role = newRole)
+        val updatedUser = user.updateRole(newRole)
         userRepository.add(updatedUser)
     }
 
-    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
+    private fun User.updateRole(newRole: AuthRole): User {
+        return copy(role = newRole)
+    }
 }

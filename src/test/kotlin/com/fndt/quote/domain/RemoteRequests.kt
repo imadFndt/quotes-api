@@ -1,10 +1,10 @@
 package com.fndt.quote.domain
 
-import com.fndt.quote.controllers.dto.*
-import com.fndt.quote.controllers.dto.out.OutQuote
-import com.fndt.quote.controllers.dto.out.OutQuoteList
-import com.fndt.quote.controllers.dto.out.OutUser
-import com.fndt.quote.controllers.util.*
+import com.fndt.quote.rest.dto.*
+import com.fndt.quote.rest.dto.out.OutQuote
+import com.fndt.quote.rest.dto.out.OutQuoteList
+import com.fndt.quote.rest.dto.out.OutUser
+import com.fndt.quote.rest.util.*
 import com.fndt.quote.domain.dto.Comment
 import io.ktor.http.*
 import io.ktor.server.testing.*

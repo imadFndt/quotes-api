@@ -36,19 +36,17 @@ internal class AddQuoteUseCaseTest : UseCaseTestInit() {
         )
         useCase.run()
         verify(exactly = 1) { quoteRepository.add(any()) }
-        verify(exactly = 1) { quoteRepository.findById(any()) }
     }
 
     @Test
     fun `add quote failure`() {
         val requestUser = getDummyUser(AuthRole.REGULAR)
-        coEvery { quoteRepository.findById(any()) } returns null
+        coEvery { authorRepository.findByName(any()) } returns null
+        coEvery { authorRepository.findById(any()) } returns null
         useCase = AddQuoteUseCase(
             dummyBody, dummyAuthor, quoteRepository, authorRepository, requestUser, permissionManager, requestManager
         )
         assertThrows<IllegalStateException> { runBlocking { useCase.run() } }
-        verify(exactly = 1) { quoteRepository.add(any()) }
-        verify(exactly = 1) { quoteRepository.findById(any()) }
     }
 
     @Test

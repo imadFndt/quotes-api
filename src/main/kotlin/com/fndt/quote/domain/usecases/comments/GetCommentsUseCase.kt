@@ -16,12 +16,13 @@ class GetCommentsUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<List<Comment>>(requestManager) {
-    override suspend fun makeRequest(): List<Comment> {
-        val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not exists")
-        return commentRepository.get(quote.id)
-    }
 
     override fun validate(user: User?): Boolean {
         return permissionManager.isAuthorized(requestingUser)
+    }
+
+    override suspend fun makeRequest(): List<Comment> {
+        val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not exists")
+        return commentRepository.get(quote.id)
     }
 }

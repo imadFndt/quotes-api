@@ -18,18 +18,18 @@ class AddQuoteUseCase(
     override val requestingUser: User,
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
-) : RequestUseCase<Quote>(requestManager) {
-    override suspend fun makeRequest(): Quote {
+) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthorized(user) && user?.isBanned == false
+    }
+
+    override suspend fun makeRequest() {
         val author = authorRepository.findByName(authorName) ?: run {
             val newId = authorRepository.add(Author(name = authorName))
             authorRepository.findById(newId) ?: throw IllegalStateException("failed to find author")
         }
         val quote = Quote(body = body, createdAt = System.currentTimeMillis(), user = requestingUser, author = author)
-        val id = quoteRepository.add(quote)
-        return quoteRepository.findById(id) ?: throw IllegalStateException()
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(user) && user?.isBanned == false
+        quoteRepository.add(quote)
     }
 }

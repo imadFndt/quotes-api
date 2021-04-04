@@ -1,7 +1,5 @@
 package com.fndt.quote.di
 
-import com.fndt.quote.controllers.*
-import com.fndt.quote.controllers.factory.*
 import com.fndt.quote.data.*
 import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.filter.QuotesFilter
@@ -9,6 +7,8 @@ import com.fndt.quote.domain.manager.ProfilePictureManager
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.manager.implementations.UserPermissionManagerImpl
 import com.fndt.quote.domain.repository.*
+import com.fndt.quote.rest.controllers.*
+import com.fndt.quote.rest.factory.*
 import org.koin.dsl.module
 
 object Modules {

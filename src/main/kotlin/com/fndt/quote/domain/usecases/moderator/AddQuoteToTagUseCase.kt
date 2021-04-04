@@ -18,13 +18,14 @@ class AddQuoteToTagUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?): Boolean {
+        return permissionManager.hasModeratorPermission(user)
+    }
+
     override suspend fun makeRequest() {
         val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not exist")
         val tag = tagRepository.findById(tagId) ?: throw IllegalStateException("Tag not exist")
         tagSelectionRepository.add(quote, tag)
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.hasModeratorPermission(user)
     }
 }

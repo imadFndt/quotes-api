@@ -19,13 +19,16 @@ class BanReadOnlyUserUseCase(
 
     lateinit var targetUser: User
 
+    override fun onStartRequest() {
+        targetUser = userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
+    }
+
     override suspend fun makeRequest() {
         val updatedUser = targetUser.copy(blockedUntil = System.currentTimeMillis() + BAN_TIME)
         userRepository.add(updatedUser)
     }
 
     override fun validate(user: User?): Boolean {
-        targetUser = userRepository.findUserByParams(userId) ?: throw IllegalStateException("User not found")
         return permissionManager.hasModeratorPermission(user) && targetUser.role != AuthRole.ADMIN
     }
 }

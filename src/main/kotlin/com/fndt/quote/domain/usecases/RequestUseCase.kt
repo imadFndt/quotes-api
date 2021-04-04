@@ -10,11 +10,15 @@ abstract class RequestUseCase<T>(private val requestManager: RequestManager) : U
     var isExecuted = false
         private set
 
-    protected abstract suspend fun makeRequest(): T
+    protected open fun onStartRequest() {
+    }
 
     protected abstract fun validate(user: User?): Boolean
 
+    protected abstract suspend fun makeRequest(): T
+
     final override suspend fun run(): T = requestManager.execute {
+        onStartRequest()
         if (isExecuted) throw IllegalStateException("Executed more than 1 time")
         if (!validate(requestingUser)) throw PermissionException("Permission denied")
         makeRequest().also { isExecuted = true }

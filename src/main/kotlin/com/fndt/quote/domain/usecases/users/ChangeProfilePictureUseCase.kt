@@ -18,6 +18,10 @@ class ChangeProfilePictureUseCase(
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
 
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthorized(user)
+    }
+
     override suspend fun makeRequest() {
         userRepository.findUserByParams(userId = requestingUser.id) ?: throw IllegalStateException("User not found")
         val (width, height) = pictureManager.getResolution(newPicture)
@@ -34,9 +38,5 @@ class ChangeProfilePictureUseCase(
         if (requestingUser.avatarScheme != AvatarScheme.CUSTOM) {
             userRepository.add(requestingUser.copy(avatarScheme = AvatarScheme.CUSTOM))
         }
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(user)
     }
 }

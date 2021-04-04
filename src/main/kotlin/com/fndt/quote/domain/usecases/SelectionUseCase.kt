@@ -46,6 +46,14 @@ class SelectionUseCase(
             targetTag?.isPublic == false || targetAccess == QuotesAccess.PRIVATE || targetAccess == QuotesAccess.ALL
             )
 
+    override fun onStartRequest() {
+        arguments.interpret()
+    }
+
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthorized(requestingUser) && user?.isRegularUsingPrivateData == false
+    }
+
     override suspend fun makeRequest(): Quotes {
         val filterArgs = QuoteFilterArguments(
             order = targetOrder,
@@ -55,14 +63,7 @@ class SelectionUseCase(
             query = targetQuery,
             access = targetAccess,
         )
-        quoteRepository.get(filterArgs).also {
-            return it.toPaged()
-        }
-    }
-
-    override fun validate(user: User?): Boolean {
-        arguments.interpret()
-        return permissionManager.isAuthorized(requestingUser) && user?.isRegularUsingPrivateData == false
+        quoteRepository.get(filterArgs).also { return it.toPaged() }
     }
 
     private fun Map<String, Any?>.interpret() {

@@ -14,12 +14,13 @@ class AddTagUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
-    override suspend fun makeRequest() {
-        val tag = Tag(name = tagName)
-        tagRepository.add(tag)
-    }
 
     override fun validate(user: User?): Boolean {
         return permissionManager.hasModeratorPermission(requestingUser)
+    }
+
+    override suspend fun makeRequest() {
+        val tag = Tag(name = tagName)
+        tagRepository.add(tag)
     }
 }

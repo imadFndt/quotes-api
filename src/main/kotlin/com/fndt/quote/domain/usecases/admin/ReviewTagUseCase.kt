@@ -14,10 +14,11 @@ class ReviewTagUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
+
     override suspend fun makeRequest() {
         val tag = tagRepository.findById(tagId) ?: throw IllegalStateException("Tag not found")
         if (decision) tagRepository.add(tag) else tagRepository.remove(tag.id)
     }
-
-    override fun validate(user: User?) = permissionManager.hasAdminPermission(user)
 }

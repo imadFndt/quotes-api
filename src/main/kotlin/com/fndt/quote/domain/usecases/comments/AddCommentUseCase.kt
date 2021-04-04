@@ -21,14 +21,14 @@ class AddCommentUseCase(
 
     override val requestingUser: User = user
 
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthorized(requestingUser) && user?.isBanned == false
+    }
+
     override suspend fun makeRequest(): Comment {
         quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote does not exist")
         val comment = Comment(body = body, quoteId = quoteId, createdAt = System.currentTimeMillis(), user = user)
         val id = commentRepository.add(comment)
         return commentRepository.findComment(id) ?: throw IllegalStateException("Failed to add comment")
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthorized(requestingUser) && user?.isBanned == false
     }
 }

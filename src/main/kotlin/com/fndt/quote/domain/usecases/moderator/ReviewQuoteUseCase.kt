@@ -14,6 +14,11 @@ class ReviewQuoteUseCase(
     private val permissionManager: UserPermissionManager,
     requestManager: RequestManager
 ) : RequestUseCase<Unit>(requestManager) {
+
+    override fun validate(user: User?): Boolean {
+        return permissionManager.hasModeratorPermission(user)
+    }
+
     override suspend fun makeRequest() {
         val quote = quoteRepository.findById(quoteId) ?: throw IllegalStateException("Quote not found")
         if (decision) {
@@ -22,9 +27,5 @@ class ReviewQuoteUseCase(
         } else {
             quoteRepository.remove(quoteId)
         }
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.hasModeratorPermission(user)
     }
 }

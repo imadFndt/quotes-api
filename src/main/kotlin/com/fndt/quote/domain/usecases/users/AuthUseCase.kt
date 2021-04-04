@@ -15,12 +15,12 @@ class AuthUseCase(
 ) : RequestUseCase<User>(requestManager) {
     override val requestingUser: User? = null
 
+    override fun validate(user: User?): Boolean {
+        return permissionManager.isAuthAllowed()
+    }
+
     override suspend fun makeRequest(): User {
         val user = userRepository.findUserByParams(name = name, password = password)
         return user ?: throw IllegalStateException("Authentication filed")
-    }
-
-    override fun validate(user: User?): Boolean {
-        return permissionManager.isAuthAllowed()
     }
 }
