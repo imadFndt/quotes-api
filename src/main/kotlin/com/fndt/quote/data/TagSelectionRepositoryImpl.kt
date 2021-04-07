@@ -12,8 +12,7 @@ class TagSelectionRepositoryImpl(dbProvider: DatabaseProvider) : TagSelectionRep
         return tagsQuotesTable.selectAll()
             .map {
                 it[tagsQuotesTable.quote].value to it[tagsQuotesTable.tag].value
-            }.asSequence()
-            .toMap()
+            }.toMap()
     }
 
     override fun add(quote: Quote, tag: Tag) {

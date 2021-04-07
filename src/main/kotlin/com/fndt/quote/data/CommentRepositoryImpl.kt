@@ -25,22 +25,22 @@ class CommentRepositoryImpl(dbProvider: DatabaseProvider) : CommentRepository {
             }
     }
 
-    override fun add(comment: Comment): ID {
+    override fun add(item: Comment): ID {
         return commentsTable.insert { insert ->
-            insert[body] = comment.body
-            insert[createdAt] = comment.createdAt
-            insert[user] = comment.user.id
-            insert[quoteId] = comment.quoteId
+            insert[body] = item.body
+            insert[createdAt] = item.createdAt
+            insert[user] = item.user.id
+            insert[quoteId] = item.quoteId
         }[commentsTable.id].value
     }
 
-    override fun remove(comment: Comment) {
-        commentsTable.deleteWhere { commentsTable.id eq comment.id }
+    override fun remove(item: Comment) {
+        commentsTable.deleteWhere { commentsTable.id eq item.id }
     }
 
-    override fun findComment(commentId: Int): Comment? {
+    override fun findById(itemId: Int): Comment? {
         return commentsTable
-            .select { commentsTable.id eq commentId }
+            .select { commentsTable.id eq itemId }
             .firstOrNull()
             ?.let {
                 val user = findUser(it[DatabaseProvider.Comments.user].value) ?: throw IllegalStateException("No user")

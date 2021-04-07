@@ -1,12 +1,15 @@
 package com.fndt.quote
 
-import com.fndt.quote.controllers.*
 import com.fndt.quote.di.Modules
-import com.fndt.quote.domain.manager.UrlSchemeProvider
+import com.fndt.quote.domain.PermissionException
+import com.fndt.quote.rest.UrlSchemeProvider
+import com.fndt.quote.rest.controllers.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
 import kotlinx.serialization.json.Json
@@ -46,12 +49,17 @@ fun Application.module() {
     val quotesController by inject<QuotesController>()
     val commentsController by inject<CommentsController>()
     val authController by inject<AuthController>()
-    val selectionsController by inject<SelectionsController>()
-    val moderatorController by inject<ModeratorController>()
-    val adminController by inject<AdminController>()
+    val tagsController by inject<TagsController>()
 
     install(CallLogging) {
         level = Level.INFO
+    }
+
+    install(StatusPages) {
+        exception<Throwable> {
+            val status = if (it is PermissionException) HttpStatusCode.Unauthorized else HttpStatusCode.BadRequest
+            call.respondText("Throwable: ${it.message}", status = status)
+        }
     }
 
     install(Authentication) { authController.addBasicAuth(this) }
@@ -60,9 +68,7 @@ fun Application.module() {
             registrationController,
             quotesController,
             commentsController,
-            selectionsController,
-            moderatorController,
-            adminController
+            tagsController,
         ).forEach { it.route(this) }
         routeImages(filePath, imagesPath)
     }

@@ -20,8 +20,8 @@ class UserRepositoryImpl(dbProvider: DatabaseProvider) : UserRepository {
         return if (userExists) update(user) else insert(user)
     }
 
-    override fun remove(userId: Int) {
-        usersTable.deleteWhere { DatabaseProvider.Users.id eq userId }
+    override fun remove(user: User) {
+        usersTable.deleteWhere { DatabaseProvider.Users.id eq user.id }
     }
 
     override fun findUserByParams(userId: Int?, name: String?, password: String?, withPassword: Boolean): User? {

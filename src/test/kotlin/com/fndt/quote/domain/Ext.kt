@@ -4,6 +4,7 @@ import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.manager.RequestManager
 import io.mockk.coEvery
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking

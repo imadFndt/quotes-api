@@ -5,7 +5,6 @@ import com.fndt.quote.domain.dto.*
 import org.jetbrains.exposed.sql.ResultRow
 import java.security.MessageDigest
 
-// URL SCHEME
 fun ResultRow.toQuotes(
     tagList: List<Tag> = emptyList(),
     likesCount: Int,
@@ -40,6 +39,7 @@ fun ResultRow.toTag(): Tag {
     return Tag(
         id = this[DatabaseProvider.Tags.id].value,
         name = this[DatabaseProvider.Tags.name],
+        isPublic = this[DatabaseProvider.Tags.isPublic]
     )
 }
 
@@ -66,10 +66,7 @@ fun ResultRow.toAuthor() = Author(
 // NOT REDUNDANT
 fun ResultRow.toTagNullable(): Tag? {
     return try {
-        Tag(
-            id = this[DatabaseProvider.Tags.id].value,
-            name = this[DatabaseProvider.Tags.name],
-        )
+        toTag()
     } catch (e: NullPointerException) {
         null
     }
