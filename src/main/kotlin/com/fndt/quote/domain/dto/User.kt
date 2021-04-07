@@ -26,3 +26,6 @@ data class User(
 }
 
 val User.isBanned: Boolean get() = blockedUntil?.let { System.currentTimeMillis() < it } ?: false
+fun User.getUnbanned(): User {
+    return copy(blockedUntil = null)
+}

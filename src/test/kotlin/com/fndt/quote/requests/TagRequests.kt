@@ -1,6 +1,6 @@
 package com.fndt.quote.requests
 
-import com.fndt.quote.domain.*
+import com.fndt.quote.*
 import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.rest.dto.AddQuoteToTag
 import com.fndt.quote.rest.dto.AddTag

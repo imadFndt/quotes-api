@@ -21,6 +21,6 @@ class AuthUseCase(
 
     override suspend fun makeRequest(): User {
         val user = userRepository.findUserByParams(name = name, password = password)
-        return user ?: throw IllegalStateException("Authentication filed")
+        return user ?: throw IllegalStateException("Authentication failed")
     }
 }

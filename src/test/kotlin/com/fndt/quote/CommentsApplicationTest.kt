@@ -1,6 +1,6 @@
 package com.fndt.quote
 
-import com.fndt.quote.domain.*
+import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.requests.*
 import com.fndt.quote.rest.dto.AddComment
 import io.ktor.application.*

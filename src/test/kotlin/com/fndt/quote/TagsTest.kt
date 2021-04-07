@@ -1,6 +1,5 @@
 package com.fndt.quote
 
-import com.fndt.quote.domain.createSearchMap
 import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.requests.*
 import com.fndt.quote.rest.dto.AddQuoteToTag

@@ -43,7 +43,7 @@ class UserController(
         getExt { respond(it.user.toOutUser(UrlSchemeProvider)) }
     }
 
-    private fun Route.updateAvatar() = routePathWithAuth("/avatar") {
+    private fun Route.updateAvatar() = routePathWithAuth(AVATAR_ENDPOINT) {
         postExt { principal ->
             processRequest {
                 val file = downloadImage(uploadDir)

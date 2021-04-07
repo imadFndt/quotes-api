@@ -1,5 +1,6 @@
 package com.fndt.quote.requests
 
+import com.fndt.quote.*
 import com.fndt.quote.domain.*
 import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.rest.dto.AddComment

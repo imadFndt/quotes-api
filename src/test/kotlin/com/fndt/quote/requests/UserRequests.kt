@@ -1,13 +1,13 @@
 package com.fndt.quote.requests
 
-import com.fndt.quote.domain.addJsonHeader
-import com.fndt.quote.domain.handleRequestWithAuth
-import com.fndt.quote.domain.parseResponse
-import com.fndt.quote.domain.serializer
+import com.fndt.quote.addJsonHeader
+import com.fndt.quote.handleRequestWithAuth
+import com.fndt.quote.parseResponse
 import com.fndt.quote.rest.dto.UserCredentials
 import com.fndt.quote.rest.dto.out.OutUser
 import com.fndt.quote.rest.util.REGISTRATION_ENDPOINT
 import com.fndt.quote.rest.util.ROLE_ENDPOINT
+import com.fndt.quote.serializer
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*

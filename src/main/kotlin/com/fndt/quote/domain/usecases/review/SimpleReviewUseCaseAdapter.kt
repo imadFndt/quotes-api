@@ -32,11 +32,9 @@ class SimpleReviewUseCaseAdapter<T> internal constructor(
             repository: SimpleRepository<Tag>,
             permissionsManager: UserPermissionManager
         ): UseCaseAdapter<Tag> {
-            return SimpleReviewUseCaseAdapter(
-                itemId,
-                repository,
-                permissionsManager::hasAdminPermission,
-            ) { it.copy(isPublic = true) }
+            return SimpleReviewUseCaseAdapter(itemId, repository, permissionsManager::hasAdminPermission) {
+                it.copy(isPublic = true)
+            }
         }
 
         fun createQuoteReviewAdapter(
@@ -44,11 +42,9 @@ class SimpleReviewUseCaseAdapter<T> internal constructor(
             repository: SimpleRepository<Quote>,
             permissionsManager: UserPermissionManager
         ): UseCaseAdapter<Quote> {
-            return SimpleReviewUseCaseAdapter(
-                itemId,
-                repository,
-                permissionsManager::hasModeratorPermission,
-            ) { it.copy(isPublic = true) }
+            return SimpleReviewUseCaseAdapter(itemId, repository, permissionsManager::hasModeratorPermission) {
+                it.copy(isPublic = true)
+            }
         }
     }
 }

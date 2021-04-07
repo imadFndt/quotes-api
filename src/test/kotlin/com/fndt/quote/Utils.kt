@@ -1,4 +1,4 @@
-package com.fndt.quote.domain
+package com.fndt.quote
 
 import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuotesOrder
