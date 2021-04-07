@@ -3,11 +3,26 @@ package com.fndt.quote.domain
 import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.usecases.get.*
+import io.ktor.http.*
 import io.ktor.server.testing.*
+import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import java.net.URLEncoder
+
+@InternalAPI
+fun TestApplicationEngine.handleRequestWithAuth(
+    get: HttpMethod,
+    endpoint: String,
+    credentials: String,
+    function: (TestApplicationRequest.() -> Unit)? = null
+): TestApplicationCall {
+    return handleRequest(get, endpoint) {
+        addHeader("Authorization", "Basic ${credentials.encodeBase64()}")
+        function?.invoke(this)
+    }
+}
 
 val serializer = Json {
     prettyPrint = true

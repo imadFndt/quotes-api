@@ -31,6 +31,7 @@ object Modules {
         factory<RequestManager> { RequestManagerImpl() }
         factory<QuotesFilter.Factory> { QuotesFilterImpl.FilterFactory(get()) }
         factory { AddAdapterProvider(get(), get()) }
+        factory { UseCaseToolManager(get(), get()) }
     }
 
     fun imagesModule(path: String) = module {

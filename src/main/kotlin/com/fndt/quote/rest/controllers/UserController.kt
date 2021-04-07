@@ -1,7 +1,6 @@
 package com.fndt.quote.rest.controllers
 
 import com.fndt.quote.rest.UrlSchemeProvider
-import com.fndt.quote.rest.dto.PermanentBan
 import com.fndt.quote.rest.dto.UserCredentials
 import com.fndt.quote.rest.dto.out.toOutUser
 import com.fndt.quote.rest.factory.UsersUseCaseFactory
@@ -53,10 +52,10 @@ class UserController(
         }
     }
 
-    private fun Route.banUser() = routePathWithAuth("$BAN_ENDPOINT/{$QUOTE_ID}") {
+    private fun Route.banUser() = routePathWithAuth(BAN_ENDPOINT) {
         postExt { principal ->
             processRequest {
-                val quoteId = parameters[QUOTE_ID]!!.toInt()
+                val quoteId = parameters[ID]!!.toInt()
                 useCaseManager.getBanUseCase(quoteId, principal.user).run()
             }.respondPostDefault(this)
         }
@@ -65,7 +64,7 @@ class UserController(
     private fun Route.permanentBan() = routePathWithAuth(PERMANENT_BAN_ENDPOINT) {
         postExt { principal ->
             processRequest {
-                val (userId) = receive<PermanentBan>()
+                val userId = parameters[ID]!!.toInt()
                 useCaseManager.getPermanentBanUseCase(userId, principal.user).run()
             }.respondPostDefault(this)
         }
