@@ -3,6 +3,7 @@ package com.fndt.quote.data
 import com.fndt.quote.data.util.toTag
 import com.fndt.quote.domain.dto.ID
 import com.fndt.quote.domain.dto.Tag
+import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.repository.TagRepository
 import org.jetbrains.exposed.sql.*
 
@@ -13,13 +14,13 @@ class TagRepositoryImpl(dbProvider: DatabaseProvider) : TagRepository {
         return tagsTable.selectAll().map { it.toTag() }
     }
 
-    override fun add(tag: Tag): ID {
-        val tagExists = findById(tag.id) != null
-        return if (tagExists) update(tag) else insert(tag)
+    override fun add(item: Tag): ID {
+        val tagExists = findById(item.id) != null
+        return if (tagExists) update(item) else insert(item)
     }
 
-    override fun remove(tag: Tag): Int {
-        return tagsTable.deleteWhere { tagsTable.id eq tag.id }
+    override fun remove(item: Tag) {
+        tagsTable.deleteWhere { tagsTable.id eq item.id }
     }
 
     private fun insert(tag: Tag): ID {
@@ -37,7 +38,13 @@ class TagRepositoryImpl(dbProvider: DatabaseProvider) : TagRepository {
         return tag.id
     }
 
-    override fun findById(id: Int): Tag? {
-        return tagsTable.select { tagsTable.id eq id }.firstOrNull()?.toTag()
+    override fun findById(itemId: Int): Tag? {
+        return tagsTable.select { tagsTable.id eq itemId }.firstOrNull()?.toTag()
+    }
+
+    override fun findByAccess(access: Access): List<Tag> {
+        return tagsTable.selectAll()
+            .apply { applyAccess(access, tagsTable) }
+            .map { it.toTag() }
     }
 }

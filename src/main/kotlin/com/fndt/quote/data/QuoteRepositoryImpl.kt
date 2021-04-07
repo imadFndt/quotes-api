@@ -19,17 +19,17 @@ class QuoteRepositoryImpl(dbProvider: DatabaseProvider) : QuoteRepository {
         return filterFactory.create().getQuotes(args)
     }
 
-    override fun add(quote: Quote): ID = transaction {
-        val quoteExists = findById(quote.id) != null
-        return@transaction if (quoteExists) update(quote) else insert(quote)
+    override fun add(item: Quote): ID = transaction {
+        val quoteExists = findById(item.id) != null
+        return@transaction if (quoteExists) update(item) else insert(item)
     }
 
-    override fun remove(quote: Quote) {
-        quotesTable.deleteWhere { quotesTable.id eq quote.id }
+    override fun remove(item: Quote) {
+        quotesTable.deleteWhere { quotesTable.id eq item.id }
     }
 
-    override fun findById(id: Int): Quote? {
-        return filterFactory.create().findQuote(QuoteFilterArguments(quoteId = id))
+    override fun findById(itemId: Int): Quote? {
+        return filterFactory.create().findQuote(QuoteFilterArguments(quoteId = itemId))
     }
 
     override fun findByUser(user: User): List<Quote> {

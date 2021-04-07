@@ -1,5 +1,6 @@
 package com.fndt.quote.rest.util
 
+import com.fndt.quote.domain.PermissionException
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -11,7 +12,8 @@ fun <T> ApplicationCall.processRequest(block: suspend ApplicationCall.() -> T): 
 
 fun <T> ApplicationCall.defaultCatch(): (suspend FlowCollector<T>.(Throwable) -> Unit) {
     return {
-        respondText("Throwable: ${it.message}", status = HttpStatusCode.BadRequest)
+        val status = if (it is PermissionException) HttpStatusCode.Unauthorized else HttpStatusCode.BadRequest
+        respondText("Throwable: ${it.message}", status = status)
     }
 }
 

@@ -1,6 +1,6 @@
 package com.fndt.quote.domain.usecases.users
 
-import com.fndt.quote.domain.UseCaseTestInit
+import com.fndt.quote.domain.UseCaseInitTest
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.repository.UserRepository
 import io.mockk.every
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class RegisterUseCaseTest : UseCaseTestInit() {
+internal class RegisterUseCaseTest : UseCaseInitTest() {
 
     @MockK(relaxed = true)
     lateinit var userRepository: UserRepository

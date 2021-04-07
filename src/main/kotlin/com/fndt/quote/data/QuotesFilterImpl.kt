@@ -6,8 +6,8 @@ import com.fndt.quote.data.util.toQuotes
 import com.fndt.quote.data.util.toTagNullable
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
+import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuoteFilterArguments
-import com.fndt.quote.domain.filter.QuotesAccess
 import com.fndt.quote.domain.filter.QuotesFilter
 import com.fndt.quote.domain.filter.QuotesOrder
 import org.jetbrains.exposed.sql.*
@@ -50,11 +50,7 @@ class QuotesFilterImpl(
     }
 
     private fun Query.applySelectors(args: QuoteFilterArguments) = apply {
-        when (args.access) {
-            QuotesAccess.PRIVATE -> andWhere { DatabaseProvider.Quotes.isPublic eq false }
-            QuotesAccess.PUBLIC -> andWhere { DatabaseProvider.Quotes.isPublic eq true }
-            QuotesAccess.ALL -> Unit
-        }
+        applyAccess(args.quoteAccess, quotesTable)
         with(args) {
             user?.id?.let { andWhere { DatabaseProvider.Quotes.user eq it } }
             tagId?.let { andWhere { DatabaseProvider.TagsOnQuotes.tag eq it } }
@@ -76,5 +72,13 @@ class QuotesFilterImpl(
 
     class FilterFactory(private val dbProvider: DatabaseProvider) : Factory {
         override fun create(): QuotesFilter = QuotesFilterImpl(dbProvider)
+    }
+}
+
+fun Query.applyAccess(access: Access, table: DatabaseProvider.AccessLimitableIntIdTable) {
+    when (access) {
+        Access.PRIVATE -> andWhere { (table.isPublic eq false) }
+        Access.PUBLIC -> andWhere { (table.isPublic eq true) or (table.id eq null) }
+        Access.ALL -> Unit
     }
 }

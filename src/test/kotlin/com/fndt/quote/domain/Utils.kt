@@ -1,8 +1,8 @@
 package com.fndt.quote.domain
 
-import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuotesOrder
-import com.fndt.quote.domain.usecases.quotes.*
+import com.fndt.quote.domain.usecases.get.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -39,7 +39,7 @@ fun createSearchMap(
     page: Int? = null,
     perPage: Int? = null,
     order: QuotesOrder? = null,
-    access: QuotesAccess? = null
+    access: Access? = null
 ) = mapOf(
     QUERY_KEY to query,
     AUTHOR_KEY to authorId,

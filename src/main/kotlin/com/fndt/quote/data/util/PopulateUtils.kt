@@ -57,7 +57,7 @@ fun populateDb() = transaction {
         insert[createdAt] = System.currentTimeMillis()
         insert[user] = 1
     }
-    val tags = listOf("Смешарики", "За жизнь")
+    val tags = listOf("Смешарики", "За жизнь", "ЫЫЫ")
     DatabaseProvider.Tags.batchInsert(tagsList) { tag ->
         this[DatabaseProvider.Tags.id] = tag.id
         this[DatabaseProvider.Tags.name] = tag.name
@@ -127,4 +127,8 @@ internal val quotesList = listOf(
         author = authorsList[0],
     ),
 )
-val tagsList = listOf(Tag(1, "Смешарики", true), Tag(2, "За жизнь", true))
+val tagsList = listOf(
+    Tag(1, "Смешарики", true),
+    Tag(2, "За жизнь", true),
+    Tag(3, "ЫЫЫ", false),
+)

@@ -13,21 +13,21 @@ class AuthorRepositoryImpl(databaseProvider: DatabaseProvider) : AuthorRepositor
         return authorTable.selectAll().map { it.toAuthor() }
     }
 
-    override fun add(author: Author): ID {
-        val authorExists = findById(author.id) != null
-        return if (authorExists) update(author) else insert(author)
-    }
-
-    override fun remove(author: Author): Int {
-        return authorTable.deleteWhere { authorTable.id eq author.id }
-    }
-
-    override fun findById(authorId: ID): Author? {
-        return find(authorId = authorId)
-    }
-
     override fun findByName(name: String): Author? {
         return find(name = name)
+    }
+
+    override fun add(item: Author): ID {
+        val authorExists = findById(item.id) != null
+        return if (authorExists) update(item) else insert(item)
+    }
+
+    override fun remove(item: Author) {
+        authorTable.deleteWhere { authorTable.id eq item.id }
+    }
+
+    override fun findById(itemId: ID): Author? {
+        return find(authorId = itemId)
     }
 
     private fun find(authorId: ID? = null, name: String? = null): Author? {

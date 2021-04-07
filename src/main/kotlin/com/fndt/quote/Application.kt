@@ -46,9 +46,7 @@ fun Application.module() {
     val quotesController by inject<QuotesController>()
     val commentsController by inject<CommentsController>()
     val authController by inject<AuthController>()
-    val selectionsController by inject<SelectionsController>()
-    val moderatorController by inject<ModeratorController>()
-    val adminController by inject<AdminController>()
+    val tagsController by inject<TagsController>()
 
     install(CallLogging) {
         level = Level.INFO
@@ -60,9 +58,7 @@ fun Application.module() {
             registrationController,
             quotesController,
             commentsController,
-            selectionsController,
-            moderatorController,
-            adminController
+            tagsController,
         ).forEach { it.route(this) }
         routeImages(filePath, imagesPath)
     }

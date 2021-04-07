@@ -1,9 +1,7 @@
 package com.fndt.quote.rest.controllers
 
-import com.fndt.quote.rest.util.defaultCatch
 import com.fndt.quote.rest.dto.AddComment
 import com.fndt.quote.rest.factory.CommentsUseCaseFactory
-import com.fndt.quote.rest.util.processRequest
 import com.fndt.quote.rest.util.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -17,25 +15,22 @@ class CommentsController(private val useCaseFactory: CommentsUseCaseFactory) : R
         addComment()
     }
 
-    private fun Route.getComments() {
-        getExt { principal ->
-            processRequest {
-                parameters[ID]!!.toInt()
-            }.catch(defaultCatch()).collect {
-                respond(useCaseFactory.getCommentsUseCase(it, principal.user).run())
-            }
+    private fun Route.getComments() = getExt { principal ->
+        processRequest {
+            val id = parameters[ID]!!.toInt()
+            useCaseFactory.getCommentsUseCase(id, principal.user).run()
+        }.catch(defaultCatch()).collect {
+            respond(it)
         }
     }
 
-    private fun Route.addComment() {
-        postExt { principal ->
-            processRequest {
-                val quoteId = parameters[ID]!!.toInt()
-                val (body) = receive<AddComment>()
-                useCaseFactory.addCommentsUseCase(body, quoteId, principal.user).run()
-            }.catch(defaultCatch()).collect {
-                respond(SUCCESS)
-            }
+    private fun Route.addComment() = postExt { principal ->
+        processRequest {
+            val quoteId = parameters[ID]!!.toInt()
+            val (body) = receive<AddComment>()
+            useCaseFactory.addCommentsUseCase(body, quoteId, principal.user).run()
+        }.catch(defaultCatch()).collect {
+            respond(SUCCESS)
         }
     }
 }

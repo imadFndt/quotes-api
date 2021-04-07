@@ -1,10 +1,12 @@
 package com.fndt.quote.rest.factory
 
-import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.ProfilePictureManager
+import com.fndt.quote.domain.manager.RequestManager
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
+import com.fndt.quote.domain.usecases.ban.BanReadOnlyUserUseCase
+import com.fndt.quote.domain.usecases.ban.PermanentBanUseCase
 import com.fndt.quote.domain.usecases.base.UseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
 import com.fndt.quote.domain.usecases.users.ChangeProfilePictureUseCase
@@ -29,5 +31,13 @@ class UsersUseCaseFactory(
         return ChangeProfilePictureUseCase(
             profilePicture, user, profilePictureManager, userRepository, permissionManager, requestManager
         )
+    }
+
+    fun getBanUseCase(quoteId: Int, requestingUser: User): UseCase<Unit> {
+        return BanReadOnlyUserUseCase(quoteId, userRepository, requestingUser, permissionManager, requestManager)
+    }
+
+    fun getPermanentBanUseCase(userId: Int, requestingUser: User): UseCase<Unit> {
+        return PermanentBanUseCase(userId, userRepository, requestingUser, permissionManager, requestManager)
     }
 }

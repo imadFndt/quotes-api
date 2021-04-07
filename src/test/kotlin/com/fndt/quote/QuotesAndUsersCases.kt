@@ -2,7 +2,8 @@ package com.fndt.quote
 
 import com.fndt.quote.domain.*
 import com.fndt.quote.domain.dto.AuthRole
-import com.fndt.quote.domain.filter.QuotesAccess
+import com.fndt.quote.domain.filter.Access
+import com.fndt.quote.requests.*
 import com.fndt.quote.rest.dto.LikeRequest
 import io.ktor.application.*
 import io.ktor.http.*
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-// Covers SelectionsController AuthController QuotesController And Moderator Positive Review, Add Quote to tag
 @InternalAPI
 class QuotesAndUsersCases {
 
@@ -42,7 +42,7 @@ class QuotesAndUsersCases {
     fun `quotes use cases`() = withTestApplication(Application::module) {
         val newBody = "New quote"
         val newAuthor = "Barash"
-        val listBefore = getQuotes(createSearchMap(access = QuotesAccess.ALL), moderatorCredentials)
+        val listBefore = getQuotes(createSearchMap(access = Access.ALL), moderatorCredentials)
 
         sendNewQuote(newBody, newAuthor, regularCredentials).run {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -52,7 +52,7 @@ class QuotesAndUsersCases {
             assertEquals(HttpStatusCode.OK, response.status())
         }
 
-        val listAfterModerator = getQuotes(createSearchMap(access = QuotesAccess.ALL), moderatorCredentials)
+        val listAfterModerator = getQuotes(createSearchMap(access = Access.ALL), moderatorCredentials)
         val result = listAfterModerator.quotes subtract listBefore.quotes
         val quote = result.firstOrNull()
 
@@ -61,7 +61,7 @@ class QuotesAndUsersCases {
 
         approveQuote(quote, moderatorCredentials)
 
-        val listAfterRegular = getQuotes(createSearchMap(access = QuotesAccess.PUBLIC), regularCredentials)
+        val listAfterRegular = getQuotes(createSearchMap(access = Access.PUBLIC), regularCredentials)
         val updatedQuote = listAfterRegular.quotes.find { it.id == quote.id }
         assertNotNull(updatedQuote)
         assertEquals(true, updatedQuote.isPublic)

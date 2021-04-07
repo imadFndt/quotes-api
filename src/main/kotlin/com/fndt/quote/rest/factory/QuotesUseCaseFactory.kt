@@ -1,48 +1,38 @@
 package com.fndt.quote.rest.factory
 
-import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.Like
 import com.fndt.quote.domain.dto.User
-import com.fndt.quote.domain.manager.UserPermissionManager
-import com.fndt.quote.domain.repository.AuthorRepository
-import com.fndt.quote.domain.repository.LikeRepository
+import com.fndt.quote.domain.manager.*
 import com.fndt.quote.domain.repository.QuoteRepository
-import com.fndt.quote.domain.repository.UserRepository
+import com.fndt.quote.domain.usecases.add.AddUseCase
 import com.fndt.quote.domain.usecases.base.UseCase
-import com.fndt.quote.domain.usecases.quotes.AddQuoteUseCase
-import com.fndt.quote.domain.usecases.quotes.LikeUseCase
+import com.fndt.quote.domain.usecases.get.QuoteSelectionUseCase
+import com.fndt.quote.domain.usecases.review.ReviewUseCase
+import com.fndt.quote.domain.usecases.review.SimpleReviewUseCaseAdapter
+import com.fndt.quote.domain.usecases.users.LikeUseCase
 
 class QuotesUseCaseFactory(
-    private val authorRepository: AuthorRepository,
-    private val likeRepository: LikeRepository,
-    private val userRepository: UserRepository,
-    private val quoteRepository: QuoteRepository,
+    private val repositoryProvider: RepositoryProvider,
     private val requestManager: RequestManager,
     private val permissionManager: UserPermissionManager,
+    private val addAdapterProvider: AddAdapterProvider,
 ) {
-
     fun addQuotesUseCase(body: String, authorName: String, userRequesting: User): UseCase<Unit> {
-        return AddQuoteUseCase(
-            body,
-            authorName,
-            quoteRepository,
-            authorRepository,
-            userRequesting,
-            permissionManager,
-            requestManager
-        )
+        val adapter = addAdapterProvider.createAddQuoteAdapter(body, authorName)
+        return AddUseCase(adapter, userRequesting, requestManager)
     }
 
     fun likeQuoteUseCase(like: Like, likeAction: Boolean, userRequesting: User): UseCase<Unit> {
-        return LikeUseCase(
-            like,
-            likeAction,
-            userRequesting,
-            quoteRepository,
-            userRepository,
-            likeRepository,
-            permissionManager,
-            requestManager
-        )
+        return LikeUseCase(like, likeAction, userRequesting, repositoryProvider, permissionManager, requestManager)
+    }
+
+    fun getReviewQuoteUseCase(quoteId: Int, decision: Boolean, requestingUser: User): UseCase<Unit> {
+        val quoteRepository = repositoryProvider.getRepository<QuoteRepository>()
+        val adapter = SimpleReviewUseCaseAdapter.createQuoteReviewAdapter(quoteId, quoteRepository, permissionManager)
+        return ReviewUseCase(decision, adapter, requestingUser, requestManager)
+    }
+
+    fun getQuoteSelectionsUseCase(arguments: Map<String, Any?>, user: User): QuoteSelectionUseCase {
+        return QuoteSelectionUseCase(arguments, repositoryProvider, user, permissionManager, requestManager)
     }
 }

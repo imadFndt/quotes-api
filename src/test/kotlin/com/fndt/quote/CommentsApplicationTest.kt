@@ -1,6 +1,7 @@
 package com.fndt.quote
 
 import com.fndt.quote.domain.*
+import com.fndt.quote.requests.*
 import com.fndt.quote.rest.dto.AddComment
 import io.ktor.application.*
 import io.ktor.http.*
@@ -23,6 +24,7 @@ class CommentsApplicationTest {
     fun `add comment`() = withTestApplication(Application::module) {
         val commentBody = "NewComment"
         addComment(quoteId, AddComment(commentBody), regularCredentials).run {
+            print(response.content)
             assertEquals(HttpStatusCode.OK, response.status())
         }
         getComments(quoteId, regularCredentials).run {

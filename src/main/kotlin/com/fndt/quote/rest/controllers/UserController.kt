@@ -1,6 +1,7 @@
 package com.fndt.quote.rest.controllers
 
 import com.fndt.quote.rest.UrlSchemeProvider
+import com.fndt.quote.rest.dto.PermanentBan
 import com.fndt.quote.rest.dto.UserCredentials
 import com.fndt.quote.rest.dto.out.toOutUser
 import com.fndt.quote.rest.factory.UsersUseCaseFactory
@@ -26,17 +27,17 @@ class UserController(
 ) : RoutingController {
     override fun route(routing: Routing) = routing {
         register()
-        updateAvatar()
         getUserInfo()
+        updateAvatar()
+        banUser()
+        permanentBan()
     }
 
-    private fun Route.register() {
-        post(REGISTRATION_ENDPOINT) {
-            call.processRequest {
-                val credentials = receive<UserCredentials>()
-                useCaseManager.registerUseCase(credentials.login, credentials.password).run()
-            }.respondPostDefault(call)
-        }
+    private fun Route.register() = post(REGISTRATION_ENDPOINT) {
+        call.processRequest {
+            val credentials = receive<UserCredentials>()
+            useCaseManager.registerUseCase(credentials.login, credentials.password).run()
+        }.respondPostDefault(call)
     }
 
     private fun Route.getUserInfo() = routePathWithAuth(ROLE_ENDPOINT) {
@@ -48,6 +49,24 @@ class UserController(
             processRequest {
                 val file = downloadImage(uploadDir)
                 useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
+            }.respondPostDefault(this)
+        }
+    }
+
+    private fun Route.banUser() = routePathWithAuth("$BAN_ENDPOINT/{$QUOTE_ID}") {
+        postExt { principal ->
+            processRequest {
+                val quoteId = parameters[QUOTE_ID]!!.toInt()
+                useCaseManager.getBanUseCase(quoteId, principal.user).run()
+            }.respondPostDefault(this)
+        }
+    }
+
+    private fun Route.permanentBan() = routePathWithAuth(PERMANENT_BAN_ENDPOINT) {
+        postExt { principal ->
+            processRequest {
+                val (userId) = receive<PermanentBan>()
+                useCaseManager.getPermanentBanUseCase(userId, principal.user).run()
             }.respondPostDefault(this)
         }
     }

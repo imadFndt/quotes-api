@@ -1,8 +1,8 @@
 package com.fndt.quote.domain.usecases.base
 
 import com.fndt.quote.domain.PermissionException
-import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.manager.RequestManager
 
 abstract class RequestUseCase<T>(private val requestManager: RequestManager) : UseCase<T> {
     protected abstract val requestingUser: User?

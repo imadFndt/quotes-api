@@ -1,9 +1,9 @@
 package com.fndt.quote.domain.usecases.users
 
-import com.fndt.quote.domain.RequestManager
 import com.fndt.quote.domain.dto.AvatarScheme
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.ProfilePictureManager
+import com.fndt.quote.domain.manager.RequestManager
 import com.fndt.quote.domain.manager.UserPermissionManager
 import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.base.RequestUseCase
