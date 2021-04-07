@@ -1,11 +1,8 @@
 package com.fndt.quote.rest.util
 
-import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.rest.dto.UserPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.http.*
-import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
 
@@ -38,14 +35,6 @@ private fun Route.httpMethodsPrincipalExt(
 }
 
 private suspend fun ApplicationCall.initBlockWithPrincipal(block: suspend ApplicationCall.(UserPrincipal) -> Unit) {
-    try {
-        val principal = principal<UserPrincipal>() ?: throw IllegalStateException(MISSING_PRINCIPAL)
-        block(principal)
-    } catch (e: PermissionException) {
-        respondText(e.message.toString(), status = HttpStatusCode.Unauthorized)
-    } catch (e: IllegalStateException) {
-        respondText(e.message.toString(), status = HttpStatusCode.BadRequest)
-    } catch (e: IllegalArgumentException) {
-        respondText(e.message.toString(), status = HttpStatusCode.NotAcceptable)
-    }
+    val principal = principal<UserPrincipal>() ?: throw IllegalStateException(MISSING_PRINCIPAL)
+    block(principal)
 }

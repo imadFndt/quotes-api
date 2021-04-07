@@ -1,12 +1,15 @@
 package com.fndt.quote
 
 import com.fndt.quote.di.Modules
+import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.controllers.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
 import kotlinx.serialization.json.Json
@@ -50,6 +53,13 @@ fun Application.module() {
 
     install(CallLogging) {
         level = Level.INFO
+    }
+
+    install(StatusPages) {
+        exception<Throwable> {
+            val status = if (it is PermissionException) HttpStatusCode.Unauthorized else HttpStatusCode.BadRequest
+            call.respondText("Throwable: ${it.message}", status = status)
+        }
     }
 
     install(Authentication) { authController.addBasicAuth(this) }

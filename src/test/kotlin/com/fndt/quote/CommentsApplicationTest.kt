@@ -1,6 +1,5 @@
 package com.fndt.quote
 
-import com.fndt.quote.domain.PermissionException
 import com.fndt.quote.requests.*
 import com.fndt.quote.rest.dto.AddComment
 import io.ktor.application.*
@@ -8,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -44,6 +42,8 @@ class CommentsApplicationTest {
             assertEquals(HttpStatusCode.OK, response.status())
         }
 
-        assertThrows<PermissionException> { addComment(quoteId, AddComment("b"), credentials) }
+        addComment(quoteId, AddComment("b"), credentials).run {
+            assertEquals(HttpStatusCode.Unauthorized, response.status())
+        }
     }
 }

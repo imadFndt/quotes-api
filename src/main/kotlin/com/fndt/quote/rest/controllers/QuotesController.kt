@@ -16,8 +16,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 
 class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : RoutingController {
 
@@ -29,33 +27,27 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
     }
 
     private fun Route.getQuotes() = getExt { principal ->
-        processRequest {
-            val args = initArgsMap()
-            useCaseFactory.getQuoteSelectionsUseCase(args, principal.user).run()
-        }.catch(defaultCatch()).collect { quotes ->
-            respond(quotes.toOutQuoteList(UrlSchemeProvider))
-        }
+        val args = initArgsMap()
+        val quotes = useCaseFactory.getQuoteSelectionsUseCase(args, principal.user).run()
+        respond(quotes.toOutQuoteList(UrlSchemeProvider))
     }
 
     private fun Route.addQuote() = postExt { principal ->
-        processRequest {
-            val (quote, authorName) = receive<AddQuote>()
-            useCaseFactory.addQuotesUseCase(quote, authorName, principal.user).run()
-        }.respondPostDefault(this)
+        val (quote, authorName) = receive<AddQuote>()
+        useCaseFactory.addQuotesUseCase(quote, authorName, principal.user).run()
+        respond(SUCCESS)
     }
 
     private fun Route.likeQuote() = postExt(LIKE_ENDPOINT) { principal ->
-        processRequest {
-            val (quoteId, action) = receive<LikeRequest>()
-            useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
-        }.respondPostDefault(this)
+        val (quoteId, action) = receive<LikeRequest>()
+        useCaseFactory.likeQuoteUseCase(Like(quoteId, principal.user.id), action, principal.user).run()
+        respond(SUCCESS)
     }
 
     private fun Route.reviewQuote() = postExt(REVIEW_ENDPOINT) { principal ->
-        processRequest {
-            val (decision, quoteId) = receive<QuoteReview>()
-            useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
-        }.respondPostDefault(this)
+        val (decision, quoteId) = receive<QuoteReview>()
+        useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
+        respond(SUCCESS)
     }
 }
 

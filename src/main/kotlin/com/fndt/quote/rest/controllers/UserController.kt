@@ -33,10 +33,9 @@ class UserController(
     }
 
     private fun Route.register() = post(REGISTRATION_ENDPOINT) {
-        call.processRequest {
-            val credentials = receive<UserCredentials>()
-            useCaseManager.registerUseCase(credentials.login, credentials.password).run()
-        }.respondPostDefault(call)
+        val credentials = call.receive<UserCredentials>()
+        useCaseManager.registerUseCase(credentials.login, credentials.password).run()
+        call.respond(SUCCESS)
     }
 
     private fun Route.getUserInfo() = routePathWithAuth(ROLE_ENDPOINT) {
@@ -45,28 +44,25 @@ class UserController(
 
     private fun Route.updateAvatar() = routePathWithAuth(AVATAR_ENDPOINT) {
         postExt { principal ->
-            processRequest {
-                val file = downloadImage(uploadDir)
-                useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
-            }.respondPostDefault(this)
+            val file = downloadImage(uploadDir)
+            useCaseManager.changeProfilePictureUseCase(file, principal.user).run()
+            respond(SUCCESS)
         }
     }
 
     private fun Route.banUser() = routePathWithAuth(BAN_ENDPOINT) {
         postExt { principal ->
-            processRequest {
-                val quoteId = parameters[ID]!!.toInt()
-                useCaseManager.getBanUseCase(quoteId, principal.user).run()
-            }.respondPostDefault(this)
+            val quoteId = parameters[ID]!!.toInt()
+            useCaseManager.getBanUseCase(quoteId, principal.user).run()
+            respond(SUCCESS)
         }
     }
 
     private fun Route.permanentBan() = routePathWithAuth(PERMANENT_BAN_ENDPOINT) {
         postExt { principal ->
-            processRequest {
-                val userId = parameters[ID]!!.toInt()
-                useCaseManager.getPermanentBanUseCase(userId, principal.user).run()
-            }.respondPostDefault(this)
+            val userId = parameters[ID]!!.toInt()
+            useCaseManager.getPermanentBanUseCase(userId, principal.user).run()
+            respond(SUCCESS)
         }
     }
 }
