@@ -52,8 +52,8 @@ class UserController(
 
     private fun Route.banUser() = routePathWithAuth(BAN_ENDPOINT) {
         postExt { principal ->
-            val quoteId = parameters[ID]!!.toInt()
-            useCaseManager.getBanUseCase(quoteId, principal.user).run()
+            val userId = parameters[ID]!!.toInt()
+            useCaseManager.getBanUseCase(userId, principal.user).run()
             respond(SUCCESS)
         }
     }

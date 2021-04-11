@@ -39,10 +39,11 @@ class AddAdapterProvider(
     }
 
     fun createAddTagAdapter(tagName: String): UseCaseAdapter<Tag> {
-        return SimpleRepositoryAdapter(
-            repositoryProvider.getRepository<TagRepository>(),
-            { permissionManager.hasModeratorPermission(it) }
-        ) { Tag(name = tagName) }
+        val repository = repositoryProvider.getRepository<TagRepository>()
+        return SimpleRepositoryAdapter(repository, { permissionManager.hasModeratorPermission(it) }) {
+            repository.findByName(tagName)?.let { throw IllegalStateException("Tag already exists") }
+            Tag(name = tagName)
+        }
     }
 
     fun createAddQuoteToTagAdapter(quoteId: Int, tagId: Int): UseCaseAdapter<Pair<Quote, Tag>> {

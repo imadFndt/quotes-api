@@ -47,4 +47,8 @@ class TagRepositoryImpl(dbProvider: DatabaseProvider) : TagRepository {
             .apply { applyAccess(access, tagsTable) }
             .map { it.toTag() }
     }
+
+    override fun findByName(name: String): Tag? {
+        return tagsTable.select { tagsTable.name eq name }.firstOrNull()?.toTag()
+    }
 }

@@ -10,9 +10,8 @@ class TagSelectionRepositoryImpl(dbProvider: DatabaseProvider) : TagSelectionRep
 
     override fun get(): Map<Int, Int> {
         return tagsQuotesTable.selectAll()
-            .map {
-                it[tagsQuotesTable.quote].value to it[tagsQuotesTable.tag].value
-            }.toMap()
+            .map { it[tagsQuotesTable.quote].value to it[tagsQuotesTable.tag].value }
+            .toMap()
     }
 
     override fun add(quote: Quote, tag: Tag) {

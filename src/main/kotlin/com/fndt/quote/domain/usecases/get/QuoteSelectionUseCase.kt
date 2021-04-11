@@ -66,11 +66,7 @@ class QuoteSelectionUseCase(
             quoteAccess = targetAccess,
         )
         quoteRepository.get(filterArgs).also {
-            return Quotes(
-                page = targetPage,
-                totalPages = pager.getTotalPages(it),
-                quotes = pager.getPaged(it)
-            )
+            return Quotes(page = targetPage, totalPages = pager.getTotalPages(it), quotes = pager.getPaged(it))
         }
     }
 
