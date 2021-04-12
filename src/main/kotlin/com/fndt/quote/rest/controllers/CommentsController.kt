@@ -1,6 +1,8 @@
 package com.fndt.quote.rest.controllers
 
+import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.dto.AddComment
+import com.fndt.quote.rest.dto.out.toOutComment
 import com.fndt.quote.rest.factory.CommentsUseCaseFactory
 import com.fndt.quote.rest.util.*
 import io.ktor.request.*
@@ -15,7 +17,9 @@ class CommentsController(private val useCaseFactory: CommentsUseCaseFactory) : R
 
     private fun Route.getComments() = getExt { principal ->
         val id = parameters[ID]!!.toInt()
-        val comments = useCaseFactory.getCommentsUseCase(id, principal.user).run()
+        val comments = useCaseFactory.getCommentsUseCase(id, principal.user).run().map {
+            it.toOutComment(UrlSchemeProvider)
+        }
         respond(comments)
     }
 
