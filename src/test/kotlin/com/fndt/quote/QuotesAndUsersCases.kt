@@ -56,7 +56,7 @@ class QuotesAndUsersCases {
         val quote = result.firstOrNull()
 
         assertNotNull(quote)
-        assertTrue(result.size == 1 && quote.run { body == newBody && author.name == newAuthor && likes == 1 })
+        assertTrue(result.size == 1 && quote.run { body == newBody && author.name == newAuthor && likes == 1 && !didILike })
 
         approveQuote(quote, moderatorCredentials)
 

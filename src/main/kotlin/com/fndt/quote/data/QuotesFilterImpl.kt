@@ -1,11 +1,9 @@
 package com.fndt.quote.data
 
-import com.fndt.quote.data.util.nullableGroupBy
-import com.fndt.quote.data.util.toAuthor
-import com.fndt.quote.data.util.toQuotes
-import com.fndt.quote.data.util.toTagNullable
+import com.fndt.quote.data.util.*
 import com.fndt.quote.domain.dto.Author
 import com.fndt.quote.domain.dto.Quote
+import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesFilter
@@ -35,9 +33,11 @@ class QuotesFilterImpl(
         return tablesJoin
             .select { quotesTable.id inList ids }
             .nullableGroupBy({
+                val (likes, didILike) = fetchLikes(it[DatabaseProvider.Quotes.id].value, args.requestingUser)
                 it.toQuotes(
-                    likesCount = fetchLikes(it[DatabaseProvider.Quotes.id].value),
+                    likesCount = likes,
                     author = findAuthor(it[DatabaseProvider.Quotes.author].value),
+                    didILike = didILike,
                 )
             }) { it.toTagNullable() }
             .entries.map { (quote, tags) -> quote.copy(tags = tags) }
@@ -65,9 +65,11 @@ class QuotesFilterImpl(
         QuotesOrder.LATEST -> sortedByDescending { it.createdAt }
     }
 
-    private fun fetchLikes(quoteId: Int): Int {
+    private fun fetchLikes(quoteId: Int, requestingUser: User?): Pair<Int, Boolean> {
         return likesQuotesMapTable.select { DatabaseProvider.LikesOnQuotes.quote eq quoteId }
-            .count().toInt()
+            .toList().map { it.toLike() }.run {
+                return@run this.size to (this.find { it.userId == requestingUser?.id } != null)
+            }
     }
 
     class FilterFactory(private val dbProvider: DatabaseProvider) : Factory {

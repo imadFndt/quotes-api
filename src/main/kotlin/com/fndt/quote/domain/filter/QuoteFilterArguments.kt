@@ -10,5 +10,6 @@ data class QuoteFilterArguments(
     var query: String? = null,
     var quoteId: Int? = null,
     var authorId: Int? = null,
-    var tagAccess: Access = Access.PUBLIC
+    var tagAccess: Access = Access.PUBLIC,
+    var requestingUser: User? = null
 )

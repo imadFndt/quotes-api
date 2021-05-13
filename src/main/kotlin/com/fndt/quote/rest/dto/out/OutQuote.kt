@@ -16,9 +16,10 @@ data class OutQuote(
     val user: OutUser,
     val likes: Int = 0,
     val tags: List<Tag>,
-    @SerialName("is_public") val isPublic: Boolean = false
+    @SerialName("is_public") val isPublic: Boolean = false,
+    @SerialName("did_i_like") val didILike: Boolean = false,
 )
 
 fun Quote.toOutQuote(urlProvider: UrlSchemeProvider): OutQuote {
-    return OutQuote(id, body, author, createdAt, user.toOutUser(urlProvider), likes, tags, isPublic)
+    return OutQuote(id, body, author, createdAt, user.toOutUser(urlProvider), likes, tags, isPublic, didILike)
 }

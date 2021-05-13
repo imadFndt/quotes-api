@@ -64,6 +64,7 @@ class QuoteSelectionUseCase(
             tagId = targetTag?.id,
             query = targetQuery,
             quoteAccess = targetAccess,
+            requestingUser = requestingUser,
         )
         quoteRepository.get(filterArgs).also {
             return Quotes(
