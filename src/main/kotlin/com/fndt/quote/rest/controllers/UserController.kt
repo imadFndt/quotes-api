@@ -1,6 +1,7 @@
 package com.fndt.quote.rest.controllers
 
 import com.fndt.quote.rest.UrlSchemeProvider
+import com.fndt.quote.rest.dto.UpdateRole
 import com.fndt.quote.rest.dto.UserCredentials
 import com.fndt.quote.rest.dto.out.toOutUser
 import com.fndt.quote.rest.factory.UsersUseCaseFactory
@@ -30,6 +31,7 @@ class UserController(
         updateAvatar()
         banUser()
         permanentBan()
+        changeRole()
     }
 
     private fun Route.register() = post(REGISTRATION_ENDPOINT) {
@@ -62,6 +64,14 @@ class UserController(
         postExt { principal ->
             val userId = parameters[ID]!!.toInt()
             useCaseManager.getPermanentBanUseCase(userId, principal.user).run()
+            respond(SUCCESS)
+        }
+    }
+
+    private fun Route.changeRole() = routePathWithAuth(ROLE_ENDPOINT) {
+        postExt { principal ->
+            val (role, id) = receive<UpdateRole>()
+            useCaseManager.getChangeRoleUseCase(id, role, principal.user).run()
             respond(SUCCESS)
         }
     }

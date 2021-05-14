@@ -1,5 +1,6 @@
 package com.fndt.quote.rest.factory
 
+import com.fndt.quote.domain.dto.AuthRole
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.ProfilePictureManager
 import com.fndt.quote.domain.manager.RequestManager
@@ -10,6 +11,7 @@ import com.fndt.quote.domain.usecases.ban.PermanentBanUseCase
 import com.fndt.quote.domain.usecases.base.UseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
 import com.fndt.quote.domain.usecases.users.ChangeProfilePictureUseCase
+import com.fndt.quote.domain.usecases.users.ChangeRoleUseCase
 import com.fndt.quote.domain.usecases.users.RegisterUseCase
 import java.io.File
 
@@ -39,5 +41,9 @@ class UsersUseCaseFactory(
 
     fun getPermanentBanUseCase(userId: Int, requestingUser: User): UseCase<Unit> {
         return PermanentBanUseCase(userId, userRepository, requestingUser, permissionManager, requestManager)
+    }
+
+    fun getChangeRoleUseCase(userId: Int, newRole: AuthRole, requestingUser: User): UseCase<Unit> {
+        return ChangeRoleUseCase(userId, newRole, userRepository, requestingUser, permissionManager, requestManager)
     }
 }
