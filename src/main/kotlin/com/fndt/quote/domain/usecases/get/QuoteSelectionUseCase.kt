@@ -19,6 +19,7 @@ const val ACCESS_KEY = "access"
 const val QUERY_KEY = "query"
 const val PAGE_KEY = "page"
 const val PER_PAGE_KEY = "per_page"
+const val QUOTE_KEY = "quote"
 
 class QuoteSelectionUseCase(
     private val arguments: Map<String, Any?>,
@@ -43,6 +44,7 @@ class QuoteSelectionUseCase(
     private var targetQuery: String? = null
     private var targetPage: Int = 1
     private var targetPerPage: Int = 20
+    private var targetQuote: Quote? = null
 
     private val User.isRegularUsingPrivateData
         get() = role == AuthRole.REGULAR && (targetTag?.isPublic == false || targetAccess == Access.PRIVATE || targetAccess == Access.ALL)
@@ -65,6 +67,7 @@ class QuoteSelectionUseCase(
             query = targetQuery,
             quoteAccess = targetAccess,
             requestingUser = requestingUser,
+            quote = targetQuote,
         )
         quoteRepository.get(filterArgs).also {
             return Quotes(page = targetPage, totalPages = pager.getTotalPages(it), quotes = pager.getPaged(it))
@@ -80,6 +83,9 @@ class QuoteSelectionUseCase(
         }
         targetTag = (this[TAG_KEY] as? ID)?.let { id ->
             tagRepository.findById(id) ?: throw IllegalStateException("Tag not found")
+        }
+        targetQuote = (this[QUOTE_KEY] as? ID)?.let { id ->
+            quoteRepository.findById(id) ?: throw IllegalStateException("Quote not found")
         }
         targetOrder = this[ORDER_KEY] as? QuotesOrder ?: QuotesOrder.LATEST
         targetAccess = this[ACCESS_KEY] as? Access ?: Access.PUBLIC

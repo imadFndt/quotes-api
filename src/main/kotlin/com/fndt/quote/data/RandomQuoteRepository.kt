@@ -47,5 +47,5 @@ class RandomQuoteRepository(
 
     private fun hasUser(user: User): Boolean = randomQuoteTable.select {
         randomQuoteTable.user eq user.id
-    }.toList().firstOrNull() == null
+    }.toList().firstOrNull() != null
 }

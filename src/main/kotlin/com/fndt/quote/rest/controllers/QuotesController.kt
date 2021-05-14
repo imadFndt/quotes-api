@@ -65,6 +65,7 @@ private fun ApplicationCall.initArgsMap(): Map<String, Any?> {
     args[AUTHOR_KEY] = parameters[AUTHOR_KEY]?.toInt() as? Any
     args[USER_KEY] = parameters[USER_KEY]?.toInt() as? Any
     args[TAG_KEY] = parameters[TAG_KEY]?.toInt() as? Any
+    args[QUOTE_KEY] = parameters[QUOTE_KEY]?.toInt() as? Any
     args[PAGE_KEY] = parameters[PAGE_KEY]?.toInt() as? Any
     args[PER_PAGE_KEY] = parameters[PER_PAGE_KEY]?.toInt() as? Any
     args[ORDER_KEY] = parameters.getOrder() as? Any

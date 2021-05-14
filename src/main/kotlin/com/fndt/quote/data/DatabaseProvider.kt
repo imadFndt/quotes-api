@@ -15,7 +15,7 @@ object DatabaseProvider {
         // LOCAL IS jdbc:h2:mem:
         // TODO CHANGE INIT LOGIC
         Database.connect(
-            "jdbc:h2:file:./webapps/quotyv4;DB_CLOSE_DELAY=-1",
+            "jdbc:h2:file:./webapps/quotyv44;DB_CLOSE_DELAY=-1",
             "org.h2.Driver",
             "root",
             ""
@@ -54,7 +54,7 @@ object DatabaseProvider {
         val body = varchar("body", 300)
         val quoteId = reference("quote_id", Quotes, onDelete = ReferenceOption.CASCADE)
         val createdAt = long("date")
-        val user = reference("user", Users)
+        val user = reference("user", Users, onDelete = ReferenceOption.CASCADE)
     }
 
     object LikesOnQuotes : Table() {
@@ -83,7 +83,7 @@ object DatabaseProvider {
 
     object RandomQuotes : Table() {
         val quote = reference("quote", Quotes, onDelete = ReferenceOption.CASCADE)
-        val user = reference("tag", Tags, onDelete = ReferenceOption.CASCADE)
+        val user = reference("user", Users, onDelete = ReferenceOption.CASCADE)
         val day = integer("day")
         override val primaryKey: PrimaryKey get() = PrimaryKey(user)
     }

@@ -56,6 +56,7 @@ class QuotesFilterImpl(
             query?.toLowerCase()?.let { andWhere { DatabaseProvider.Quotes.body.lowerCase() like "%$it%" } }
             quoteId?.let { andWhere { DatabaseProvider.Quotes.id eq it } }
             authorId?.let { andWhere { DatabaseProvider.Quotes.author eq it } }
+            quote?.let { andWhere { DatabaseProvider.Quotes.id eq it.id } }
         }
     }
 

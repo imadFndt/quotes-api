@@ -1,5 +1,6 @@
 package com.fndt.quote.domain.filter
 
+import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 
 data class QuoteFilterArguments(
@@ -11,5 +12,6 @@ data class QuoteFilterArguments(
     var quoteId: Int? = null,
     var authorId: Int? = null,
     var tagAccess: Access = Access.PUBLIC,
-    var requestingUser: User? = null
+    var requestingUser: User? = null,
+    var quote: Quote? = null,
 )
