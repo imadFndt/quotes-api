@@ -15,5 +15,6 @@ data class Quote(
     val user: User,
     val likes: Int = 0,
     val tags: List<Tag> = emptyList(),
-    val isPublic: Boolean = false
+    val isPublic: Boolean = false,
+    @SerialName("did_i_like") val didILike: Boolean = false,
 )

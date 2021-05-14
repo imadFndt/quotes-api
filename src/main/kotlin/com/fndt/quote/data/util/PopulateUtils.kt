@@ -22,6 +22,7 @@ fun populateDb() = transaction {
         DatabaseProvider.Comments,
         DatabaseProvider.LikesOnQuotes,
         DatabaseProvider.Authors,
+        DatabaseProvider.RandomQuotes,
     )
     SchemaUtils.drop(*tables)
     commit()

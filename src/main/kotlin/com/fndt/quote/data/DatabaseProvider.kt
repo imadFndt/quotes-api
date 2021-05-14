@@ -15,7 +15,7 @@ object DatabaseProvider {
         // LOCAL IS jdbc:h2:mem:
         // TODO CHANGE INIT LOGIC
         Database.connect(
-            "jdbc:h2:file:./webapps/qdb13;DB_CLOSE_DELAY=-1",
+            "jdbc:h2:file:./webapps/quotyv4;DB_CLOSE_DELAY=-1",
             "org.h2.Driver",
             "root",
             ""
@@ -33,6 +33,7 @@ object DatabaseProvider {
             TagsOnQuotes::javaClass.get().kotlin -> TagsOnQuotes as T
             Users::javaClass.get().kotlin -> Users as T
             Authors::javaClass.get().kotlin -> Authors as T
+            RandomQuotes::javaClass.get().kotlin -> RandomQuotes as T
             else -> throw IllegalArgumentException()
         }
     }
@@ -78,6 +79,13 @@ object DatabaseProvider {
         val role = enumeration("user_role", AuthRole::class)
         val blockedUntil = long("blocked_until").nullable()
         val avatarScheme = enumeration("avatar", AvatarScheme::class)
+    }
+
+    object RandomQuotes : Table() {
+        val quote = reference("quote", Quotes, onDelete = ReferenceOption.CASCADE)
+        val user = reference("tag", Tags, onDelete = ReferenceOption.CASCADE)
+        val day = integer("day")
+        override val primaryKey: PrimaryKey get() = PrimaryKey(user)
     }
 
     object Authors : IntIdTable() {

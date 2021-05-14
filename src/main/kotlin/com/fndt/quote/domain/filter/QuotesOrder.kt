@@ -1,7 +1,7 @@
 package com.fndt.quote.domain.filter
 
 enum class QuotesOrder(val key: String) {
-    POPULARS("populars"), LATEST("latest");
+    POPULARS("populars"), LATEST("latest"), RANDOM("random");
 
     companion object {
         fun findKey(key: String): QuotesOrder? {

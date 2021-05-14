@@ -9,6 +9,7 @@ fun ResultRow.toQuotes(
     tagList: List<Tag> = emptyList(),
     likesCount: Int,
     author: Author,
+    didILike: Boolean,
 ): Quote {
     return Quote(
         id = this[DatabaseProvider.Quotes.id].value,
@@ -18,7 +19,8 @@ fun ResultRow.toQuotes(
         user = toUser(),
         likes = likesCount,
         tags = tagList,
-        author = author
+        author = author,
+        didILike = didILike,
     )
 }
 

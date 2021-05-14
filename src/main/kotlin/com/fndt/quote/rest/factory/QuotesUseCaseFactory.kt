@@ -1,11 +1,13 @@
 package com.fndt.quote.rest.factory
 
 import com.fndt.quote.domain.dto.Like
+import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.*
 import com.fndt.quote.domain.repository.QuoteRepository
 import com.fndt.quote.domain.usecases.add.AddUseCase
 import com.fndt.quote.domain.usecases.base.UseCase
+import com.fndt.quote.domain.usecases.get.GetQuoteOfTheDay
 import com.fndt.quote.domain.usecases.get.QuoteSelectionUseCase
 import com.fndt.quote.domain.usecases.review.ReviewUseCase
 import com.fndt.quote.domain.usecases.review.SimpleReviewUseCaseAdapter
@@ -34,5 +36,9 @@ class QuotesUseCaseFactory(
 
     fun getQuoteSelectionsUseCase(arguments: Map<String, Any?>, user: User): QuoteSelectionUseCase {
         return QuoteSelectionUseCase(arguments, repositoryProvider, user, permissionManager, requestManager)
+    }
+
+    fun getQuoteOfTheDay(user: User): UseCase<Quote> {
+        return GetQuoteOfTheDay(repositoryProvider, user, permissionManager, requestManager)
     }
 }
