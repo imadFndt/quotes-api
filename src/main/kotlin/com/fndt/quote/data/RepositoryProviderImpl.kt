@@ -16,6 +16,7 @@ class RepositoryProviderImpl(private val databaseProvider: DatabaseProvider) : R
             TagRepository::class -> TagRepositoryImpl(databaseProvider) as T
             TagSelectionRepository::class -> TagSelectionRepositoryImpl(databaseProvider) as T
             UserRepository::class -> UserRepositoryImpl(databaseProvider) as T
+            RandomQuoteRepository::class -> RandomQuoteRepository(databaseProvider) as T
             else -> throw IllegalArgumentException("Bad repository: $k")
         }
     }

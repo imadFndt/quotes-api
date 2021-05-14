@@ -26,9 +26,8 @@ class QuotesFilterImpl(
         val ids = tablesJoin
             .slice(quotesTable.id)
             .selectAll()
-            .apply {
-                applySelectors(args)
-            }.map { it[DatabaseProvider.Quotes.id].value }
+            .apply { applySelectors(args) }
+            .map { it[DatabaseProvider.Quotes.id].value }
 
         return tablesJoin
             .select { quotesTable.id inList ids }
@@ -63,6 +62,7 @@ class QuotesFilterImpl(
     private fun List<Quote>.applyOrder(args: QuoteFilterArguments): List<Quote> = when (args.order) {
         QuotesOrder.POPULARS -> sortedByDescending { it.likes }
         QuotesOrder.LATEST -> sortedByDescending { it.createdAt }
+        QuotesOrder.RANDOM -> shuffled()
     }
 
     private fun fetchLikes(quoteId: Int, requestingUser: User?): Pair<Int, Boolean> {

@@ -8,6 +8,7 @@ import com.fndt.quote.rest.UrlSchemeProvider
 import com.fndt.quote.rest.dto.AddQuote
 import com.fndt.quote.rest.dto.LikeRequest
 import com.fndt.quote.rest.dto.QuoteReview
+import com.fndt.quote.rest.dto.out.toOutQuote
 import com.fndt.quote.rest.dto.out.toOutQuoteList
 import com.fndt.quote.rest.factory.QuotesUseCaseFactory
 import com.fndt.quote.rest.util.*
@@ -24,6 +25,7 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
         addQuote()
         likeQuote()
         reviewQuote()
+        randomQuote()
     }
 
     private fun Route.getQuotes() = getExt { principal ->
@@ -48,6 +50,12 @@ class QuotesController(private val useCaseFactory: QuotesUseCaseFactory) : Routi
         val (decision, quoteId) = receive<QuoteReview>()
         useCaseFactory.getReviewQuoteUseCase(quoteId, decision, principal.user).run()
         respond(SUCCESS)
+    }
+
+    private fun Route.randomQuote() = getExt(DAY_ENDPOINT) { principal ->
+        useCaseFactory.getQuoteOfTheDay(principal.user).run().also {
+            respond(it.toOutQuote(UrlSchemeProvider))
+        }
     }
 }
 

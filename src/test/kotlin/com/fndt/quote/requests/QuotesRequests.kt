@@ -6,6 +6,7 @@ import com.fndt.quote.rest.dto.LikeRequest
 import com.fndt.quote.rest.dto.QuoteReview
 import com.fndt.quote.rest.dto.out.OutQuote
 import com.fndt.quote.rest.dto.out.OutQuoteList
+import com.fndt.quote.rest.util.DAY_ENDPOINT
 import com.fndt.quote.rest.util.LIKE_ENDPOINT
 import com.fndt.quote.rest.util.QUOTES_ENDPOINT
 import com.fndt.quote.rest.util.REVIEW_QUOTE_ENDPOINT
@@ -58,5 +59,13 @@ fun TestApplicationEngine.getQuotes(
         .reduce { acc, current -> "$acc$current" }
 
     val call = handleRequestWithAuth(HttpMethod.Get, "$QUOTES_ENDPOINT?$urlArgs", credentials)
+    return serializer.parseResponse(call.response)
+}
+
+@InternalAPI
+fun TestApplicationEngine.getQuoteOfTheDay(
+    credentials: String
+): OutQuote {
+    val call = handleRequestWithAuth(HttpMethod.Get, "$QUOTES_ENDPOINT$DAY_ENDPOINT", credentials)
     return serializer.parseResponse(call.response)
 }
