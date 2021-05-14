@@ -28,4 +28,8 @@ class GetTagsUseCase(
     override suspend fun makeRequest(): List<Tag> {
         return tagRepository.findByAccess(access)
     }
+
+    companion object {
+        val DEFAULT_ACCESS = Access.PUBLIC
+    }
 }

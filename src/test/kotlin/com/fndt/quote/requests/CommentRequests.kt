@@ -1,9 +1,8 @@
 package com.fndt.quote.requests
 
 import com.fndt.quote.*
-import com.fndt.quote.domain.*
-import com.fndt.quote.domain.dto.Comment
 import com.fndt.quote.rest.dto.AddComment
+import com.fndt.quote.rest.dto.out.OutComment
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.util.*
@@ -24,7 +23,7 @@ fun TestApplicationEngine.addComment(
 fun TestApplicationEngine.getComments(
     quoteId: Int,
     credentials: String
-): List<Comment> {
+): List<OutComment> {
     val call = handleRequestWithAuth(HttpMethod.Get, "/quotes/$quoteId/comment", credentials)
     return serializer.parseResponse(call.response)
 }

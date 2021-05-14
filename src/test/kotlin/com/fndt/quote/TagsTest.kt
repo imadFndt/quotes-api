@@ -41,4 +41,17 @@ class TagsTest {
         val tagExists = quote.tags.find { it.id == item.id }
         assertNotNull(tagExists)
     }
+
+    @Test
+    fun `double tag add`(): Unit = withTestApplication(Application::module) {
+        val tagName = "testTagA"
+
+        addTag(tagName, moderatorCredentials).run {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+
+        addTag(tagName, moderatorCredentials).run {
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+        }
+    }
 }

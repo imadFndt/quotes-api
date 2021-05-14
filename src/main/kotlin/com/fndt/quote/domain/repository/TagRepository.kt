@@ -7,4 +7,5 @@ import com.fndt.quote.domain.repository.base.SimpleRepository
 interface TagRepository : SimpleRepository<Tag> {
     fun get(): List<Tag>
     fun findByAccess(access: Access): List<Tag>
+    fun findByName(name: String): Tag?
 }

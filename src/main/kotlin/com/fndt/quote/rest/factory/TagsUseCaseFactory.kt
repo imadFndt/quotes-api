@@ -1,5 +1,6 @@
 package com.fndt.quote.rest.factory
 
+import com.fndt.quote.domain.dto.Tag
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.manager.*
@@ -16,22 +17,13 @@ class TagsUseCaseFactory(
     private val permissionManager: UserPermissionManager,
     private val requestManager: RequestManager
 ) {
-    fun getTagsUseCase(access: Access?, user: User): GetTagsUseCase {
-        return access?.let {
-            GetTagsUseCase(
-                access = it,
-                tagRepository = repositoryProvider.getRepository(),
-                requestingUser = user,
-                permissionManager = permissionManager,
-                requestManager = requestManager
-            )
-        } ?: GetTagsUseCase(
-            tagRepository = repositoryProvider.getRepository(),
-            requestingUser = user,
-            permissionManager = permissionManager,
-            requestManager = requestManager
-        )
-    }
+    fun getTagsUseCase(accessParameter: Access?, user: User): UseCase<List<Tag>> = GetTagsUseCase(
+        access = accessParameter ?: GetTagsUseCase.DEFAULT_ACCESS,
+        tagRepository = repositoryProvider.getRepository(),
+        requestingUser = user,
+        permissionManager = permissionManager,
+        requestManager = requestManager
+    )
 
     fun getAddTagUseCase(tagName: String, requestingUser: User): UseCase<Unit> {
         val adapter = addAdapterProvider.createAddTagAdapter(tagName)

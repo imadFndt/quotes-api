@@ -15,7 +15,7 @@ object DatabaseProvider {
         // LOCAL IS jdbc:h2:mem:
         // TODO CHANGE INIT LOGIC
         Database.connect(
-            "jdbc:h2:file:./webapps/quodb11;DB_CLOSE_DELAY=-1",
+            "jdbc:h2:file:./webapps/quotyv4;DB_CLOSE_DELAY=-1",
             "org.h2.Driver",
             "root",
             ""

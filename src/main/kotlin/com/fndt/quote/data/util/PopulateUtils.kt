@@ -53,22 +53,21 @@ fun populateDb() = transaction {
         this[DatabaseProvider.Quotes.user] = userId
     }
     DatabaseProvider.Comments.insert { insert ->
-        insert[body] = "Хуйня"
+        insert[body] = "Мне нравится"
         insert[quoteId] = 1
         insert[createdAt] = System.currentTimeMillis()
         insert[user] = 1
     }
-    val tags = listOf("Смешарики", "За жизнь", "ЫЫЫ")
     DatabaseProvider.Tags.batchInsert(tagsList) { tag ->
         this[DatabaseProvider.Tags.id] = tag.id
         this[DatabaseProvider.Tags.name] = tag.name
         this[DatabaseProvider.Tags.isPublic] = tag.isPublic
     }
-    DatabaseProvider.TagsOnQuotes.batchInsert(tags) { current ->
+    DatabaseProvider.TagsOnQuotes.batchInsert(tagsList) { current ->
         this[quote] = 1
         this[tag] = DatabaseProvider.Tags
             .slice(DatabaseProvider.Tags.id)
-            .select { DatabaseProvider.Tags.name eq current }
+            .select { DatabaseProvider.Tags.name eq current.name }
             .firstOrNull()
             ?.let { it[DatabaseProvider.Tags.id] } ?: run { throw IllegalArgumentException() }
     }
@@ -131,5 +130,5 @@ internal val quotesList = listOf(
 val tagsList = listOf(
     Tag(1, "Смешарики", true),
     Tag(2, "За жизнь", true),
-    Tag(3, "ЫЫЫ", false),
+    Tag(3, "Лучшие", false),
 )

@@ -45,7 +45,7 @@ fun Application.module() {
         )
     }
 
-    val registrationController by inject<UserController>()
+    val userController by inject<UserController>()
     val quotesController by inject<QuotesController>()
     val commentsController by inject<CommentsController>()
     val authController by inject<AuthController>()
@@ -64,12 +64,7 @@ fun Application.module() {
 
     install(Authentication) { authController.addBasicAuth(this) }
     routing {
-        listOf(
-            registrationController,
-            quotesController,
-            commentsController,
-            tagsController,
-        ).forEach { it.route(this) }
+        listOf(userController, quotesController, commentsController, tagsController).forEach { it.route(this) }
         routeImages(filePath, imagesPath)
     }
 }
