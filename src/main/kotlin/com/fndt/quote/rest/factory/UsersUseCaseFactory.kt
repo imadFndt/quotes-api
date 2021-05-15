@@ -9,6 +9,7 @@ import com.fndt.quote.domain.repository.UserRepository
 import com.fndt.quote.domain.usecases.ban.BanReadOnlyUserUseCase
 import com.fndt.quote.domain.usecases.ban.PermanentBanUseCase
 import com.fndt.quote.domain.usecases.base.UseCase
+import com.fndt.quote.domain.usecases.get.GetUserUseCase
 import com.fndt.quote.domain.usecases.users.AuthUseCase
 import com.fndt.quote.domain.usecases.users.ChangeProfilePictureUseCase
 import com.fndt.quote.domain.usecases.users.ChangeRoleUseCase
@@ -45,5 +46,9 @@ class UsersUseCaseFactory(
 
     fun getChangeRoleUseCase(userId: Int, newRole: AuthRole, requestingUser: User): UseCase<Unit> {
         return ChangeRoleUseCase(userId, newRole, userRepository, requestingUser, permissionManager, requestManager)
+    }
+
+    fun getUserUseCase(userId: Int, requestingUser: User): UseCase<User> {
+        return GetUserUseCase(userId, userRepository, requestingUser, permissionManager, requestManager)
     }
 }

@@ -19,6 +19,6 @@ object UrlSchemeProvider {
 }
 
 private fun User.toProfilePictureName(): String = when (avatarScheme) {
-    AvatarScheme.PANDA -> "panda.$SUPPORTED_EXTENSION"
     AvatarScheme.CUSTOM -> "$id.$SUPPORTED_EXTENSION"
+    else -> avatarScheme.fileName
 }

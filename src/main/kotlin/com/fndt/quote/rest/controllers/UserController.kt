@@ -32,6 +32,7 @@ class UserController(
         banUser()
         permanentBan()
         changeRole()
+        getUser()
     }
 
     private fun Route.register() = post(REGISTRATION_ENDPOINT) {
@@ -73,6 +74,15 @@ class UserController(
             val (role, id) = receive<UpdateRole>()
             useCaseManager.getChangeRoleUseCase(id, role, principal.user).run()
             respond(SUCCESS)
+        }
+    }
+
+    private fun Route.getUser() = routePathWithAuth(USER_ENDPOINT) {
+        getExt { principal ->
+            val userId = parameters[ID]!!.toInt()
+            useCaseManager.getUserUseCase(userId, principal.user).run().also {
+                respond(it.toOutUser(UrlSchemeProvider))
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.fndt.quote.domain.usecases.get
 import com.fndt.quote.data.RandomQuoteRepository
 import com.fndt.quote.domain.dto.Quote
 import com.fndt.quote.domain.dto.User
+import com.fndt.quote.domain.filter.Access
 import com.fndt.quote.domain.filter.QuoteFilterArguments
 import com.fndt.quote.domain.filter.QuotesOrder
 import com.fndt.quote.domain.manager.RepositoryProvider
@@ -32,7 +33,7 @@ class GetQuoteOfTheDay(
     }
 
     private fun generateNew(user: User, date: LocalDate): Quote = quoteRepository
-        .get(QuoteFilterArguments(requestingUser = user, order = QuotesOrder.RANDOM))
+        .get(QuoteFilterArguments(requestingUser = user, order = QuotesOrder.RANDOM, quoteAccess = Access.PUBLIC))
         .first().also { quote ->
             randomQuoteRepository.addRandomQuote(user, date, quote)
         }

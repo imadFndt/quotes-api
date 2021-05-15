@@ -1,5 +1,6 @@
 package com.fndt.quote.domain.usecases.users
 
+import com.fndt.quote.domain.dto.AvatarScheme
 import com.fndt.quote.domain.dto.User
 import com.fndt.quote.domain.manager.RequestManager
 import com.fndt.quote.domain.manager.UserPermissionManager
@@ -21,7 +22,8 @@ class RegisterUseCase(
 
     override suspend fun makeRequest(): User {
         userRepository.findUserByParams(name = name)?.let { throw IllegalArgumentException("User already registered") }
-        val user = User(name = name, password = password)
+        val randomAvatar = AvatarScheme.getRandomAvatar()
+        val user = User(name = name, password = password, avatarScheme = randomAvatar)
         val newId = userRepository.add(user)
         return userRepository.findUserByParams(userId = newId) ?: throw IllegalArgumentException("Failed to add user")
     }

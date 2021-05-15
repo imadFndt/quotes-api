@@ -21,6 +21,17 @@ data class User(
         hashedPassword = password
     }
 
+    constructor(
+        id: ID = UNDEFINED,
+        name: String,
+        password: String,
+        role: AuthRole = AuthRole.REGULAR,
+        blockedUntil: Long? = null,
+        avatarScheme: AvatarScheme,
+    ) : this(id, name, role, blockedUntil, avatarScheme) {
+        hashedPassword = password
+    }
+
     @Transient
     var hashedPassword: String = ""
 }
